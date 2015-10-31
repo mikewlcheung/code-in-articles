@@ -1,0 +1,184 @@
+Mplus VERSION 7.31 (Linux)
+MUTHEN & MUTHEN
+10/31/2015   8:40 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE: Fixed-effects model: An intercept model
+  DATA:	FILE IS hox.txt;
+  VARIABLE: NAMES d varofd inter weeks;
+  	USEVARIABLES ARE d inter;
+  DEFINE: w2 = SQRT(varofd**(-1));	! Weight for the transformation
+  	d = w2*d;			! Transformed d
+  	inter = w2*inter;		! Transformed intercept
+  MODEL:			
+  	d ON inter;
+  	[d@0.0];			! Intercept is fixed at 0
+  	d@1.0;				! Error variance is fixed at 1
+  OUTPUT: SAMPSTAT;
+
+
+
+
+INPUT READING TERMINATED NORMALLY
+
+
+
+Fixed-effects model: An intercept model
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                          20
+
+Number of dependent variables                                    1
+Number of independent variables                                  1
+Number of continuous latent variables                            0
+
+Observed dependent variables
+
+  Continuous
+   D
+
+Observed independent variables
+   INTER
+
+
+Estimator                                                       ML
+Information matrix                                        OBSERVED
+Maximum number of iterations                                  1000
+Convergence criterion                                    0.500D-04
+Maximum number of steepest descent iterations                   20
+
+Input data file(s)
+  hox.txt
+
+Input data format  FREE
+
+
+SAMPLE STATISTICS
+
+
+     SAMPLE STATISTICS
+
+
+           Means
+              D             INTER
+              ________      ________
+      1         1.957         3.407
+
+
+           Covariances
+              D             INTER
+              ________      ________
+ D              2.234
+ INTER         -0.154         0.230
+
+
+           Correlations
+              D             INTER
+              ________      ________
+ D              1.000
+ INTER         -0.214         1.000
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     D                     1.957       0.086      -0.900    5.00%       0.708      1.368      1.982
+              20.000       2.234      -0.242       4.911    5.00%       2.570      2.873
+     INTER                 3.407       0.582       2.591    5.00%       3.015      3.244      3.400
+              20.000       0.230      -0.061       4.428    5.00%       3.450      3.581
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                        1
+
+Loglikelihood
+
+          H0 Value                         -43.171
+          H1 Value                         -35.945
+
+Information Criteria
+
+          Akaike (AIC)                      88.343
+          Bayesian (BIC)                    89.338
+          Sample-Size Adjusted BIC          86.256
+            (n* = (n + 2) / 24)
+
+Chi-Square Test of Model Fit
+
+          Value                             14.453
+          Degrees of Freedom                     2
+          P-Value                           0.0007
+
+RMSEA (Root Mean Square Error Of Approximation)
+
+          Estimate                           0.558
+          90 Percent C.I.                    0.312  0.844
+          Probability RMSEA <= .05           0.001
+
+CFI/TLI
+
+          CFI                                0.000
+          TLI                                1.000
+
+Chi-Square Test of Model Fit for the Baseline Model
+
+          Value                              0.940
+          Degrees of Freedom                     1
+          P-Value                           0.3324
+
+SRMR (Standardized Root Mean Square Residual)
+
+          Value                              0.386
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+ D        ON
+    INTER              0.550      0.065      8.465      0.000
+
+ Intercepts
+    D                  0.000      0.000    999.000    999.000
+
+ Residual Variances
+    D                  1.000      0.000    999.000    999.000
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.100E+01
+       (ratio of smallest to largest eigenvalue)
+
+
+     Beginning Time:  20:40:10
+        Ending Time:  20:40:10
+       Elapsed Time:  00:00:00
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2015 Muthen & Muthen

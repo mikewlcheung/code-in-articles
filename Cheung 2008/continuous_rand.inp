@@ -1,0 +1,19 @@
+TITLE: Random-effects model (with ML method): A continuous covariate
+DATA:	FILE IS hox.txt;	
+VARIABLE: NAMES d varofd inter weeks;
+	USEVARIABLES ARE d inter weeks;
+DEFINE: w2 = SQRT(varofd**(-1));
+	d = w2*d;
+	inter = w2*inter;
+	weeks = w2*weeks;
+ANALYSIS: TYPE=RANDOM;			! Use random slope analysis
+MODEL:	
+	[d@0.0];			! Intercept is fixed at 0
+	d@1.0;				! Error variance is fixed at 1
+	u | d ON inter;
+	d ON weeks;
+	u*;				! var(u): tau^2
+   	[u*];				! mean(u): intercept
+OUTPUT: SAMPSTAT;         
+
+

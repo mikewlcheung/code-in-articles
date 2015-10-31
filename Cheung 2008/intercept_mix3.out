@@ -1,0 +1,380 @@
+Mplus VERSION 7.31 (Linux)
+MUTHEN & MUTHEN
+10/31/2015   8:40 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE:	Fixed-effects model: An intercept model with three mixtures
+  DATA:	FILE IS hox.txt;	
+  VARIABLE: NAMES d varofd inter weeks;
+  	USEVARIABLES ARE d inter;
+  	CLASSES=c(3);			! Define three classes of mixtures
+  DEFINE:	w2 = SQRT(varofd**(-1));
+  	d = w2*d;
+  	inter = w2*inter;
+  ANALYSIS: TYPE=MIXTURE;			! Use mixture analysis
+  	STARTS 200 20;			! Use 200 random starting values
+  	STITERATIONS = 20;
+  MODEL:			
+  	%OVERALL%			! Overall model
+  	[d@0.0];			! Intercept is fixed at 0
+  	d@1.0;				! Error variance is fixed at 1
+  	d ON inter;			! Weighted mean of the 1st mixture
+
+  	%c#2%				! Second mixture
+  	d ON inter;			! Weighted mean of the 2nd mixture
+
+  	%c#3%				! Third mixture
+  	d ON inter;			! Weighted mean of the 3rd mixture
+
+  OUTPUT: SAMPSTAT;
+  	TECH11;
+
+  SAVEDATA:
+  	SAVE=CPROB;			! Save the posterior probabilities
+  	FILE IS intercept_3mix.txt;
+
+
+
+INPUT READING TERMINATED NORMALLY
+
+
+
+Fixed-effects model: An intercept model with three mixtures
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                          20
+
+Number of dependent variables                                    1
+Number of independent variables                                  1
+Number of continuous latent variables                            0
+Number of categorical latent variables                           1
+
+Observed dependent variables
+
+  Continuous
+   D
+
+Observed independent variables
+   INTER
+
+Categorical latent variables
+   C
+
+
+Estimator                                                      MLR
+Information matrix                                        OBSERVED
+Optimization Specifications for the Quasi-Newton Algorithm for
+Continuous Outcomes
+  Maximum number of iterations                                 100
+  Convergence criterion                                  0.100D-05
+Optimization Specifications for the EM Algorithm
+  Maximum number of iterations                                 500
+  Convergence criteria
+    Loglikelihood change                                 0.100D-06
+    Relative loglikelihood change                        0.100D-06
+    Derivative                                           0.100D-05
+Optimization Specifications for the M step of the EM Algorithm for
+Categorical Latent variables
+  Number of M step iterations                                    1
+  M step convergence criterion                           0.100D-05
+  Basis for M step termination                           ITERATION
+Optimization Specifications for the M step of the EM Algorithm for
+Censored, Binary or Ordered Categorical (Ordinal), Unordered
+Categorical (Nominal) and Count Outcomes
+  Number of M step iterations                                    1
+  M step convergence criterion                           0.100D-05
+  Basis for M step termination                           ITERATION
+  Maximum value for logit thresholds                            15
+  Minimum value for logit thresholds                           -15
+  Minimum expected cell size for chi-square              0.100D-01
+Optimization algorithm                                         EMA
+Random Starts Specifications
+  Number of initial stage random starts                        200
+  Number of final stage optimizations                           20
+  Number of initial stage iterations                            20
+  Initial stage convergence criterion                    0.100D+01
+  Random starts scale                                    0.500D+01
+  Random seed for generating random starts                       0
+
+Input data file(s)
+  hox.txt
+Input data format  FREE
+
+
+SAMPLE STATISTICS
+
+
+     SAMPLE STATISTICS
+
+
+           Means
+              D             INTER
+              ________      ________
+ 1              1.957         3.407
+
+
+           Covariances
+              D             INTER
+              ________      ________
+ D              2.234
+ INTER         -0.154         0.230
+
+
+           Correlations
+              D             INTER
+              ________      ________
+ D              1.000
+ INTER         -0.214         1.000
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     D                     1.957       0.086      -0.900    5.00%       0.708      1.368      1.982
+              20.000       2.234      -0.242       4.911    5.00%       2.570      2.873
+     INTER                 3.407       0.582       2.591    5.00%       3.015      3.244      3.400
+              20.000       0.230      -0.061       4.428    5.00%       3.450      3.581
+
+RANDOM STARTS RESULTS RANKED FROM THE BEST TO THE WORST LOGLIKELIHOOD VALUES
+
+Final stage loglikelihood values at local maxima, seeds, and initial stage start numbers:
+
+             -37.136  51375            148
+             -37.136  247224           94
+             -37.136  432148           30
+             -37.136  227563           63
+             -37.136  966014           37
+             -37.136  263268           165
+             -37.136  654136           167
+             -37.136  402224           91
+             -37.136  509733           130
+             -37.136  928287           197
+             -37.136  107446           12
+             -37.136  813779           92
+             -37.136  370466           41
+             -37.136  685657           69
+             -37.136  915642           40
+             -37.136  399671           13
+             -37.136  608496           4
+             -37.136  12477            155
+             -37.136  848163           47
+             -38.267  292884           103
+
+
+
+THE BEST LOGLIKELIHOOD VALUE HAS BEEN REPLICATED.  RERUN WITH AT LEAST TWICE THE
+RANDOM STARTS TO CHECK THAT THE BEST LOGLIKELIHOOD IS STILL OBTAINED AND REPLICATED.
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                        5
+
+Loglikelihood
+
+          H0 Value                         -37.136
+          H0 Scaling Correction Factor      0.6669
+            for MLR
+
+Information Criteria
+
+          Akaike (AIC)                      84.271
+          Bayesian (BIC)                    89.250
+          Sample-Size Adjusted BIC          73.836
+            (n* = (n + 2) / 24)
+
+
+
+FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES
+BASED ON THE ESTIMATED MODEL
+
+    Latent
+   Classes
+
+       1         10.70648          0.53532
+       2          7.41988          0.37099
+       3          1.87364          0.09368
+
+
+FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES
+BASED ON ESTIMATED POSTERIOR PROBABILITIES
+
+    Latent
+   Classes
+
+       1         10.70648          0.53532
+       2          7.41988          0.37099
+       3          1.87364          0.09368
+
+
+FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES
+BASED ON THEIR MOST LIKELY LATENT CLASS MEMBERSHIP
+
+Class Counts and Proportions
+
+    Latent
+   Classes
+
+       1               11          0.55000
+       2                7          0.35000
+       3                2          0.10000
+
+
+CLASSIFICATION QUALITY
+
+     Entropy                         0.616
+
+
+Average Latent Class Probabilities for Most Likely Latent Class Membership (Row)
+by Latent Class (Column)
+
+           1        2        3
+
+    1   0.830    0.164    0.006
+    2   0.197    0.803    0.000
+    3   0.098    0.000    0.901
+
+
+Classification Probabilities for the Most Likely Latent Class Membership (Column)
+by Latent Class (Row)
+
+           1        2        3
+
+    1   0.853    0.129    0.018
+    2   0.243    0.757    0.000
+    3   0.038    0.000    0.962
+
+
+Logits for the Classification Probabilities for the Most Likely Latent Class Membership (Column)
+by Latent Class (Row)
+
+              1        2        3
+
+    1      3.837    1.948    0.000
+    2      7.587    8.725    0.000
+    3     -3.229  -13.462    0.000
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+Latent Class 1
+
+ D          ON
+    INTER              0.677      0.096      7.022      0.000
+
+ Intercepts
+    D                  0.000      0.000    999.000    999.000
+
+ Residual Variances
+    D                  1.000      0.000    999.000    999.000
+
+Latent Class 2
+
+ D          ON
+    INTER              0.203      0.145      1.398      0.162
+
+ Intercepts
+    D                  0.000      0.000    999.000    999.000
+
+ Residual Variances
+    D                  1.000      0.000    999.000    999.000
+
+Latent Class 3
+
+ D          ON
+    INTER              1.630      0.140     11.642      0.000
+
+ Intercepts
+    D                  0.000      0.000    999.000    999.000
+
+ Residual Variances
+    D                  1.000      0.000    999.000    999.000
+
+Categorical Latent Variables
+
+ Means
+    C#1                1.743      0.925      1.885      0.059
+    C#2                1.376      0.986      1.395      0.163
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.588E-02
+       (ratio of smallest to largest eigenvalue)
+
+
+TECHNICAL 11 OUTPUT
+
+     Random Starts Specifications for the k-1 Class Analysis Model
+        Number of initial stage random starts                 200
+        Number of final stage optimizations                    20
+
+
+
+     VUONG-LO-MENDELL-RUBIN LIKELIHOOD RATIO TEST FOR 2 (H0) VERSUS 3 CLASSES
+
+          H0 Loglikelihood Value                          -38.267
+          2 Times the Loglikelihood Difference              2.263
+          Difference in the Number of Parameters                2
+          Mean                                             -0.426
+          Standard Deviation                                1.986
+          P-Value                                          0.0453
+
+     LO-MENDELL-RUBIN ADJUSTED LRT TEST
+
+          Value                                             1.939
+          P-Value                                          0.0599
+
+
+SAVEDATA INFORMATION
+
+
+  Save file
+    intercept_3mix.txt
+
+  Order and format of variables
+
+    D              F10.3
+    INTER          F10.3
+    CPROB1         F10.3
+    CPROB2         F10.3
+    CPROB3         F10.3
+    C              F10.3
+
+  Save file format
+    6F10.3
+
+  Save file record length    10000
+
+
+     Beginning Time:  20:40:12
+        Ending Time:  20:40:12
+       Elapsed Time:  00:00:00
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2015 Muthen & Muthen

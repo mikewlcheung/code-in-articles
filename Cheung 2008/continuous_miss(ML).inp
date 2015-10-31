@@ -1,0 +1,16 @@
+TITLE: Fixed-effects model: Missing data on the covariate (FIML)
+! FIML is the default option started from Mplus Version 5
+DATA:	FILE IS hox_miss.txt;		! Data file with missing values	
+VARIABLE: NAMES d varofd inter weeks;
+	USEVARIABLES ARE d inter weeks;
+	MISSING ARE ALL (999);		! Define missing values
+DEFINE: w2 = SQRT(varofd**(-1));	
+	d = w2*d;
+	inter = w2*inter;
+	weeks = w2*weeks;		! Transformed weeks
+MODEL:						            
+	d ON inter weeks;
+	[d@0.0];			! Intercept is fixed at 0
+	d@1.0;				! Error variance is fixed at 1
+OUTPUT: SAMPSTAT; 
+    

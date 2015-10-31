@@ -1,0 +1,20 @@
+TITLE: Fixed-effects model: An intercept model with Q statistic and heterogeneity indices
+! Bootstrap approach
+DATA:	FILE IS hox.txt;
+VARIABLE: NAMES d varofd inter weeks;
+	USEVARIABLES ARE d inter;
+DEFINE: w2 = SQRT(varofd**(-1));
+	d = w2*d;
+	inter = w2*inter;
+ANALYSIS: BOOTSTRAP=2000;		! Use bootstrap analysis
+MODEL:			            
+	d ON inter;
+	[d@0.0];			! Intercept is fixed at 0
+	d (p1);				! Estimated error variance
+MODEL CONSTRAINT:
+	NEW(Q_stat H2_stat I2_stat);
+	Q_stat = 20*p1;			! Q statistic
+	H2_stat = Q_stat/19;		! H2 index
+	I2_stat = 1-19/Q_stat;		! I2 index
+OUTPUT: SAMPSTAT;        
+	CINTERVAL(BCBOOTSTRAP);		! Bias-corrected bootstrap CI

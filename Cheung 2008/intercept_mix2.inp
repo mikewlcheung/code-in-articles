@@ -1,0 +1,25 @@
+TITLE: Fixed-effects model: An intercept model with two mixtures
+DATA:	FILE IS hox.txt;	
+VARIABLE: NAMES d varofd inter weeks;
+	USEVARIABLES ARE d inter;
+	CLASSES=c(2);			! Define two classes of mixtures
+DEFINE: w2 = SQRT(varofd**(-1));
+	d = w2*d;
+	inter = w2*inter;
+ANALYSIS: TYPE=MIXTURE;			! Use mixture analysis
+	STARTS 200 20;			! Use 200 random starting values
+	STITERATIONS = 20;
+MODEL:			           
+	%OVERALL%			! Overall model
+	[d@0.0];			! Intercept is fixed at 0
+	d@1.0;				! Error variance is fixed at 1
+	d ON inter;			! Weighted mean of the 1st mixture
+
+	%c#2%				! Second mixture
+	d ON inter;			! Weighted mean of the 2nd mixture
+OUTPUT: SAMPSTAT;    
+	TECH11;				! Request an aLRT
+SAVEDATA:
+	SAVE=CPROB;			! Save the posterior probabilities
+	FILE IS intercept_2mix.txt;
+
