@@ -1,0 +1,34 @@
+TI Multivariate meta-analysis: Two effect sizes
+DA NG=4 NI=3 NO=1 MA=KM
+KM=es.cor SY
+AC=acov1.ack SY
+MO NX=3 NK=3 LX=ID PH=ST,FR TD=ZE
+OU ME=WL ND=6
+
+TI Study 2
+DA NI=3 NO=1 MA=KM
+KM=es.cor SY
+AC=acov2.ack SY
+MO NX=3 NK=3 LX=ID PH=ST,FR TD=ZE
+OU ME=WL ND=6
+
+TI Study 3
+DA NI=3 NO=1 MA=KM
+KM=es.cor SY
+AC=acov3.ack SY
+MO NX=3 NK=3 LX=ID PH=ST,FR TD=ZE
+OU ME=WL ND=6
+
+TI Study 4
+DA NI=3 NO=1 MA=KM
+KM=es.cor SY
+AC=acov4.ack SY
+MO NX=3 NK=3 LX=ID PH=ST,FR TD=ZE
+
+EQ PH(1,2,1) PH(2,2,1)
+EQ PH(1,2,1) PH(3,2,1)
+EQ PH(1,2,1) PH(4,2,1)
+EQ PH(1,3,1) PH(2,3,1)
+EQ PH(1,3,1) PH(3,3,1)
+EQ PH(1,3,1) PH(4,3,1)
+OU ME=WL ND=6

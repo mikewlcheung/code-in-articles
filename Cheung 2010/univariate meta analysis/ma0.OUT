@@ -1,0 +1,738 @@
+
+                                DATE: 11/22/2006
+                                  TIME: 18:41
+
+
+                         LISREL 8.80 (STUDENT EDITION)
+
+                                       BY
+
+                         Karl G. J”reskog & Dag S”rbom
+
+
+
+                    This program is published exclusively by
+                    Scientific Software International, Inc.
+                       7383 N. Lincoln Avenue, Suite 100
+                        Lincolnwood, IL 60712, U.S.A. 
+            Phone: (800)247-6113, (847)675-0720, Fax: (847)675-2140
+        Copyright by Scientific Software International, Inc., 1981-2006 
+          Use of this program is subject to the terms specified in the
+                        Universal Copyright Convention.
+                          Website: www.ssicentral.com
+
+ The following lines were read from file D:\Mike\study\meta analysis\SEM\univariate\ma0.LS8:
+
+ TI Hedages & Olkin (1985, p. 22): without predictor
+ DA NG=10 NI=2 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov1.ack SY
+ MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+ OU ME=WL ND=6
+
+ TI Hedages & Olkin (1985, p. 22): without predictor                            
+
+                           Number of Input Variables  2
+                           Number of Y - Variables    0
+                           Number of X - Variables    2
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  2
+                           Number of Observations     1
+                           Number of Groups          10
+  
+ TI Study 2
+ DA NI=2 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov2.ack SY
+ MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+ OU ME=WL ND=6
+
+ TI Study 2                                                                     
+
+                           Number of Input Variables  2
+                           Number of Y - Variables    0
+                           Number of X - Variables    2
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  2
+                           Number of Observations     1
+                           Number of Groups          10
+  
+ TI Study 3
+ DA NI=2 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov3.ack SY
+ MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+ OU ME=WL ND=6
+
+ TI Study 3                                                                     
+
+                           Number of Input Variables  2
+                           Number of Y - Variables    0
+                           Number of X - Variables    2
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  2
+                           Number of Observations     1
+                           Number of Groups          10
+  
+ TI Study 4
+ DA NI=2 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov4.ack SY
+ MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+ OU ME=WL ND=6
+
+ TI Study 4                                                                     
+
+                           Number of Input Variables  2
+                           Number of Y - Variables    0
+                           Number of X - Variables    2
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  2
+                           Number of Observations     1
+                           Number of Groups          10
+  
+ TI Study 5
+ DA NI=2 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov5.ack SY
+ MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+ OU ME=WL ND=6
+
+ TI Study 5                                                                     
+
+                           Number of Input Variables  2
+                           Number of Y - Variables    0
+                           Number of X - Variables    2
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  2
+                           Number of Observations     1
+                           Number of Groups          10
+  
+ TI Study 6
+ DA NI=2 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov6.ack SY
+ MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+ OU ME=WL ND=6
+
+ TI Study 6                                                                     
+
+                           Number of Input Variables  2
+                           Number of Y - Variables    0
+                           Number of X - Variables    2
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  2
+                           Number of Observations     1
+                           Number of Groups          10
+  
+ TI Study 7
+ DA NI=2 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov7.ack SY
+ MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+ OU ME=WL ND=6
+
+ TI Study 7                                                                     
+
+                           Number of Input Variables  2
+                           Number of Y - Variables    0
+                           Number of X - Variables    2
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  2
+                           Number of Observations     1
+                           Number of Groups          10
+  
+ TI Study 8
+ DA NI=2 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov8.ack SY
+ MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+ OU ME=WL ND=6
+
+ TI Study 8                                                                     
+
+                           Number of Input Variables  2
+                           Number of Y - Variables    0
+                           Number of X - Variables    2
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  2
+                           Number of Observations     1
+                           Number of Groups          10
+  
+ TI Study 9
+ DA NI=2 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov9.ack SY
+ MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+ OU ME=WL ND=6
+
+ TI Study 9                                                                     
+
+                           Number of Input Variables  2
+                           Number of Y - Variables    0
+                           Number of X - Variables    2
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  2
+                           Number of Observations     1
+                           Number of Groups          10
+  
+ TI Study 10
+ DA NI=2 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov10.ack SY
+ MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+  
+ EQ PH(1,2,1) PH(2,2,1)
+ EQ PH(1,2,1) PH(3,2,1)
+ EQ PH(1,2,1) PH(4,2,1)
+ EQ PH(1,2,1) PH(5,2,1)
+ EQ PH(1,2,1) PH(6,2,1)
+ EQ PH(1,2,1) PH(7,2,1)
+ EQ PH(1,2,1) PH(8,2,1)
+ EQ PH(1,2,1) PH(9,2,1)
+ EQ PH(1,2,1) PH(10,2,1)
+ OU ME=WL ND=6
+
+ TI Study 10                                                                    
+
+                           Number of Input Variables  2
+                           Number of Y - Variables    0
+                           Number of X - Variables    2
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  2
+                           Number of Observations     1
+                           Number of Groups          10
+
+ W_A_R_N_I_N_G: Total sample size is smaller than the number of parameters.
+                Parameter estimates are unreliable.
+
+ TI Hedages & Olkin (1985, p. 22): without predictor                            
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+    VAR 2  -0.330000   1.000000
+
+ TI Study 2                                                                     
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+    VAR 2   0.070000   1.000000
+
+ TI Study 3                                                                     
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+    VAR 2  -0.300000   1.000000
+
+ TI Study 4                                                                     
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+    VAR 2   0.350000   1.000000
+
+ TI Study 5                                                                     
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+    VAR 2   0.690000   1.000000
+
+ TI Study 6                                                                     
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+    VAR 2   0.810000   1.000000
+
+ TI Study 7                                                                     
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+    VAR 2   0.400000   1.000000
+
+ TI Study 8                                                                     
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+    VAR 2   0.470000   1.000000
+
+ TI Study 9                                                                     
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+    VAR 2   0.370000   1.000000
+
+ TI Study 10                                                                    
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+    VAR 2  -0.060000   1.000000
+
+
+ TI Hedages & Olkin (1985, p. 22): without predictor                            
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2
+            --------   --------
+    VAR 1          1
+    VAR 2          2          3
+
+
+ TI Study 2                                                                     
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2
+            --------   --------
+    VAR 1          4
+    VAR 2          2          5
+
+
+ TI Study 3                                                                     
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2
+            --------   --------
+    VAR 1          6
+    VAR 2          2          7
+
+
+ TI Study 4                                                                     
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2
+            --------   --------
+    VAR 1          8
+    VAR 2          2          9
+
+
+ TI Study 5                                                                     
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2
+            --------   --------
+    VAR 1         10
+    VAR 2          2         11
+
+
+ TI Study 6                                                                     
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2
+            --------   --------
+    VAR 1         12
+    VAR 2          2         13
+
+
+ TI Study 7                                                                     
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2
+            --------   --------
+    VAR 1         14
+    VAR 2          2         15
+
+
+ TI Study 8                                                                     
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2
+            --------   --------
+    VAR 1         16
+    VAR 2          2         17
+
+
+ TI Study 9                                                                     
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2
+            --------   --------
+    VAR 1         18
+    VAR 2          2         19
+
+
+ TI Study 10                                                                    
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2
+            --------   --------
+    VAR 1         20
+    VAR 2          2         21
+ 
+
+
+ TI Hedages & Olkin (1985, p. 22): without predictor                            
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.121662   1.000000
+          (0.059828) (1.000000)
+            2.033546   1.000000
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 7.083284
+                Percentage Contribution to Chi-Square = 22.647294
+ 
+                    Root Mean Square Residual (RMR) = 0.260767
+                           Standardized RMR = 0.260767
+                     Goodness of Fit Index (GFI) = -0.225217
+
+
+ TI Study 2                                                                     
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.121662   1.000000
+          (0.059828) (1.000000)
+            2.033546   1.000000
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 0.0794335
+                 Percentage Contribution to Chi-Square = 0.253972
+ 
+                   Root Mean Square Residual (RMR) = 0.0298271
+                           Standardized RMR = 0.0298271
+                      Goodness of Fit Index (GFI) = 0.963397
+
+
+ TI Study 3                                                                     
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.121662   1.000000
+          (0.059828) (1.000000)
+            2.033546   1.000000
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 8.081767
+                Percentage Contribution to Chi-Square = 25.839729
+ 
+                    Root Mean Square Residual (RMR) = 0.243447
+                           Standardized RMR = 0.243447
+                     Goodness of Fit Index (GFI) = -0.576930
+
+
+ TI Study 4                                                                     
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.121662   1.000000
+          (0.059828) (1.000000)
+            2.033546   1.000000
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 3.238399
+                Percentage Contribution to Chi-Square = 10.354092
+ 
+                    Root Mean Square Residual (RMR) = 0.131831
+                           Standardized RMR = 0.131831
+                      Goodness of Fit Index (GFI) = 0.482144
+
+
+ TI Study 5                                                                     
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.121662   1.000000
+          (0.059828) (1.000000)
+            2.033546   1.000000
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 4.879276
+                Percentage Contribution to Chi-Square = 15.600445
+ 
+                    Root Mean Square Residual (RMR) = 0.328130
+                           Standardized RMR = 0.328130
+                      Goodness of Fit Index (GFI) = 0.736700
+
+
+ TI Study 6                                                                     
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.121662   1.000000
+          (0.059828) (1.000000)
+            2.033546   1.000000
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 2.187485
+                 Percentage Contribution to Chi-Square = 6.994016
+ 
+                    Root Mean Square Residual (RMR) = 0.397412
+                           Standardized RMR = 0.397412
+                      Goodness of Fit Index (GFI) = 0.911728
+
+
+ TI Study 7                                                                     
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.121662   1.000000
+          (0.059828) (1.000000)
+            2.033546   1.000000
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 1.710199
+                 Percentage Contribution to Chi-Square = 5.467998
+ 
+                    Root Mean Square Residual (RMR) = 0.160698
+                           Standardized RMR = 0.160698
+                      Goodness of Fit Index (GFI) = 0.773650
+
+
+ TI Study 8                                                                     
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.121662   1.000000
+          (0.059828) (1.000000)
+            2.033546   1.000000
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 1.771377
+                 Percentage Contribution to Chi-Square = 5.663602
+ 
+                    Root Mean Square Residual (RMR) = 0.201113
+                           Standardized RMR = 0.201113
+                      Goodness of Fit Index (GFI) = 0.816820
+
+
+ TI Study 9                                                                     
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.121662   1.000000
+          (0.059828) (1.000000)
+            2.033546   1.000000
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 1.214011
+                 Percentage Contribution to Chi-Square = 3.881541
+ 
+                    Root Mean Square Residual (RMR) = 0.143378
+                           Standardized RMR = 0.143378
+                      Goodness of Fit Index (GFI) = 0.820239
+
+
+ TI Study 10                                                                    
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2   
+            --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.121662   1.000000
+          (0.059828) (1.000000)
+            2.033546   1.000000
+
+
+                        Global Goodness of Fit Statistics
+
+                              Degrees of Freedom = 9
+         Minimum Fit Function Chi-Square = 31.276515 (P = .26537153D-03)
+               Estimated Non-centrality Parameter (NCP) = 22.276515
+         90 Percent Confidence Interval for NCP = (8.898049 ; 43.234604)
+ 
+                      Minimum Fit Function Value = 3.127652
+              Population Discrepancy Function Value (F0) = 2.227652
+          90 Percent Confidence Interval for F0 = (0.889805 ; 4.323460)
+            Root Mean Square Error of Approximation (RMSEA) = 1.573267
+         90 Percent Confidence Interval for RMSEA = (0.994320 ; 2.191768)
+           P-Value for Test of Close Fit (RMSEA < 0.05) = .27390409D-03
+ 
+                Expected Cross-Validation Index (ECVI) = 7.327652
+         90 Percent Confidence Interval for ECVI = (5.989805 ; 9.423460)
+                       ECVI for Saturated Model = 0.600000
+                      ECVI for Independence Model = 3.941183
+ 
+     Chi-Square for Independence Model with 10 Degrees of Freedom = 35.411825
+                           Independence AIC = 75.411825
+                              Model AIC = 73.276515
+                            Saturated AIC = 60.000000
+                          Independence CAIC = 115.326471
+                             Model CAIC = 115.186893
+                           Saturated CAIC = 119.871968
+ 
+                        Normed Fit Index (NFI) = 0.116778
+                     Non-Normed Fit Index (NNFI) = 0.0259777
+                   Parsimony Normed Fit Index (PNFI) = 0.105100
+                      Comparative Fit Index (CFI) = 0.123380
+                      Incremental Fit Index (IFI) = 0.156570
+                       Relative Fit Index (RFI) = 0.0186418
+ 
+                            Critical N (CN) = 7.927412
+ 
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 1.031284
+                 Percentage Contribution to Chi-Square = 3.297312
+ 
+                    Root Mean Square Residual (RMR) = 0.104883
+                           Standardized RMR = 0.104883
+                      Goodness of Fit Index (GFI) = 0.514690
+
+                           Time used:    0.016 Seconds

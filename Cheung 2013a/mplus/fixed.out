@@ -1,0 +1,232 @@
+Mplus VERSION 7.31 (Linux)
+MUTHEN & MUTHEN
+11/01/2015   9:22 AM
+
+INPUT INSTRUCTIONS
+
+  TITLE:	Fixed-effects model
+  DATA:	FILE IS wvs94.dat;	
+  VARIABLE: NAMES Study y InterLS InterLC GNP;
+  	USEVARIABLES ARE y InterLS InterLC;
+  	MISSING ARE *;
+
+  MODEL:
+  	y ON InterLS;	! b1 in the figure
+  	y ON InterLC;	! b2 in the figure
+
+  	[y@0.0];		! Intercept of the effect size is fixed at 0.0
+  	y@1.0;			! Error variance is fixed at 1.0
+
+  OUTPUT: SAMPSTAT;
+  	CINTERVAL(symmetric);
+
+
+
+INPUT READING TERMINATED NORMALLY
+
+
+
+Fixed-effects model
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                          84
+
+Number of dependent variables                                    1
+Number of independent variables                                  2
+Number of continuous latent variables                            0
+
+Observed dependent variables
+
+  Continuous
+   Y
+
+Observed independent variables
+   INTERLS     INTERLC
+
+
+Estimator                                                       ML
+Information matrix                                        OBSERVED
+Maximum number of iterations                                  1000
+Convergence criterion                                    0.500D-04
+Maximum number of steepest descent iterations                   20
+Maximum number of iterations for H1                           2000
+Convergence criterion for H1                             0.100D-03
+
+Input data file(s)
+  wvs94.dat
+
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of missing data patterns             1
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              Y             INTERLS       INTERLC
+              ________      ________      ________
+ Y              1.000
+ INTERLS        1.000         1.000
+ INTERLC        1.000         1.000         1.000
+
+
+SAMPLE STATISTICS
+
+
+     ESTIMATED SAMPLE STATISTICS
+
+
+           Means
+              Y             INTERLS       INTERLC
+              ________      ________      ________
+      1         0.426         9.662         5.375
+
+
+           Covariances
+              Y             INTERLS       INTERLC
+              ________      ________      ________
+ Y              3.689
+ INTERLS       -7.437       104.998
+ INTERLC       10.785      -125.841       165.902
+
+
+           Correlations
+              Y             INTERLS       INTERLC
+              ________      ________      ________
+ Y              1.000
+ INTERLS       -0.378         1.000
+ INTERLC        0.436        -0.953         1.000
+
+
+     MAXIMUM LOG-LIKELIHOOD VALUE FOR THE UNRESTRICTED (H1) MODEL IS -712.136
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     Y                     0.426       0.339      -3.948    1.19%      -1.016     -0.189      0.228
+              84.000       3.689       0.171       5.284    1.19%       0.641      1.757
+     INTERLS               9.662       0.373       0.000   50.00%       0.000      0.000      4.571
+              84.000     104.998      -1.272      35.882    1.19%      16.206     18.175
+     INTERLC               5.375       0.068     -16.011    1.19%      -7.290     -4.558      4.302
+              84.000     165.902      -1.589      31.616    1.19%      15.408     17.412
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                        2
+
+Loglikelihood
+
+          H0 Value                        -202.206
+          H1 Value                        -164.332
+
+Information Criteria
+
+          Akaike (AIC)                     408.412
+          Bayesian (BIC)                   413.274
+          Sample-Size Adjusted BIC         406.965
+            (n* = (n + 2) / 24)
+
+Chi-Square Test of Model Fit
+
+          Value                             75.747
+          Degrees of Freedom                     2
+          P-Value                           0.0000
+
+RMSEA (Root Mean Square Error Of Approximation)
+
+          Estimate                           0.663
+          90 Percent C.I.                    0.540  0.794
+          Probability RMSEA <= .05           0.000
+
+CFI/TLI
+
+          CFI                                0.000
+          TLI                               -3.249
+
+Chi-Square Test of Model Fit for the Baseline Model
+
+          Value                             19.356
+          Degrees of Freedom                     2
+          P-Value                           0.0001
+
+SRMR (Standardized Root Mean Square Residual)
+
+          Value                              0.213
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+ Y        ON
+    INTERLS            0.010      0.008      1.156      0.248
+    INTERLC            0.071      0.008      8.392      0.000
+
+ Intercepts
+    Y                  0.000      0.000    999.000    999.000
+
+ Residual Variances
+    Y                  1.000      0.000    999.000    999.000
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.453E+00
+       (ratio of smallest to largest eigenvalue)
+
+
+CONFIDENCE INTERVALS OF MODEL RESULTS
+
+                  Lower .5%  Lower 2.5%    Lower 5%    Estimate    Upper 5%  Upper 2.5%   Upper .5%
+
+ Y        ON
+    INTERLS         -0.012      -0.007      -0.004       0.010       0.023       0.026       0.031
+    INTERLC          0.049       0.054       0.057       0.071       0.085       0.087       0.093
+
+ Intercepts
+    Y                0.000       0.000       0.000       0.000       0.000       0.000       0.000
+
+ Residual Variances
+    Y                1.000       1.000       1.000       1.000       1.000       1.000       1.000
+
+
+     Beginning Time:  09:22:07
+        Ending Time:  09:22:07
+       Elapsed Time:  00:00:00
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2015 Muthen & Muthen

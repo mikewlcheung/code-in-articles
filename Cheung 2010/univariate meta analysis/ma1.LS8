@@ -1,0 +1,80 @@
+TI Univariate meta-analysis: with a categorical moderator 
+DA NG=10 NI=2 NO=1 MA=KM
+KM=es.cor SY
+AC=acov1.ack SY
+MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+OU ME=WL ND=6
+
+TI Study 2
+DA NI=2 NO=1 MA=KM
+KM=es.cor SY
+AC=acov2.ack SY
+MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+OU ME=WL ND=6
+
+TI Study 3
+DA NI=2 NO=1 MA=KM
+KM=es.cor SY
+AC=acov3.ack SY
+MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+OU ME=WL ND=6
+
+TI Study 4
+DA NI=2 NO=1 MA=KM
+KM=es.cor SY
+AC=acov4.ack SY
+MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+OU ME=WL ND=6
+
+TI Study 5
+DA NI=2 NO=1 MA=KM
+KM=es.cor SY
+AC=acov5.ack SY
+MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+OU ME=WL ND=6
+
+TI Study 6
+DA NI=2 NO=1 MA=KM
+KM=es.cor SY
+AC=acov6.ack SY
+MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+OU ME=WL ND=6
+
+TI Study 7
+DA NI=2 NO=1 MA=KM
+KM=es.cor SY
+AC=acov7.ack SY
+MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+OU ME=WL ND=6
+
+TI Study 8
+DA NI=2 NO=1 MA=KM
+KM=es.cor SY
+AC=acov8.ack SY
+MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+OU ME=WL ND=6
+
+TI Study 9
+DA NI=2 NO=1 MA=KM
+KM=es.cor SY
+AC=acov9.ack SY
+MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+OU ME=WL ND=6
+
+TI Study 10
+DA NI=2 NO=1 MA=KM
+KM=es.cor SY
+AC=acov10.ack SY
+MO NX=2 NK=2 LX=ID PH=ST,FR TD=ZE
+
+! Studies 1 and 2: percentage of male authors=25
+EQ PH(1,2,1) PH(2,2,1)
+! Study 3: percentage of male authors=50
+! Studies 4 to 10: percentage of male authors=100
+EQ PH(4,2,1) PH(5,2,1)
+EQ PH(4,2,1) PH(6,2,1)
+EQ PH(4,2,1) PH(7,2,1)
+EQ PH(4,2,1) PH(8,2,1)
+EQ PH(4,2,1) PH(9,2,1)
+EQ PH(4,2,1) PH(10,2,1)
+OU ME=WL ND=6

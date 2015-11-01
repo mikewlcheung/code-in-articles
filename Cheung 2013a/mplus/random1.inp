@@ -1,0 +1,21 @@
+TITLE:	Random-effects model
+DATA:	FILE IS wvs94.dat;	
+VARIABLE: NAMES Study y InterLS InterLC GNP;
+	USEVARIABLES ARE y InterLS InterLC;
+	MISSING ARE *;
+
+ANALYSIS: TYPE=RANDOM;
+	ESTIMATOR=ML;		! Use ML method to calculate standard errors
+MODEL:
+	s_LS | y ON InterLS;
+	s_LC | y ON InterLC;
+	[y@0.0];			! Intercept of the effect size is fixed at 0.0
+	y@1.0				! Error variance is fixed at 1.0
+
+	s_LS*;				! t1,1 in the figure
+	s_LC*;				! t2,1 in the figure
+	s_LS WITH s_LC*;	! t2,2 in the figure
+	[s_LS*];			! b1 in the figure
+	[s_LC*];			! b2 in the figure
+OUTPUT: SAMPSTAT;
+	CINTERVAL(symmetric);

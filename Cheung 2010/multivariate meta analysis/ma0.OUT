@@ -1,0 +1,356 @@
+
+                                DATE: 11/22/2006
+                                  TIME: 19:19
+
+
+                         LISREL 8.80 (STUDENT EDITION)
+
+                                       BY
+
+                         Karl G. J”reskog & Dag S”rbom
+
+
+
+                    This program is published exclusively by
+                    Scientific Software International, Inc.
+                       7383 N. Lincoln Avenue, Suite 100
+                        Lincolnwood, IL 60712, U.S.A. 
+            Phone: (800)247-6113, (847)675-0720, Fax: (847)675-2140
+        Copyright by Scientific Software International, Inc., 1981-2006 
+          Use of this program is subject to the terms specified in the
+                        Universal Copyright Convention.
+                          Website: www.ssicentral.com
+
+ The following lines were read from file D:\Mike\study\meta analysis\SEM\multivariate\ma0.LS8:
+
+ TI Hedages & Olkin (1985, p. 217-218): Two effect sizes
+ DA NG=4 NI=3 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov1.ack SY
+ MO NX=3 NK=3 LX=ID PH=ST,FR TD=ZE
+ OU ME=WL ND=6
+
+ TI Hedages & Olkin (1985, p. 217-218): Two effect sizes                        
+
+                           Number of Input Variables  3
+                           Number of Y - Variables    0
+                           Number of X - Variables    3
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  3
+                           Number of Observations     1
+                           Number of Groups           4
+  
+ TI Study 2
+ DA NI=3 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov2.ack SY
+ MO NX=3 NK=3 LX=ID PH=ST,FR TD=ZE
+ OU ME=WL ND=6
+
+ TI Study 2                                                                     
+
+                           Number of Input Variables  3
+                           Number of Y - Variables    0
+                           Number of X - Variables    3
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  3
+                           Number of Observations     1
+                           Number of Groups           4
+  
+ TI Study 3
+ DA NI=3 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov3.ack SY
+ MO NX=3 NK=3 LX=ID PH=ST,FR TD=ZE
+ OU ME=WL ND=6
+
+ TI Study 3                                                                     
+
+                           Number of Input Variables  3
+                           Number of Y - Variables    0
+                           Number of X - Variables    3
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  3
+                           Number of Observations     1
+                           Number of Groups           4
+  
+ TI Study 4
+ DA NI=3 NO=1 MA=KM
+ KM=es.cor SY
+ AC=acov4.ack SY
+ MO NX=3 NK=3 LX=ID PH=ST,FR TD=ZE
+  
+ EQ PH(1,2,1) PH(2,2,1)
+ EQ PH(1,2,1) PH(3,2,1)
+ EQ PH(1,2,1) PH(4,2,1)
+ EQ PH(1,3,1) PH(2,3,1)
+ EQ PH(1,3,1) PH(3,3,1)
+ EQ PH(1,3,1) PH(4,3,1)
+ OU ME=WL ND=6
+
+ TI Study 4                                                                     
+
+                           Number of Input Variables  3
+                           Number of Y - Variables    0
+                           Number of X - Variables    3
+                           Number of ETA - Variables  0
+                           Number of KSI - Variables  3
+                           Number of Observations     1
+                           Number of Groups           4
+
+ W_A_R_N_I_N_G: Total sample size is smaller than the number of parameters.
+                Parameter estimates are unreliable.
+
+ TI Hedages & Olkin (1985, p. 217-218): Two effect sizes                        
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2      VAR 3   
+            --------   --------   --------
+    VAR 1   1.000000
+    VAR 2   0.458000   1.000000
+    VAR 3   0.100000    - -       1.000000
+
+ TI Study 2                                                                     
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2      VAR 3   
+            --------   --------   --------
+    VAR 1   1.000000
+    VAR 2   0.363000   1.000000
+    VAR 3   0.241000    - -       1.000000
+
+ TI Study 3                                                                     
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2      VAR 3   
+            --------   --------   --------
+    VAR 1   1.000000
+    VAR 2   0.162000   1.000000
+    VAR 3  -0.121000    - -       1.000000
+
+ TI Study 4                                                                     
+
+         Correlation Matrix      
+
+               VAR 1      VAR 2      VAR 3   
+            --------   --------   --------
+    VAR 1   1.000000
+    VAR 2   0.294000   1.000000
+    VAR 3   0.037000    - -       1.000000
+
+
+ TI Hedages & Olkin (1985, p. 217-218): Two effect sizes                        
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2      VAR 3
+            --------   --------   --------
+    VAR 1          1
+    VAR 2          2          3
+    VAR 3          4          5          6
+
+
+ TI Study 2                                                                     
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2      VAR 3
+            --------   --------   --------
+    VAR 1          7
+    VAR 2          2          8
+    VAR 3          4          9         10
+
+
+ TI Study 3                                                                     
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2      VAR 3
+            --------   --------   --------
+    VAR 1         11
+    VAR 2          2         12
+    VAR 3          4         13         14
+
+
+ TI Study 4                                                                     
+
+ Parameter Specifications
+
+         PHI         
+
+               VAR 1      VAR 2      VAR 3
+            --------   --------   --------
+    VAR 1         15
+    VAR 2          2         16
+    VAR 3          4         17         18
+ 
+
+
+ TI Hedages & Olkin (1985, p. 217-218): Two effect sizes                        
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2      VAR 3   
+            --------   --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.320969   1.000000
+          (0.099492) (1.000000)
+            3.226069   1.000000
+    VAR 3   0.077797    - -       1.000000
+          (0.099128) (1.000000) (1.000000)
+            0.784812   0.000000   1.000000
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 0.497208
+                Percentage Contribution to Chi-Square = 22.108787
+ 
+                   Root Mean Square Residual (RMR) = 0.0566721
+                           Standardized RMR = 0.0566721
+                      Goodness of Fit Index (GFI) = 0.939493
+
+
+ TI Study 2                                                                     
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2      VAR 3   
+            --------   --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.320969   1.000000
+          (0.099492) (1.000000)
+            3.226069   1.000000
+    VAR 3   0.077797    - -       1.000000
+          (0.099128) (1.000000) (1.000000)
+            0.784812   0.000000   1.000000
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 0.934147
+                Percentage Contribution to Chi-Square = 41.537633
+ 
+                   Root Mean Square Residual (RMR) = 0.0688013
+                           Standardized RMR = 0.0688013
+                      Goodness of Fit Index (GFI) = 0.832479
+
+
+ TI Study 3                                                                     
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2      VAR 3   
+            --------   --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.320969   1.000000
+          (0.099492) (1.000000)
+            3.226069   1.000000
+    VAR 3   0.077797    - -       1.000000
+          (0.099128) (1.000000) (1.000000)
+            0.784812   0.000000   1.000000
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 0.759247
+                Percentage Contribution to Chi-Square = 33.760580
+ 
+                    Root Mean Square Residual (RMR) = 0.103916
+                           Standardized RMR = 0.103916
+                      Goodness of Fit Index (GFI) = 0.852178
+
+
+ TI Study 4                                                                     
+
+ Number of Iterations =  1
+
+ LISREL Estimates (Weighted Least Squares)                       
+
+         PHI         
+
+               VAR 1      VAR 2      VAR 3   
+            --------   --------   --------
+    VAR 1   1.000000
+          (1.000000)
+            1.000000
+    VAR 2   0.320969   1.000000
+          (0.099492) (1.000000)
+            3.226069   1.000000
+    VAR 3   0.077797    - -       1.000000
+          (0.099128) (1.000000) (1.000000)
+            0.784812   0.000000   1.000000
+
+
+                        Global Goodness of Fit Statistics
+
+                              Degrees of Freedom = 6
+            Minimum Fit Function Chi-Square = 2.248917 (P = 0.895442)
+                  Estimated Non-centrality Parameter (NCP) = 0.0
+            90 Percent Confidence Interval for NCP = (0.0 ; 1.988007)
+             90 Percent Confidence Interval for F0 = (0.0 ; 0.497002)
+              Root Mean Square Error of Approximation (RMSEA) = 0.0
+           90 Percent Confidence Interval for RMSEA = (0.0 ; 0.575617)
+             P-Value for Test of Close Fit (RMSEA < 0.05) = 0.896018
+ 
+                Expected Cross-Validation Index (ECVI) = 10.500000
+        90 Percent Confidence Interval for ECVI = (10.500000 ; 10.997002)
+                       ECVI for Saturated Model = 3.000000
+                      ECVI for Independence Model = 5.302262
+ 
+     Chi-Square for Independence Model with 12 Degrees of Freedom = 15.209049
+                           Independence AIC = 39.209049
+                              Model AIC = 38.248917
+                            Saturated AIC = 48.000000
+                          Independence CAIC = 52.162347
+                              Model CAIC = 57.678865
+                            Saturated CAIC = 73.906597
+ 
+                        Normed Fit Index (NFI) = 0.852133
+                      Non-Normed Fit Index (NNFI) = 3.337816
+                   Parsimony Normed Fit Index (PNFI) = 0.426066
+                      Comparative Fit Index (CFI) = 1.000000
+                      Incremental Fit Index (IFI) = 1.407326
+                       Relative Fit Index (RFI) = 0.704266
+ 
+                           Critical N (CN) = 30.902768
+ 
+
+
+                         Group Goodness of Fit Statistics
+
+                      Contribution to Chi-Square = 0.0583144
+                 Percentage Contribution to Chi-Square = 2.593000
+ 
+                   Root Mean Square Residual (RMR) = 0.0199656
+                           Standardized RMR = 0.0199656
+                      Goodness of Fit Index (GFI) = 0.989176
+
+                           Time used:    0.016 Seconds
