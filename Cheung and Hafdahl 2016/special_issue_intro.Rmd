@@ -1,0 +1,459 @@
+---
+title: 'Special Issue on Meta-analytic Structural Equation Modeling: Introduction
+  from the Guest Editors'
+author: "Mike W.-L. Cheung and Adam R. Hafdahl"
+date: "17 Feb 2016"
+output:
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document: default
+---
+
+# Introduction
+*  Becker (2009) tested a mediation model on "Sport Performance" (`SP`). The independent variables were "Cognitive Anxiety" (`CA`) and "Somatic Anxiety" (`SA`) while the mediator was "Self confidence" (`SC`). The following figure displays the model with the labels of the parameters.
+
+```{r, engine='dot', echo=FALSE, eval=TRUE, fig.align='center'}
+digraph "reduced" {
+   node [style=filled, shape=box, fontname="Arial", fontsize=16];
+  {rank=same; CA; SA};
+  SC [fillcolor="green"];
+  SP [fillcolor="yellow"];
+  CA -> SP [label="CA2SP"];
+  CA -> SC [label="CA2SC"];  
+  SA -> SP [label="SA2SP"];
+  SA -> SC [label="SA2SC"];
+  SC -> SP [label="SC2SP"];
+  CA -> SA [dir=both, label="Cor_CA_SA"];
+  CA:n -> CA:n [dir=both, label="1.0"];
+  SA:n -> SA:n [dir=both, label="1.0"];
+  SP:s -> SP:s [dir=both, label="Err_Var_SP"];
+  SC:e -> SC:e [dir=both, label="Err_Var_SC"];
+}
+```
+
+
+* The analysis was conducted in [R](https://www.r-project.org/) with the [metaSEM package](https://courses.nus.edu.sg/course/psycwlm/internet/metasem/). If you have not installed it yet, you may install it by using the following code in R.
+```{r, eval=FALSE}
+## Install the stable version from CRAN
+install.packages("metaSEM")
+```
+
+* The dataset is stored as an R object `Becker09` in the metaSEM package. The correlation matrices and the sample sizes are stored as `Becker09$data` and `Becker09$n`, respectively. `NA` represents missing value.
+* In this illustration, we calculated the sampling variances based on the unweighted means of the correlation matrices.
+
+```{r, message=FALSE}
+options(width=100)
+
+## Load the library for data analysis 
+library(metaSEM)
+
+## Display the correlation matrices
+Becker09$data
+
+## Display the sample sizes
+Becker09$n
+
+## Display the numbers of studies present in each cell of the correlation matrix
+pattern.na(Becker09$data, show.na = FALSE)
+
+## Display the cumulative sample size in each cell of the correlation matrix
+pattern.n(Becker09$data, Becker09$n)
+```
+
+
+# Fixed-effects GLS approach
+## Stage 1 analysis
+
+```{r}
+## Construct a column vector y of correlation coefficients
+## Extract the correlation coefficients without missing values for each study
+y <- lapply(Becker09$data, function(x) {x <- vechs(x)
+                                        x[complete.cases(x)]})
+y
+
+## Convert it into a column vector
+y <- matrix(unlist(y), ncol=1)
+y
+
+## Create indicators on whether the correlation matrices are missing
+X.design <- lapply(Becker09$data, function(x) {ifelse(is.na(vechs(x)), yes = 0, no = 1)})
+X.design
+
+## Create the design matrices
+X.design <- lapply(X.design, function(x) create.Fmatrix(x, as.mxMatrix = FALSE))
+X.design
+
+## Combine into a matrix
+X <- do.call(rbind, X.design)
+X
+
+## Sampling variance covariance matrix based on the unweighted mean of correlations
+V <- asyCov(Becker09$data, Becker09$n, acov="unweighted", as.matrix = FALSE)
+
+## Function to remove missing values in V: x*v*x'
+filter <- function(x,v) { x %*% v %*% t(x) }
+
+## Extract known sampling covariance matrices without the missing values
+V <- mapply(filter, X.design, V)
+
+## Convert it into a diagonal matrix
+V <- bdiagMat(V)
+
+## Only show part of V as it is too big
+V[1:8, 1:8]
+
+## Textbook formula; it may not be numerically stable
+## Common correlation matrix under the fixed-effects model
+r.fixed <- solve( t(X)%*%solve(V)%*%X ) %*% t(X) %*% solve(V) %*% y
+r.fixed
+
+## Sampling covariance matrix of r.fixed
+V.fixed <- solve( t(X)%*%solve(V)%*%X )
+V.fixed
+
+## Q statistic in testing the homogeneity of correlation matrices
+Q.fixed <- t(y) %*% (solve(V)-solve(V)%*% X %*%solve(t(X)%*%solve(V)%*%X) %*% t(X) %*%solve(V)) %*% y
+Q.fixed
+
+## df for the Q statistic
+Q.df <- sum(vechs(pattern.na(Becker09$data, show.na = FALSE))) - 6
+Q.df
+
+## p value of the Q statistic
+pchisq(Q.fixed, df=Q.df, lower.tail=FALSE)
+```
+
+## Stage 2 analysis
+* The models were specified in the [RAM formulation](http://openmx.psyc.virginia.edu/docs/OpenMx/latest/Examples_Matrix.html) and analyzed with the `wls()` function.
+```{r}
+## A matrix for regression coefficients
+A1 <- create.mxMatrix(c(0, "0.1*CA2SP", "0.1*SA2SP", "0.1*SC2SP",
+                        0, 0, 0, 0,
+                        0, 0, 0, 0,
+                        0, "0.1*CA2SC", "0.1*SA2SC",0),
+                      type="Full", byrow=TRUE, ncol=4, nrow=4,
+                      as.mxMatrix=FALSE)
+
+## Variable names
+var.names <- c("Performance","Cognitive","Somatic","Self confidence")
+
+## This step is not necessary but it is useful for inspecting the model.
+dimnames(A1) <- list(var.names, var.names)
+A1
+
+## S matrix for variance and covariance matrix
+## Since the correlation matrix is used, the variances of the predictors are fixed at 1.0.
+S1 <- create.mxMatrix(c("0.1*Err_Var_SP",
+                        0, 1,
+                        0, "0.1*Cor_CA_SA", 1,
+                        0, 0, 0, "0.1*Err_Var_SC"), byrow=TRUE, type="Symm",
+                      as.mxMatrix=FALSE)
+
+## This step is not necessary but it is useful for inspecting the model.
+dimnames(S1) <- list(var.names, var.names)
+S1
+
+## Total sample size
+n.total <- sum(Becker09$n)
+
+## Convert r vector to a matrix
+R.fixed <- vec2symMat(r.fixed, diag = FALSE)
+R.fixed
+
+gls.fixed2 <- wls(Cov=R.fixed, asyCov=V.fixed, n=n.total, Amatrix=A1, Smatrix=S1, 
+                  model.name="Fixed effects GLS 2nd stage with direct effects")
+summary(gls.fixed2)
+```
+
+* We also illustrated how to fit a model without the direct effects from `CA` and `SA` to `SP`. We created a new matrix `A2` to represent the regression coefficients. The matrix `S1` was the same as the one we used before.
+```{r}
+## A matrix for regression coefficients with the direct effects
+A2 <- create.mxMatrix(c(0, 0, 0, "0.1*SC2SP",
+                        0, 0, 0, 0,
+                        0, 0, 0, 0,
+                        0, "0.1*CA2SC", "0.1*SA2SC",0),
+                      type="Full", byrow=TRUE, ncol=4, nrow=4,
+                      as.mxMatrix=FALSE)
+
+## This step is not necessary but it is useful for inspecting the model.
+dimnames(A2) <- list(var.names, var.names)
+A2
+
+gls.fixed3 <- wls(Cov=R.fixed, asyCov=V.fixed, n=n.total, Amatrix=A2, Smatrix=S1, 
+                  model.name="Fixed effects GLS 2nd stage without direct effect)")
+summary(gls.fixed3)
+```
+
+
+# Random-effects GLS approach
+## Stage 1 analysis
+* Following Becker (2009), we only estimated the diagonals of the random effects. For completeness, we repeated the process by reading the data.
+
+```{r}
+## Extract the correlation coefficients without missing values
+y <- lapply(Becker09$data, function(x) {x <- vechs(x); x[complete.cases(x)]})
+
+## Convert it into a column vector
+y <- matrix(unlist(y), ncol=1)
+y
+
+## Extract whether the correlation matrices are missing
+X.design <- lapply(Becker09$data, function(x) {ifelse(is.na(vechs(x)), yes = 0, no = 1)})
+
+## Create the design matrices
+X.design <- lapply(X.design, function(x) create.Fmatrix(x, as.mxMatrix = FALSE))
+
+## Combine into a matrix
+X <- do.call(rbind, X.design)
+X
+```
+
+* We estimated the heterogeneity variance $\tau^2$ `Tau2` on each correlation coefficient with the maximum likelihood (ML) estimation method.
+```{r}
+## Stack the correlation coefficients
+y.vec <- t(sapply(Becker09$data, function(x) vechs(x)))
+y.vec
+
+## Extract the data by effect sizes (by column)
+y.vec <- lapply(1:6, function(x) y.vec[, x] )
+y.vec
+
+## Function to estimate the tau^2 with ML estimation method
+est.tau2 <- function(x, n) {
+  ## remove missing values in x
+  y <- x[!is.na(x)]
+  ## unweighted mean of the correlation coefficients
+  r <- mean(x, na.rm = TRUE)
+  ## sampling variances based on the unweighted mean
+  v <- (1-r^2)^2/n[!is.na(x)]
+  ## meta-analysis with ML estimation
+  out <- meta(y, v)
+  ## extract the tau2
+  coef(out, select = "random")
+}
+
+## Digaonal matrix of random effects (tau2)
+Tau2 <- diag(sapply(y.vec, est.tau2, n=Becker09$n))
+Tau2
+
+## Sampling variance covariance matrix based on the unweighted mean of correlations
+V <- asyCov(Becker09$data, Becker09$n, acov="unweighted", as.matrix = FALSE)
+
+## Function to filter the elements with missing data and add Tau2
+filter <- function(x,v) { x %*% (v+Tau2) %*% t(x) }
+
+## New V = old V + Tau2
+V <- mapply(filter, X.design, V)
+
+## Convert it into a diagonal matrix
+V <- bdiagMat(V)
+
+## Show part of V
+V[1:8, 1:8]
+
+## Average correlation matrix under the random-effects model
+r.random <- solve(t(X)%*%solve(V)%*%X) %*% t(X) %*% solve(V) %*% y
+r.random
+
+## Sampling covariance matrix of r.random
+V.random <- solve(t(X)%*%solve(V)%*%X)
+V.random
+```
+
+```{r, eval=FALSE, echo=FALSE}
+library(lavaan)
+## estimate VC 
+x <- t(sapply(Becker09$data, function(x) vechs(x)))
+colnames(x) <- paste0("x", 1:6) 
+my.model <- "x1 ~~ x1
+             x2 ~~ x2
+             x3 ~~ x3
+             x4 ~~ x4
+             x5 ~~ x5
+             x6 ~~ x6
+             x1 ~~ x2
+             x1 ~~ x3
+             x1 ~~ x4
+             x1 ~~ x5
+             x1 ~~ x6
+             x2 ~~ x3
+             x2 ~~ x4
+             x2 ~~ x5
+             x2 ~~ x6
+             x3 ~~ x4
+             x3 ~~ x5
+             x3 ~~ x6
+             x4 ~~ x5
+             x4 ~~ x6
+             x5 ~~ x6"
+
+fit <- sem(model=my.model, data=x, fixed.x=FALSE, missing="fiml")
+summary(fit)
+```
+
+## Stage 2 analysis
+* We fitted the model with the direct effects from `CA` and `SA` to `SP`.
+```{r}
+## Total sample size
+n.total <- sum(Becker09$n)
+
+## Convert r vector to a matrix
+R.random <- vec2symMat(r.random, diag = FALSE)
+R.random
+
+gls.random2 <- wls(Cov=R.random, asyCov=V.random, n=n.total, Amatrix=A1, Smatrix=S1, 
+                   model.name="Random effects GLS 2nd stage with direct effects")
+
+summary(gls.random2)
+```
+
+* We fitted the model without the direct effects from `CA` and `SA` to `SP`.
+```{r}
+gls.random3 <- wls(Cov=R.random, asyCov=V.fixed, n=n.total, Amatrix=A2, Smatrix=S1, 
+                   model.name="Random effects GLS 2nd stage without direct effect")
+summary(gls.random3)
+```
+
+# Fixed-effects TSSEM approach
+## Stage 1 analysis
+* Since the fixed-effects TSSEM uses a multiple-group structural equation modeling approach, it does not need to estimate the sampling covariance matrix of the correlation coefficients.
+
+```{r}
+tssem.fixed1 <- tssem1(Becker09$data, Becker09$n, method="FEM", 
+                       model.name="Fixed effects TSSEM 1st stage")
+summary(tssem.fixed1)
+
+## Estimated common correlation matrix
+coef(tssem.fixed1)
+```
+
+## Stage 2 analysis
+* We fitted the model with the direct effects from `CA` and `SA` to `SP`.
+```{r}
+tssem.fixed2 <- tssem2(tssem.fixed1, Amatrix=A1, Smatrix=S1, 
+                       model.name="Fixed effects TSSEM 2nd stage with direct effects")
+summary(tssem.fixed2)
+```
+
+* We fitted the model without the direct effects from `CA` and `SA` to `SP`.
+```{r}
+tssem.fixed3 <- tssem2(tssem.fixed1, Amatrix=A2, Smatrix=S1, 
+                       model.name="Fixed effects TSSEM 2nd stage without direct effect)")
+summary(tssem.fixed3)
+```
+
+
+# Random-effects TSSEM approach
+## Stage 1 analysis
+```{r}
+## Run the analysis with the unweighted correlation matrx to calculate 
+## the sampling covariance matrices of the correlation coefficients.
+tssem.random1 <- tssem1(Becker09$data, Becker09$n, method="REM", RE.type="Diag",
+                        acov="unweighted", model.name="Random effects TSSEM 1st stage")
+summary(tssem.random1)
+
+## Estimated average correlation matrix
+vec2symMat( coef(tssem.random1, select="fixed"), diag = FALSE)
+```
+
+## Stage 2 analysis
+* We fitted the model with the direct effects from `CA` and `SA` to `SP`.
+```{r}
+tssem.random2 <- tssem2(tssem.random1, Amatrix=A1, Smatrix=S1, 
+                        model.name="Random effects TSSEM 2nd stage with direct effects")
+summary(tssem.random2)
+```
+
+* We fitted the model without the direct effects from `CA` and `SA` to `SP`.
+```{r}
+tssem.random3 <- tssem2(tssem.random1, Amatrix=A2, Smatrix=S1, 
+                       model.name="Random effects TSSEM 2nd stage without direct effect)")
+summary(tssem.random3)
+```
+
+
+# Summary of parameter estimates and and their standard errors
+## Tables
+* We combined the results for the ease of comparisions for the model with direct effects.
+```{r}
+gls.fixed.est <- coef(gls.fixed2)
+gls.fixed.se <- sqrt(diag(vcov(gls.fixed2)))
+
+gls.random.est <- coef(gls.random2)
+gls.random.se <- sqrt(diag(vcov(gls.random2)))
+
+tssem.fixed.est <- coef(tssem.fixed2)
+tssem.fixed.se <- sqrt(diag(vcov(tssem.fixed2)))
+
+tssem.random.est <- coef(tssem.random2)
+tssem.random.se <- sqrt(diag(vcov(tssem.random2)))
+
+para <- data.frame(gls.fixed=gls.fixed.est, tssem.fixed=tssem.fixed.est, 
+                   gls.random=gls.random.est, tssem.random=tssem.random.est)
+
+se <- data.frame(gls.fixed=gls.fixed.se, tssem.fixed=tssem.fixed.se, 
+                 gls.random=gls.random.se, tssem.random=tssem.random.se)
+
+knitr::kable(para, digits=4, caption="Parameter estimates of various methods (model with direct effects)")
+
+knitr::kable(se, digits=4, caption="Standard errors of various methods (model with direct effects)")
+```
+
+* We combined the results for the ease of comparisions for the model without direct effect.
+```{r}
+gls.fixed.est <- coef(gls.fixed3)
+gls.fixed.se <- sqrt(diag(vcov(gls.fixed3)))
+
+gls.random.est <- coef(gls.random3)
+gls.random.se <- sqrt(diag(vcov(gls.random3)))
+
+tssem.fixed.est <- coef(tssem.fixed3)
+tssem.fixed.se <- sqrt(diag(vcov(tssem.fixed3)))
+
+tssem.random.est <- coef(tssem.random3)
+tssem.random.se <- sqrt(diag(vcov(tssem.random3)))
+
+para <- data.frame(gls.fixed=gls.fixed.est, tssem.fixed=tssem.fixed.est, 
+                   gls.random=gls.random.est, tssem.random=tssem.random.est)
+
+se <- data.frame(gls.fixed=gls.fixed.se, tssem.fixed=tssem.fixed.se, 
+                 gls.random=gls.random.se, tssem.random=tssem.random.se)
+
+knitr::kable(para, digits=4, caption="Parameter estimates of various methods (model without direct effects)")
+
+knitr::kable(se, digits=4, caption="Standard errors of various methods (model without direct effects)")
+```
+
+## Figures
+* We plotted the output of the model with the direct effects based on the TSSEM approach.
+```{r, message=FALSE}
+## Install the library if it is not available in R
+# install.packages("semPlot")
+
+## Load the library to plot the figure
+library(semPlot)
+
+## Convert the model to semPlotModel object
+my.plot1 <- meta2semPlot(tssem.random2, manNames=c("SP", "CA", "SA", "SC"))
+
+## Plot the parameter estimates
+semPaths(my.plot1, whatLabels="est", nCharNodes=10, edge.label.cex=1.2,
+         layout="spring", color="green")
+```
+
+* We may plot the output of the model without the direct effects based on the TSSEM approach.
+```{r}
+## Convert the model to semPlotModel object
+my.plot2 <- meta2semPlot(tssem.random3, manNames=c("SP", "CA", "SA", "SC"))
+
+## Plot the parameter estimates
+semPaths(my.plot2, whatLabels="est", nCharNodes=10, edge.label.cex=1.2, color="yellow")
+
+## R settings for the analyses
+sessionInfo()
+```

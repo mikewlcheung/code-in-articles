@@ -5,3 +5,5 @@
 [Cheung, M. W.-L. (2010)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung 2010). Fixed-effects meta-analyses as multiple-group structural equation models. *Structural Equation Modeling: A Multidisciplinary Journal*, *17*, 481-509. [DOI: 10.1080/10705511.2010.489367](http://dx.doi.org/10.1080/10705511.2010.489367).
 
 [Cheung, M. W.-L. (2013a)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung 2013a). Multivariate meta-analysis as structural equation models. *Structural Equation Modeling: A Multidisciplinary Journal*, *20*,  429-454. [DOI:10.1080/10705511.2013.797827](http://dx.doi.org/10.1080/10705511.2013.797827).
+
+[Cheung, M. W.-L., & Hafdahl, A. R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung and Hafdahl 2016). Special issue on meta-analytic structural equation modeling: Introduction from the Guest Editors. *Manuscript in preparation*.
