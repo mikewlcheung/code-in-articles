@@ -1,0 +1,294 @@
+---
+title: "Correlation-based versus parameter-based MASEM"
+author: "Mike W.-L. Cheung and Shu Fai Cheung"
+date: "19 Feb 2016"
+output:
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: no
+  pdf_document:
+    toc: no
+  word_document: default
+---
+
+This file includes examples used in Cheung and Cheung (2016):
+
+Cheung, M.W.-L., and Cheung, S.-F. (2016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*. Manuscript accepted for publication.
+
+# Installing the R packages
+* R can be downloaded at http://www.r-project.org/.
+* Before running the analyses, we need to install some R packages and download the data. 
+* We only need to install them once.
+```{r, eval=FALSE}
+## Installing R packages from the CRAN
+install.packages(c("semPlot", "lavaan", "metaSEM"))
+```
+
+# Illustration 1: World Values Survey
+
+## Show some sample data
+```{r, message=FALSE}
+## Load the libraries for TSSEM
+library("metaSEM")
+library("semPlot")
+library("lavaan")
+
+## Display some data
+head(wvs94b$data)
+
+## Display some sample sizes
+head(wvs94b$n)
+```
+
+## Correlation-based MASEM
+```{r}
+## First stage of TSSEM: Random-effects model
+rand1 <- tssem1(wvs94b$data, wvs94b$n, method="REM")
+
+## Show the summary
+summary(rand1)
+
+## Plot the effect sizes
+plot.meta(rand1, axis.labels=c("Cor(LS,JS)", "Cor(LS,JA)", "Cor(JS,JA)"), 
+          study.min.cex=0.5, main="Effect sizes and their CIs")
+
+## Build a model with indirect effect
+## A1: Regression coefficients; 
+## parameters are labelled with "a", "b", and "c"
+## S1: Variance-covariance of parameters
+A1 <- create.mxMatrix(c(0,"0.2*b","0.2*c",
+                        0,0,"0.2*a",
+                        0,0,0), 
+    	                type="Full", ncol=3, nrow=3, as.mxMatrix=FALSE, byrow=TRUE)
+dimnames(A1) <- list(c("LS","JS","JA"), c("LS","JS","JA"))
+A1
+
+S1 <- create.mxMatrix(c("0.2*Error_y","0.2*Error_m",1), type="Diag", as.mxMatrix=FALSE)
+dimnames(S1) <- list(c("LS","JS","JA"), c("LS","JS","JA"))
+S1
+
+## Second stage of TSSEM: Random-effects model
+## Estimate direct and indirect effects
+rand2 <- tssem2(rand1, Amatrix=A1, Smatrix=S1, 
+                diag.constraints=TRUE, intervals.type="LB",
+                mx.algebras=list( indirect=mxAlgebra(a*b, name="indirect"), 
+                                  direct=mxAlgebra(c, name="direct") ))
+
+## Show the summary
+summary(rand2)
+
+## Plot the model
+my.plot1 <- meta2semPlot(rand2)
+semPaths(my.plot1, whatLabels="est", edge.label.cex=1.5, sizeMan=8, color="yellow")
+```
+
+## Parameter-based MASEM
+```{r}
+## First stage of analysis: Extract the direct 
+## and indirect effects per study
+(indirect1 <- indirectEffect(wvs94b$data, wvs94b$n))
+
+## Second stage of analysis: Multivariate meta-analysis on 
+## the direct and indirect effect sizes
+indirect2 <- meta(indirect1[, c("ind_eff", "dir_eff")], 
+                  indirect1[, c("ind_var", "ind_dir_cov", "dir_var")], intervals.type="z")
+
+## Show the summary
+summary(indirect2)  
+
+## Plot the indirect and direct effects as effect sizes
+plot.meta(indirect2, axis.labels=c("Indirect effect", "Direct effect"),
+          study.min.cex=0.5, main="Effect sizes and their CIs")
+```
+
+# Illustration 2: Theory of Planned Behavior
+
+## Show some sample data and check the data
+```{r}
+## Display some data
+head(Cheung00$data)
+
+## Display some sample sizes
+head(Cheung00$n)
+
+# Check pd in the data
+pd_check <- is.pd(Cheung00$data)
+sum(!is.na(pd_check))
+
+## Studies with positive definite matrices happen to be studies without missing data.
+my.pd <- list()
+my.pd$data <- Cheung00$data[!is.na(pd_check)]
+my.pd$n <- Cheung00$n[!is.na(pd_check)]
+
+# No. of studies: All data
+pattern.na(Cheung00$data, show.na=FALSE)
+
+# No. of studies: Positive definite
+pattern.na(my.pd$data, show.na=FALSE)
+
+# Sample sizes: All data
+pattern.n(Cheung00$data, Cheung00$n)
+
+# Sample sizes: Positive definite
+pattern.n(my.pd$data, my.pd$n)
+```
+
+## Correlation-based MASEM
+```{r}
+## Stage 1 analysis: Random-effects model
+## All studies used.
+tra_random_1 <- tssem1(Cheung00$data, Cheung00$n, method="REM")
+summary(tra_random_1)
+
+## Variable labels
+labels <- c("att","sn","bi","beh")
+
+## Complete mediation model
+tra_S <- Diag(c("1", "1", ".2*e_bi", ".2*e_beh"))
+tra_S[2,1] <- tra_S[1,2] <- ".2*c_att_sn"
+dimnames(tra_S) <- list(labels, labels)
+tra_S
+
+tra_A <- matrix(c("0","0","0","0",
+                  "0","0","0","0",
+                  ".2*att2bi", ".2*sn2bi", "0", "0",
+                  "0", "0", ".2*bi2beh", "0"),
+                byrow=TRUE, 4, 4)
+dimnames(tra_A) <- list(labels, labels)
+tra_A
+
+## Stage 2
+tra_random_2 <- tssem2(tra_random_1, Amatrix=tra_A, Smatrix=tra_S, 
+                       intervals.type="LB", diag.constraints=FALSE)
+summary(tra_random_2)
+
+my.plot2 <- meta2semPlot(tra_random_2)
+semPaths(my.plot2, whatLabels="est", rotation=2, edge.label.cex=1.5, sizeMan=8, 
+         color="yellow")
+
+## Stage 1
+# Only use studies with positive definite matrices
+## Not enough data to estimate the variance component for all random effects
+## A diagonal matrix is used
+tra_random_pd_1 <- tssem1(my.pd$data, my.pd$n, method="REM", RE.type="Diag")
+summary(tra_random_pd_1)
+
+## Stage 2
+tra_random_pd_2 <- tssem2(tra_random_pd_1, Amatrix=tra_A, Smatrix=tra_S, 
+                          intervals.type="LB", diag.constraints=FALSE)
+summary(tra_random_pd_2)
+
+my.plot3 <- meta2semPlot(tra_random_pd_2)
+semPaths(my.plot3, whatLabels="est", rotation=2, edge.label.cex=1.5, sizeMan=8,
+         color="yellow")
+```
+
+## Parameter-based MASEM
+```{r, message=FALSE}
+## Stage 1 analysis
+
+# Use lavaan to the model
+tra_model <- 'bi  ~ att + sn
+              beh ~ bi
+              att ~~ sn'
+  
+tra_study_lavaan <- function(id, data, para_names=NULL, model, ...) {
+    cor_i   <- data$data[[id]]
+    n_i     <- data$n[[id]]
+    fit_i <- sem(model=model, sample.cov=cor_i, sample.nobs=n_i,  ...)
+    results <- list()
+    coefs <- standardizedSolution(fit_i)$est.std[1:4]
+    vcoefs <- vcov(fit_i)[1:4,1:4]
+    if (is.null(para_names)) para_names <- names(coefs)
+    names(coefs) <- para_names
+    colnames(vcoefs) <- rownames(vcoefs) <- para_names
+    results$coefs <- coefs
+    results$vcoefs <- vcoefs
+    results$fit <- fit_i
+    results
+}  
+  
+# Analyze complete data with positive definite matrices
+k <- length(my.pd$data)
+para_names <- c("att2bi","sn2bi","bi2beh","c_att_sn")
+var_names <- c("att", "sn", "bi", "beh")
+
+tra_fit_all <- lapply(1:k, FUN=tra_study_lavaan, data=my.pd, para_names=para_names,
+                      model=tra_model, estimator="ML", fixed.x=FALSE)                
+                            
+## Parameter-based: Stage 2: Random and Fixed         
+tra_coefs_all <- t(sapply(1:k, function(x) {tra_fit_all[[x]]$coefs}))
+tra_vcoefs_all <- t(sapply(1:k, function(x) {lav_matrix_vech(tra_fit_all[[x]]$vcoefs)}))
+
+## Not enough data to estimate the variance component for all random effects
+## A diagonal matrix is used
+tra_pbased_random <- meta(tra_coefs_all, tra_vcoefs_all,
+                          RE.constraints=Diag(paste("0.2*Tau2_",1:4,"_", 1:4, sep="")))
+summary(tra_pbased_random)
+
+tra_pbased_fixed  <- meta(tra_coefs_all, tra_vcoefs_all, 
+                          RE.constraints=matrix("0", ncol=4, nrow=4))
+summary(tra_pbased_fixed)
+
+# Compare All Methods
+
+## Parameter estimates
+coef_cbased_random  <- coef(tra_random_2)[para_names]
+coef_cbased_random_pd  <- coef(tra_random_pd_2)[para_names]
+coef_pbased_random  <- coef(tra_pbased_random)[1:4]
+
+coef_all <- as.data.frame(rbind(coef_cbased_random,
+                                coef_cbased_random_pd,
+                                coef_pbased_random))
+```
+
+```{r, message=FALSE}
+library(lavaan)
+
+## Estimated sampling variances of parameter estimates
+### Make the results reproducible.
+set.seed(98717341)                                
+secoef_cbased_random <- sqrt(diag(vcov(tra_random_2))[1:4])
+secoef_cbased_random_pd <- sqrt(diag(vcov(tra_random_pd_2))[1:4])
+secoef_pbased_random <- summary(tra_pbased_random)$coefficients$Std.Error[1:4]
+
+secoef_all <- as.data.frame(rbind(secoef_cbased_random,
+                                  secoef_cbased_random_pd,
+                                  secoef_pbased_random))
+                                  
+## Compare them
+coef_all
+secoef_all
+
+## Variance components
+## Cbased_random
+c_labels <- lav_matrix_vech(outer(labels, labels, 
+                                  function(x,y) paste("c_",x, "_", y,sep="")), 
+                            diagonal = FALSE)
+
+cbased.vc <- vec2symMat( coef(tra_random_1, select="random"), diag=TRUE, byrow=TRUE )
+dimnames(cbased.vc) <- list(c_labels, c_labels)
+cbased.vc
+
+cbased.vc_pd <- diag(coef(tra_random_pd_1, select="random"))
+dimnames(cbased.vc_pd) <- list(c_labels, c_labels)
+cbased.vc_pd
+
+## Pbased_random
+pbased.vc <- diag( coef(tra_pbased_random, select="random") )
+dimnames(pbased.vc) <- list(para_names, para_names)
+pbased.vc
+
+## Chi-squares and p values of the parameter-based models
+tra_model_fit <- t(sapply(tra_fit_all, function(x) { 
+                                       fitMeasures(x$fit, c("chisq", "pvalue", "ntotal"))}))
+row.names(tra_model_fit) <- names(my.pd$data)
+options(scipen=50)
+round(tra_model_fit,4)
+```
+
+```{r}
+sessionInfo()
+```
