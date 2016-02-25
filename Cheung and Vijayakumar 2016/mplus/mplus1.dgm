@@ -1,0 +1,38 @@
+VERSION 1.1.0
+INPUT
+TITLE:
+  Fixed-effects model
+DATA:
+   FILE IS data.dat;
+VARIABLE:
+ NAMES y v x;
+        USEVARIABLES ARE y w2;
+DEFINE:
+ w2 = SQRT(v**(-1));
+        y = w2*y;
+OUTPUT:
+ SAMPSTAT;
+        CINTERVAL(symmetric);
+MODEL:
+        [y@0.0];
+        y@1.0;
+        y ON w2;
+INPUT_END
+3
+0
+0
+0
+ML
+1
+GENERAL
+0
+1
+0
+1
+y w2
+2
+1 0
+0
+0
+1 1 w2 y   -0.722    0.029   -0.779   -0.666
+4 1 y    1.000    0.000    1.000    1.000

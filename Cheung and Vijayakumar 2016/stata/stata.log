@@ -1,0 +1,56 @@
+------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  d:\stata.log
+  log type:  text
+ opened on:  20 Feb 2016, 14:22:57
+
+. * Read the data file "data.csv".
+
+. 
+. import delim using data.csv
+(3 vars, 50 obs)
+
+. * Generate se (standard error) from v (sampling variance)
+
+. 
+. generate se=sqrt(v)
+
+. * Run a meta-analysis on y with se as the standard error.
+
+. 
+. meta y se
+
+Meta-analysis 
+
+       |  Pooled      95% CI         Asymptotic      No. of
+Method |     Est   Lower   Upper  z_value  p_value   studies
+-------+----------------------------------------------------
+Fixed  |  -0.722  -0.779  -0.666  -25.017    0.000     50
+Random |  -0.729  -0.804  -0.654  -19.030    0.000
+
+Test for heterogeneity: Q= 85.712 on 49 degrees of freedom (p= 0.001)
+Moment-based estimate of between studies variance =  0.031
+
+. * Run a mixed-effects meta-analysis on y with x as the predictor and se as the standard error.
+
+. 
+. metareg y x, wsse(se)
+
+Meta-regression                                       Number of obs  =      50
+REML estimate of between-study variance               tau2           =  .02432
+% residual variation due to heterogeneity             I-squared_res  =  38.44%
+Proportion of between-study variance explained        Adj R-squared  =  15.93%
+With Knapp-Hartung modification
+------------------------------------------------------------------------------
+           y |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+           x |  -.0071645   .0030496    -2.35   0.023    -.0132961   -.0010329
+       _cons |  -.4422977   .1273233    -3.47   0.001    -.6982984   -.1862969
+------------------------------------------------------------------------------
+
+. log close
+      name:  <unnamed>
+       log:  d:\stata.log
+  log type:  text
+ closed on:  20 Feb 2016, 14:24:05
+------------------------------------------------------------------------------------------------------------------------------

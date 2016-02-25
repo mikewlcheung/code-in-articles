@@ -1,0 +1,15 @@
+TITLE:  Fixed-effects model
+DATA:   FILE IS data.dat;    
+VARIABLE: NAMES y v x;
+        USEVARIABLES ARE y w2;  ! Use both y and w2 in the analysis
+
+DEFINE: w2 = SQRT(v**(-1));     ! Weight for transformation           
+        y = w2*y;               ! Transformed effect size
+
+MODEL:
+        [y@0.0];                ! Intercept fixed at 0
+        y@1.0;                  ! Error variance fixed at 1
+        y ON w2;                ! Common effect estimate beta_F
+
+OUTPUT: SAMPSTAT;
+        CINTERVAL(symmetric);   ! Wald CI

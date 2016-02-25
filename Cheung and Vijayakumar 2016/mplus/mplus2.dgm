@@ -1,0 +1,44 @@
+VERSION 1.1.0
+INPUT
+TITLE:
+  Random-effects model
+DATA:
+   FILE IS data.dat;
+VARIABLE:
+ NAMES y v x;
+        USEVARIABLES ARE y w2;
+DEFINE:
+ w2 = SQRT(v**(-1));
+        y = w2*y;
+ANALYSIS:
+  TYPE=RANDOM;
+           ESTIMATOR=ML;
+OUTPUT:
+ SAMPSTAT;
+        CINTERVAL(symmetric);
+MODEL:
+        [y@0.0];
+        y@1.0;
+        f | y ON w2;
+        f*;
+        [f*];
+INPUT_END
+3
+0
+0
+0
+ML
+1
+GENERAL
+0
+1
+1
+1
+y f w2
+2
+1 0 0
+0
+0
+6 1 w2 y f
+4 1 y    1.000    0.000    1.000    1.000
+5 1 f    0.027    0.015   -0.002    0.056
