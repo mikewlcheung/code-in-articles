@@ -1,13 +1,13 @@
-# An Introduction to When and How to Conduct a Meta-Analysis
+# A Guide to Conducting a Meta-Analysis
 Mike W.-L. Cheung and Ranjith Vijayakumar  
-25 Feb 2016  
+29 Feb 2016  
 
 
 
 
 # Introduction
 * This page is a supporting document to Cheung and Vijayakumar (2016). It provides a quick introduction on how to conduct meta-analysis in various software packages. Since different default estimators are used in different packages, the results may be slightly different.
-* Cheung, M. W.-L., & Vijayakumar, R. (2016). *An introduction to when and how to conduct a meta-analysis*. Manuscript in preparation. 
+* Cheung, M. W.-L., & Vijayakumar, R. (2016). *A guide to conducting a meta-analysis*. Manuscript in preparation. 
 
 # Descriptive statistics of the data
 * The sample data sets are available as [CSV](./stata/data.csv) and [plain text](./mplus/data.dat) formats.
@@ -15,11 +15,11 @@ Mike W.-L. Cheung and Ranjith Vijayakumar
 * Sampling variance (`v`): Sampling variance of `y`.
 * Moderator (`x`): Mean age of the participants.
 
-![](conduct_a_meta_analysis_files/figure-html/unnamed-chunk-2-1.png)
+![](conduct_a_meta_analysis_files/figure-html/unnamed-chunk-2-1.png) 
 
 * IV (x): Mean age of participants
 
-![](conduct_a_meta_analysis_files/figure-html/unnamed-chunk-3-1.png)
+![](conduct_a_meta_analysis_files/figure-html/unnamed-chunk-3-1.png) 
 
 
 # R
@@ -139,7 +139,7 @@ summary(meta(y=y, v=v, x=x, data=my.df))
 ## 95% confidence intervals: z statistic approximation
 ## Coefficients:
 ##              Estimate  Std.Error     lbound     ubound z value  Pr(>|z|)
-## Intercept1 -0.4439440  0.1214427 -0.6819674 -0.2059207 -3.6556 0.0002566
+## Intercept1 -0.4439440  0.1214428 -0.6819675 -0.2059206 -3.6556 0.0002566
 ## Slope1_1   -0.0071136  0.0029137 -0.0128244 -0.0014029 -2.4414 0.0146292
 ## Tau2_1_1    0.0214313  0.0132301 -0.0044992  0.0473618  1.6199 0.1052553
 ##               
