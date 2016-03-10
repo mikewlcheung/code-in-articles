@@ -2,7 +2,7 @@
 title: 'Special Issue on Meta-analytic Structural Equation Modeling: Introduction
   from the Guest Editors'
 author: "Mike W.-L. Cheung and Adam R. Hafdahl"
-date: "17 Feb 2016"
+date: "10 Mar 2016"
 output:
   html_document:
     keep_md: yes
@@ -265,37 +265,6 @@ V.random <- solve(t(X)%*%solve(V)%*%X)
 V.random
 ```
 
-```{r, eval=FALSE, echo=FALSE}
-library(lavaan)
-## estimate VC 
-x <- t(sapply(Becker09$data, function(x) vechs(x)))
-colnames(x) <- paste0("x", 1:6) 
-my.model <- "x1 ~~ x1
-             x2 ~~ x2
-             x3 ~~ x3
-             x4 ~~ x4
-             x5 ~~ x5
-             x6 ~~ x6
-             x1 ~~ x2
-             x1 ~~ x3
-             x1 ~~ x4
-             x1 ~~ x5
-             x1 ~~ x6
-             x2 ~~ x3
-             x2 ~~ x4
-             x2 ~~ x5
-             x2 ~~ x6
-             x3 ~~ x4
-             x3 ~~ x5
-             x3 ~~ x6
-             x4 ~~ x5
-             x4 ~~ x6
-             x5 ~~ x6"
-
-fit <- sem(model=my.model, data=x, fixed.x=FALSE, missing="fiml")
-summary(fit)
-```
-
 ## Stage 2 analysis
 * We fitted the model with the direct effects from `CA` and `SA` to `SP`.
 ```{r}
@@ -398,6 +367,8 @@ para <- data.frame(gls.fixed=gls.fixed.est, tssem.fixed=tssem.fixed.est,
 
 se <- data.frame(gls.fixed=gls.fixed.se, tssem.fixed=tssem.fixed.se, 
                  gls.random=gls.random.se, tssem.random=tssem.random.se)
+## Arrange rows according to para
+se <- se[row.names(para), ]
 
 knitr::kable(para, digits=4, caption="Parameter estimates of various methods (model with direct effects)")
 
@@ -423,6 +394,8 @@ para <- data.frame(gls.fixed=gls.fixed.est, tssem.fixed=tssem.fixed.est,
 
 se <- data.frame(gls.fixed=gls.fixed.se, tssem.fixed=tssem.fixed.se, 
                  gls.random=gls.random.se, tssem.random=tssem.random.se)
+## Arrange rows according to para
+se <- se[row.names(para), ]
 
 knitr::kable(para, digits=4, caption="Parameter estimates of various methods (model without direct effects)")
 

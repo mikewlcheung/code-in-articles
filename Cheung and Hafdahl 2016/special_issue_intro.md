@@ -1,6 +1,6 @@
 # Special Issue on Meta-analytic Structural Equation Modeling: Introduction from the Guest Editors
 Mike W.-L. Cheung and Adam R. Hafdahl  
-17 Feb 2016  
+10 Mar 2016  
 
 # Introduction
 *  Becker (2009) tested a mediation model on "Sport Performance" (`SP`). The independent variables were "Cognitive Anxiety" (`CA`) and "Somatic Anxiety" (`SA`) while the mediator was "Self confidence" (`SC`). The following figure displays the model with the labels of the parameters.
@@ -458,14 +458,14 @@ V[1:8, 1:8]
 
 ```
 ##               [,1]          [,2]          [,3]          [,4]          [,5]          [,6]       [,7]
-## [1,]  0.0070794958  3.681413e-03 -2.949461e-03 -2.792773e-04  0.0012813958  6.039161e-04 0.00000000
-## [2,]  0.0036814134  7.037838e-03 -2.895465e-03 -7.097326e-05  0.0005286830  1.244920e-03 0.00000000
-## [3,] -0.0029494612 -2.895465e-03  6.354858e-03 -1.505444e-05  0.0001122063 -6.181858e-05 0.00000000
-## [4,] -0.0002792773 -7.097326e-05 -1.505444e-05  3.751398e-03 -0.0013760577 -1.402917e-03 0.00000000
-## [5,]  0.0012813958  5.286830e-04  1.122063e-04 -1.376058e-03  0.0045867731  2.032183e-03 0.00000000
-## [6,]  0.0006039161  1.244920e-03 -6.181858e-05 -1.402917e-03  0.0020321834  4.624544e-03 0.00000000
-## [7,]  0.0000000000  0.000000e+00  0.000000e+00  0.000000e+00  0.0000000000  0.000000e+00 0.02772768
-## [8,]  0.0000000000  0.000000e+00  0.000000e+00  0.000000e+00  0.0000000000  0.000000e+00 0.01441858
+## [1,]  0.0070295194  3.655404e-03 -2.928601e-03 -2.772428e-04  0.0012723260  5.996385e-04 0.00000000
+## [2,]  0.0036554036  6.988179e-03 -2.874994e-03 -7.042039e-05  0.0005249307  1.236102e-03 0.00000000
+## [3,] -0.0029286008 -2.874994e-03  6.310025e-03 -1.493057e-05  0.0001114126 -6.138744e-05 0.00000000
+## [4,] -0.0002772428 -7.042039e-05 -1.493057e-05  3.724904e-03 -0.0013662800 -1.392960e-03 0.00000000
+## [5,]  0.0012723260  5.249307e-04  1.114126e-04 -1.366280e-03  0.0045543712  2.017801e-03 0.00000000
+## [6,]  0.0005996385  1.236102e-03 -6.138744e-05 -1.392960e-03  0.0020178005  4.591872e-03 0.00000000
+## [7,]  0.0000000000  0.000000e+00  0.000000e+00  0.000000e+00  0.0000000000  0.000000e+00 0.02697809
+## [8,]  0.0000000000  0.000000e+00  0.000000e+00  0.000000e+00  0.0000000000  0.000000e+00 0.01402873
 ##            [,8]
 ## [1,] 0.00000000
 ## [2,] 0.00000000
@@ -473,8 +473,8 @@ V[1:8, 1:8]
 ## [4,] 0.00000000
 ## [5,] 0.00000000
 ## [6,] 0.00000000
-## [7,] 0.01441858
-## [8,] 0.02756441
+## [7,] 0.01402873
+## [8,] 0.02681930
 ```
 
 ```r
@@ -486,12 +486,12 @@ r.fixed
 
 ```
 ##             [,1]
-## [1,] -0.07465414
-## [2,] -0.12763961
-## [3,]  0.31726139
-## [4,]  0.52373133
-## [5,] -0.41628484
-## [6,] -0.40921471
+## [1,] -0.07395104
+## [2,] -0.12660487
+## [3,]  0.31552522
+## [4,]  0.52371725
+## [5,] -0.41663718
+## [6,] -0.40948168
 ```
 
 ```r
@@ -502,12 +502,12 @@ V.fixed
 
 ```
 ##               [,1]          [,2]          [,3]          [,4]          [,5]          [,6]
-## [1,]  1.602253e-03  8.331848e-04 -6.675273e-04 -6.320412e-05  2.900053e-04  1.366760e-04
-## [2,]  8.331848e-04  1.592821e-03 -6.553048e-04 -1.606064e-05  1.196516e-04  2.817491e-04
-## [3,] -6.675273e-04 -6.553048e-04  1.464833e-03 -3.358359e-06  2.855997e-05 -1.179929e-05
-## [4,] -6.320412e-05 -1.606064e-05 -3.358359e-06  9.132940e-04 -3.339420e-04 -3.412807e-04
-## [5,]  2.900053e-04  1.196516e-04  2.855997e-05 -3.339420e-04  1.136665e-03  5.018449e-04
-## [6,]  1.366760e-04  2.817491e-04 -1.179929e-05 -3.412807e-04  5.018449e-04  1.146823e-03
+## [1,]  1.576927e-03  8.200114e-04 -6.569663e-04 -6.220142e-05  2.854222e-04  1.345159e-04
+## [2,]  8.200114e-04  1.567644e-03 -6.449364e-04 -1.580473e-05  1.177631e-04  2.772961e-04
+## [3,] -6.569663e-04 -6.449364e-04  1.443012e-03 -3.299198e-06  2.826988e-05 -1.149996e-05
+## [4,] -6.220142e-05 -1.580473e-05 -3.299198e-06  8.993023e-04 -3.288098e-04 -3.360438e-04
+## [5,]  2.854222e-04  1.177631e-04  2.826988e-05 -3.288098e-04  1.120494e-03  4.946163e-04
+## [6,]  1.345159e-04  2.772961e-04 -1.149996e-05 -3.360438e-04  4.946163e-04  1.130509e-03
 ```
 
 ```r
@@ -518,7 +518,7 @@ Q.fixed
 
 ```
 ##          [,1]
-## [1,] 186.6425
+## [1,] 190.2517
 ```
 
 ```r
@@ -538,7 +538,7 @@ pchisq(Q.fixed, df=Q.df, lower.tail=FALSE)
 
 ```
 ##              [,1]
-## [1,] 3.083881e-18
+## [1,] 7.836051e-19
 ```
 
 ## Stage 2 analysis
@@ -602,10 +602,10 @@ R.fixed
 
 ```
 ##             [,1]        [,2]       [,3]       [,4]
-## [1,]  1.00000000 -0.07465414 -0.1276396  0.3172614
-## [2,] -0.07465414  1.00000000  0.5237313 -0.4162848
-## [3,] -0.12763961  0.52373133  1.0000000 -0.4092147
-## [4,]  0.31726139 -0.41628484 -0.4092147  1.0000000
+## [1,]  1.00000000 -0.07395104 -0.1266049  0.3155252
+## [2,] -0.07395104  1.00000000  0.5237173 -0.4166372
+## [3,] -0.12660487  0.52371725  1.0000000 -0.4094817
+## [4,]  0.31552522 -0.41663718 -0.4094817  1.0000000
 ```
 
 ```r
@@ -622,34 +622,34 @@ summary(gls.fixed2)
 ## 
 ## 95% confidence intervals: z statistic approximation
 ## Coefficients:
-##            Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
-## CA2SP      0.083474  0.047442 -0.009511  0.176460  1.7595   0.07849 .  
-## SA2SP     -0.032803  0.047087 -0.125093  0.059487 -0.6966   0.48603    
-## SC2SP      0.338587  0.042563  0.255166  0.422009  7.9550 1.776e-15 ***
-## CA2SC     -0.278303  0.041378 -0.359402 -0.197204 -6.7259 1.745e-11 ***
-## SA2SC     -0.263458  0.041436 -0.344672 -0.182245 -6.3582 2.041e-10 ***
-## Cor_CA_SA  0.523731  0.030221  0.464500  0.582963 17.3302 < 2.2e-16 ***
+##             Estimate  Std.Error     lbound     ubound z value  Pr(>|z|)    
+## CA2SP      0.0833672  0.0470697 -0.0088878  0.1756221  1.7711   0.07654 .  
+## SA2SP     -0.0322482  0.0467174 -0.1238128  0.0593163 -0.6903   0.49002    
+## SC2SP      0.3370540  0.0422678  0.2542106  0.4198974  7.9743 1.554e-15 ***
+## CA2SC     -0.2785985  0.0410844 -0.3591224 -0.1980746 -6.7811 1.192e-11 ***
+## SA2SC     -0.2635748  0.0411418 -0.3442114 -0.1829383 -6.4065 1.489e-10 ***
+## Cor_CA_SA  0.5237173  0.0299884  0.4649411  0.5824934 17.4640 < 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Goodness-of-fit indices:
-##                                            Value
-## Sample size                                633.0
-## Chi-square of target model                   0.0
-## DF of target model                           0.0
-## p value of target model                      0.0
-## Number of constraints imposed on "Smatrix"   0.0
-## DF manually adjusted                         0.0
-## Chi-square of independence model           464.4
-## DF of independence model                     6.0
-## RMSEA                                        0.0
-## RMSEA lower 95% CI                           0.0
-## RMSEA upper 95% CI                           0.0
-## SRMR                                         0.0
-## TLI                                         -Inf
-## CFI                                          1.0
-## AIC                                          0.0
-## BIC                                          0.0
+##                                             Value
+## Sample size                                633.00
+## Chi-square of target model                   0.00
+## DF of target model                           0.00
+## p value of target model                      0.00
+## Number of constraints imposed on "Smatrix"   0.00
+## DF manually adjusted                         0.00
+## Chi-square of independence model           470.88
+## DF of independence model                     6.00
+## RMSEA                                        0.00
+## RMSEA lower 95% CI                           0.00
+## RMSEA upper 95% CI                           0.00
+## SRMR                                         0.00
+## TLI                                          -Inf
+## CFI                                          1.00
+## AIC                                          0.00
+## BIC                                          0.00
 ## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
 ## Other values indicate problems.)
 ```
@@ -693,31 +693,31 @@ summary(gls.fixed3)
 ## 95% confidence intervals: z statistic approximation
 ## Coefficients:
 ##            Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
-## SC2SP      0.320129  0.038357  0.244950  0.395307  8.3460 < 2.2e-16 ***
-## CA2SC     -0.274276  0.041414 -0.355445 -0.193107 -6.6229 3.523e-11 ***
-## SA2SC     -0.265960  0.041371 -0.347046 -0.184875 -6.4287 1.287e-10 ***
-## Cor_CA_SA  0.523290  0.030111  0.464274  0.582306 17.3788 < 2.2e-16 ***
+## SC2SP      0.318358  0.038073  0.243737  0.392979  8.3618 < 2.2e-16 ***
+## CA2SC     -0.274675  0.041123 -0.355274 -0.194077 -6.6794 2.399e-11 ***
+## SA2SC     -0.266004  0.041079 -0.346517 -0.185491 -6.4755 9.451e-11 ***
+## Cor_CA_SA  0.523265  0.029881  0.464700  0.581830 17.5118 < 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Goodness-of-fit indices:
 ##                                               Value
 ## Sample size                                633.0000
-## Chi-square of target model                   3.1397
+## Chi-square of target model                   3.1833
 ## DF of target model                           2.0000
-## p value of target model                      0.2081
+## p value of target model                      0.2036
 ## Number of constraints imposed on "Smatrix"   0.0000
 ## DF manually adjusted                         0.0000
-## Chi-square of independence model           464.3958
+## Chi-square of independence model           470.8811
 ## DF of independence model                     6.0000
-## RMSEA                                        0.0300
+## RMSEA                                        0.0306
 ## RMSEA lower 95% CI                           0.0000
-## RMSEA upper 95% CI                           0.0901
+## RMSEA upper 95% CI                           0.0905
 ## SRMR                                         0.0237
-## TLI                                          0.9925
+## TLI                                          0.9924
 ## CFI                                          0.9975
-## AIC                                         -0.8603
-## BIC                                         -9.7612
+## AIC                                         -0.8167
+## BIC                                         -9.7177
 ## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
 ## Other values indicate problems.)
 ```
@@ -968,14 +968,14 @@ V[1:8, 1:8]
 
 ```
 ##               [,1]          [,2]          [,3]          [,4]          [,5]          [,6]       [,7]
-## [1,]  0.1141982111  3.681340e-03 -2.949393e-03 -2.792597e-04  0.0012813541  6.038792e-04 0.00000000
-## [2,]  0.0036813402  5.807881e-02 -2.895389e-03 -7.095888e-05  0.0005286586  1.244874e-03 0.00000000
-## [3,] -0.0029493929 -2.895389e-03  5.658847e-02 -1.503769e-05  0.0001122107 -6.181069e-05 0.00000000
-## [4,] -0.0002792597 -7.095888e-05 -1.503769e-05  3.751361e-03 -0.0013760229 -1.402884e-03 0.00000000
-## [5,]  0.0012813541  5.286586e-04  1.122107e-04 -1.376023e-03  0.0110246865  2.032143e-03 0.00000000
-## [6,]  0.0006038792  1.244874e-03 -6.181069e-05 -1.402884e-03  0.0020321428  9.478583e-03 0.00000000
-## [7,]  0.0000000000  0.000000e+00  0.000000e+00  0.000000e+00  0.0000000000  0.000000e+00 0.13484664
-## [8,]  0.0000000000  0.000000e+00  0.000000e+00  0.000000e+00  0.0000000000  0.000000e+00 0.01441874
+## [1,]  0.1141482903  3.655323e-03 -2.928532e-03 -2.772846e-04  0.0012723384  5.996186e-04 0.00000000
+## [2,]  0.0036553230  5.802912e-02 -2.874871e-03 -7.043949e-05  0.0005249483  1.236096e-03 0.00000000
+## [3,] -0.0029285315 -2.874871e-03  5.654362e-02 -1.491765e-05  0.0001114272 -6.134296e-05 0.00000000
+## [4,] -0.0002772846 -7.043949e-05 -1.491765e-05  3.724900e-03 -0.0013662920 -1.392954e-03 0.00000000
+## [5,]  0.0012723384  5.249483e-04  1.114272e-04 -1.366292e-03  0.0109923589  2.017799e-03 0.00000000
+## [6,]  0.0005996186  1.236096e-03 -6.134296e-05 -1.392954e-03  0.0020177986  9.445951e-03 0.00000000
+## [7,]  0.0000000000  0.000000e+00  0.000000e+00  0.000000e+00  0.0000000000  0.000000e+00 0.13409714
+## [8,]  0.0000000000  0.000000e+00  0.000000e+00  0.000000e+00  0.0000000000  0.000000e+00 0.01402886
 ##            [,8]
 ## [1,] 0.00000000
 ## [2,] 0.00000000
@@ -983,8 +983,8 @@ V[1:8, 1:8]
 ## [4,] 0.00000000
 ## [5,] 0.00000000
 ## [6,] 0.00000000
-## [7,] 0.01441874
-## [8,] 0.07860573
+## [7,] 0.01402886
+## [8,] 0.07786043
 ```
 
 ```r
@@ -995,12 +995,12 @@ r.random
 
 ```
 ##             [,1]
-## [1,] -0.04629338
-## [2,] -0.08919571
-## [3,]  0.24711563
-## [4,]  0.52321499
-## [5,] -0.41662373
-## [6,] -0.41769915
+## [1,] -0.04568625
+## [2,] -0.08799689
+## [3,]  0.24632203
+## [4,]  0.52319907
+## [5,] -0.41734430
+## [6,] -0.41817192
 ```
 
 ```r
@@ -1011,15 +1011,13 @@ V.random
 
 ```
 ##               [,1]          [,2]          [,3]          [,4]          [,5]          [,6]
-## [1,]  1.313721e-02  1.114051e-03 -8.184129e-04 -6.111793e-05  0.0003029071  0.0001315615
-## [2,]  1.114051e-03  7.383641e-03 -7.889699e-04 -1.556409e-05  0.0001163680  0.0002878333
-## [3,] -8.184129e-04 -7.889699e-04  7.608865e-03 -3.127877e-06  0.0000330270 -0.0000113705
-## [4,] -6.111793e-05 -1.556409e-05 -3.127877e-06  9.135100e-04 -0.0003349117 -0.0003415201
-## [5,]  3.029071e-04  1.163680e-04  3.302700e-05 -3.349117e-04  0.0021402615  0.0005254519
-## [6,]  1.315615e-04  2.878333e-04 -1.137050e-05 -3.415201e-04  0.0005254519  0.0019179407
+## [1,]  0.0130600959  1.088249e-03 -8.005977e-04 -6.019450e-05  2.976364e-04  1.295588e-04
+## [2,]  0.0010882493  7.320099e-03 -7.726332e-04 -1.532561e-05  1.145478e-04  2.830102e-04
+## [3,] -0.0008005977 -7.726332e-04  7.558044e-03 -3.083018e-06  3.246097e-05 -1.120926e-05
+## [4,] -0.0000601945 -1.532561e-05 -3.083018e-06  8.995231e-04 -3.297834e-04 -3.362906e-04
+## [5,]  0.0002976364  1.145478e-04  3.246097e-05 -3.297834e-04  2.116757e-03  5.178743e-04
+## [6,]  0.0001295588  2.830102e-04 -1.120926e-05 -3.362906e-04  5.178743e-04  1.895874e-03
 ```
-
-
 
 ## Stage 2 analysis
 * We fitted the model with the direct effects from `CA` and `SA` to `SP`.
@@ -1035,10 +1033,10 @@ R.random
 
 ```
 ##             [,1]        [,2]        [,3]       [,4]
-## [1,]  1.00000000 -0.04629338 -0.08919571  0.2471156
-## [2,] -0.04629338  1.00000000  0.52321499 -0.4166237
-## [3,] -0.08919571  0.52321499  1.00000000 -0.4176991
-## [4,]  0.24711563 -0.41662373 -0.41769915  1.0000000
+## [1,]  1.00000000 -0.04568625 -0.08799689  0.2463220
+## [2,] -0.04568625  1.00000000  0.52319907 -0.4173443
+## [3,] -0.08799689  0.52319907  1.00000000 -0.4181719
+## [4,]  0.24632203 -0.41734430 -0.41817192  1.0000000
 ```
 
 ```r
@@ -1057,12 +1055,12 @@ summary(gls.random2)
 ## 95% confidence intervals: z statistic approximation
 ## Coefficients:
 ##            Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
-## CA2SP      0.074742  0.172731 -0.263804  0.413288  0.4327   0.66523    
-## SA2SP     -0.014627  0.140081 -0.289181  0.259927 -0.1044   0.91684    
-## SC2SP      0.272145  0.119060  0.038792  0.505498  2.2858   0.02227 *  
-## CA2SC     -0.272741  0.062951 -0.396122 -0.149360 -4.3326 1.473e-05 ***
-## SA2SC     -0.274997  0.060434 -0.393445 -0.156549 -4.5504 5.355e-06 ***
-## Cor_CA_SA  0.523215  0.030224  0.463976  0.582454 17.3111 < 2.2e-16 ***
+## CA2SP      0.074833  0.172390 -0.263046  0.412712  0.4341   0.66422    
+## SA2SP     -0.013434  0.139664 -0.287169  0.260302 -0.0962   0.92337    
+## SC2SP      0.271936  0.118866  0.038962  0.504910  2.2877   0.02215 *  
+## CA2SC     -0.273396  0.062629 -0.396146 -0.150646 -4.3653 1.269e-05 ***
+## SA2SC     -0.275132  0.060114 -0.392953 -0.157310 -4.5768 4.721e-06 ***
+## Cor_CA_SA  0.523199  0.029992  0.464416  0.581982 17.4446 < 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -1074,7 +1072,7 @@ summary(gls.random2)
 ## p value of target model                      0.00
 ## Number of constraints imposed on "Smatrix"   0.00
 ## DF manually adjusted                         0.00
-## Chi-square of independence model           351.65
+## Chi-square of independence model           357.03
 ## DF of independence model                     6.00
 ## RMSEA                                        0.00
 ## RMSEA lower 95% CI                           0.00
@@ -1105,31 +1103,31 @@ summary(gls.random3)
 ## 95% confidence intervals: z statistic approximation
 ## Coefficients:
 ##            Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
-## SC2SP      0.249922  0.038359  0.174740  0.325104  6.5154 7.251e-11 ***
-## CA2SC     -0.273665  0.041417 -0.354842 -0.192489 -6.6075 3.908e-11 ***
-## SA2SC     -0.275010  0.041425 -0.356202 -0.193818 -6.6387 3.165e-11 ***
-## Cor_CA_SA  0.522882  0.030163  0.463763  0.582000 17.3352 < 2.2e-16 ***
+## SC2SP      0.249089  0.038075  0.174462  0.323715  6.5420 6.071e-11 ***
+## CA2SC     -0.274370  0.041121 -0.354965 -0.193775 -6.6723 2.518e-11 ***
+## SA2SC     -0.275133  0.041126 -0.355738 -0.194528 -6.6900 2.231e-11 ***
+## Cor_CA_SA  0.522822  0.029932  0.464157  0.581488 17.4671 < 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Goodness-of-fit indices:
 ##                                               Value
 ## Sample size                                633.0000
-## Chi-square of target model                   2.7143
+## Chi-square of target model                   2.7864
 ## DF of target model                           2.0000
-## p value of target model                      0.2574
+## p value of target model                      0.2483
 ## Number of constraints imposed on "Smatrix"   0.0000
 ## DF manually adjusted                         0.0000
-## Chi-square of independence model           438.4331
+## Chi-square of independence model           445.3699
 ## DF of independence model                     6.0000
-## RMSEA                                        0.0238
+## RMSEA                                        0.0249
 ## RMSEA lower 95% CI                           0.0000
-## RMSEA upper 95% CI                           0.0862
-## SRMR                                         0.0245
-## TLI                                          0.9950
-## CFI                                          0.9983
-## AIC                                         -1.2857
-## BIC                                        -10.1866
+## RMSEA upper 95% CI                           0.0869
+## SRMR                                         0.0248
+## TLI                                          0.9946
+## CFI                                          0.9982
+## AIC                                         -1.2136
+## BIC                                        -10.1145
 ## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
 ## Other values indicate problems.)
 ```
@@ -1154,31 +1152,31 @@ summary(tssem.fixed1)
 ## 
 ## Coefficients:
 ##         Estimate Std.Error  z value  Pr(>|z|)    
-## S[1,2] -0.068497  0.042323  -1.6184 0.1055669    
-## S[1,3] -0.158146  0.041270  -3.8320 0.0001271 ***
-## S[1,4]  0.371528  0.037348   9.9477 < 2.2e-16 ***
-## S[2,3]  0.526242  0.030213  17.4178 < 2.2e-16 ***
-## S[2,4] -0.413506  0.035155 -11.7623 < 2.2e-16 ***
-## S[3,4] -0.416417  0.035026 -11.8889 < 2.2e-16 ***
+## S[1,2] -0.067649  0.041996  -1.6109 0.1072107    
+## S[1,3] -0.157168  0.040966  -3.8365 0.0001248 ***
+## S[1,4]  0.369860  0.037133   9.9605 < 2.2e-16 ***
+## S[2,3]  0.526319  0.029981  17.5551 < 2.2e-16 ***
+## S[2,4] -0.413867  0.034900 -11.8588 < 2.2e-16 ***
+## S[3,4] -0.416681  0.034772 -11.9832 < 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Goodness-of-fit indices:
 ##                                     Value
 ## Sample size                      633.0000
-## Chi-square of target model       208.9383
+## Chi-square of target model       212.2591
 ## DF of target model                46.0000
 ## p value of target model            0.0000
-## Chi-square of independence model 628.7646
+## Chi-square of independence model 638.4062
 ## DF of independence model          52.0000
-## RMSEA                              0.2367
-## RMSEA lower 95% CI                 0.2062
-## RMSEA upper 95% CI                 0.2717
-## SRMR                               0.2049
-## TLI                                0.6806
-## CFI                                0.7175
-## AIC                              116.9383
-## BIC                              -87.7833
+## RMSEA                              0.2391
+## RMSEA lower 95% CI                 0.2086
+## RMSEA upper 95% CI                 0.2741
+## SRMR                               0.2048
+## TLI                                0.6795
+## CFI                                0.7165
+## AIC                              120.2591
+## BIC                              -84.4626
 ## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
 ## Other values may indicate problems.)
 ```
@@ -1189,11 +1187,11 @@ coef(tssem.fixed1)
 ```
 
 ```
-##                 Performance   Cognitive    Somatic Self confidence
-## Performance      1.00000000 -0.06849689 -0.1581465       0.3715276
-## Cognitive       -0.06849689  1.00000000  0.5262420      -0.4135057
-## Somatic         -0.15814648  0.52624203  1.0000000      -0.4164165
-## Self confidence  0.37152756 -0.41350572 -0.4164165       1.0000000
+##                 Performance  Cognitive    Somatic Self confidence
+## Performance       1.0000000 -0.0676493 -0.1571675       0.3698599
+## Cognitive        -0.0676493  1.0000000  0.5263193      -0.4138671
+## Somatic          -0.1571675  0.5263193  1.0000000      -0.4166809
+## Self confidence   0.3698599 -0.4138671 -0.4166809       1.0000000
 ```
 
 ## Stage 2 analysis
@@ -1218,12 +1216,12 @@ summary(tssem.fixed2)
 ## 95% confidence intervals: z statistic approximation
 ## Coefficients:
 ##            Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
-## CA2SP      0.127854  0.049159  0.031504  0.224204  2.6008    0.0093 ** 
-## SA2SP     -0.058920  0.048419 -0.153819  0.035979 -1.2169    0.2236    
-## SC2SP      0.399861  0.042928  0.315723  0.483998  9.3147 < 2.2e-16 ***
-## CA2SC     -0.268812  0.042946 -0.352984 -0.184640 -6.2594 3.866e-10 ***
-## SA2SC     -0.274956  0.042892 -0.359024 -0.190889 -6.4104 1.452e-10 ***
-## Cor_CA_SA  0.526242  0.030213  0.467026  0.585458 17.4178 < 2.2e-16 ***
+## CA2SP      0.128077  0.048824  0.032384  0.223770  2.6232   0.00871 ** 
+## SA2SP     -0.058540  0.048095 -0.152805  0.035725 -1.2172   0.22354    
+## SC2SP      0.398474  0.042687  0.314809  0.482139  9.3348 < 2.2e-16 ***
+## CA2SC     -0.269105  0.042632 -0.352663 -0.185548 -6.3123 2.750e-10 ***
+## SA2SC     -0.275046  0.042578 -0.358497 -0.191595 -6.4598 1.048e-10 ***
+## Cor_CA_SA  0.526319  0.029981  0.467558  0.585081 17.5551 < 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -1235,7 +1233,7 @@ summary(tssem.fixed2)
 ## p value of target model                      0.00
 ## Number of constraints imposed on "Smatrix"   0.00
 ## DF manually adjusted                         0.00
-## Chi-square of independence model           523.29
+## Chi-square of independence model           530.33
 ## DF of independence model                     6.00
 ## RMSEA                                        0.00
 ## RMSEA lower 95% CI                           0.00
@@ -1270,31 +1268,31 @@ summary(tssem.fixed3)
 ## 95% confidence intervals: z statistic approximation
 ## Coefficients:
 ##            Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
-## SC2SP      0.375988  0.037770  0.301960  0.450015  9.9547 < 2.2e-16 ***
-## CA2SC     -0.269461  0.043932 -0.355566 -0.183357 -6.1337 8.588e-10 ***
-## SA2SC     -0.273956  0.043606 -0.359423 -0.188489 -6.2825 3.333e-10 ***
-## Cor_CA_SA  0.532648  0.029947  0.473953  0.591344 17.7863 < 2.2e-16 ***
+## SC2SP      0.374235  0.037557  0.300625  0.447845  9.9645 < 2.2e-16 ***
+## CA2SC     -0.269780  0.043610 -0.355254 -0.184305 -6.1862 6.165e-10 ***
+## SA2SC     -0.274042  0.043279 -0.358869 -0.189216 -6.3319 2.421e-10 ***
+## Cor_CA_SA  0.532670  0.029718  0.474424  0.590916 17.9242 < 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Goodness-of-fit indices:
 ##                                               Value
 ## Sample size                                633.0000
-## Chi-square of target model                   6.7506
+## Chi-square of target model                   6.8666
 ## DF of target model                           2.0000
-## p value of target model                      0.0342
+## p value of target model                      0.0323
 ## Number of constraints imposed on "Smatrix"   0.0000
 ## DF manually adjusted                         0.0000
-## Chi-square of independence model           523.2938
+## Chi-square of independence model           530.3276
 ## DF of independence model                     6.0000
-## RMSEA                                        0.0613
-## RMSEA lower 95% CI                           0.0144
-## RMSEA upper 95% CI                           0.1150
-## SRMR                                         0.0360
-## TLI                                          0.9724
-## CFI                                          0.9908
-## AIC                                          2.7506
-## BIC                                         -6.1503
+## RMSEA                                        0.0620
+## RMSEA lower 95% CI                           0.0155
+## RMSEA upper 95% CI                           0.1156
+## SRMR                                         0.0361
+## TLI                                          0.9722
+## CFI                                          0.9907
+## AIC                                          2.8666
+## BIC                                         -6.0344
 ## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
 ## Other values indicate problems.)
 ```
@@ -1322,39 +1320,39 @@ summary(tssem.random1)
 ## 95% confidence intervals: z statistic approximation
 ## Coefficients:
 ##               Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)    
-## Intercept1 -4.7120e-02  1.0732e-01 -2.5746e-01  1.6322e-01 -0.4391 0.6606058    
-## Intercept2 -1.3802e-01  7.6965e-02 -2.8887e-01  1.2824e-02 -1.7933 0.0729183 .  
-## Intercept3  3.0289e-01  8.1069e-02  1.4399e-01  4.6178e-01  3.7361 0.0001869 ***
-## Intercept4  5.2320e-01  3.4801e-02  4.5499e-01  5.9141e-01 15.0340 < 2.2e-16 ***
-## Intercept5 -4.1522e-01  4.5245e-02 -5.0390e-01 -3.2654e-01 -9.1772 < 2.2e-16 ***
-## Intercept6 -4.1817e-01  4.6401e-02 -5.0911e-01 -3.2722e-01 -9.0120 < 2.2e-16 ***
-## Tau2_1_1    9.1016e-02  4.9745e-02 -6.4828e-03  1.8851e-01  1.8296 0.0673032 .  
-## Tau2_2_2    3.1206e-02  2.2680e-02 -1.3247e-02  7.5658e-02  1.3759 0.1688524    
-## Tau2_3_3    3.3686e-02  2.3062e-02 -1.1515e-02  7.8886e-02  1.4607 0.1441107    
-## Tau2_4_4    1.0130e-10  1.0110e-02 -1.9816e-02  1.9816e-02  0.0000 1.0000000    
-## Tau2_5_5    4.2738e-03  7.6538e-03 -1.0727e-02  1.9275e-02  0.5584 0.5765752    
-## Tau2_6_6    4.8244e-03  7.1235e-03 -9.1375e-03  1.8786e-02  0.6772 0.4982503    
+## Intercept1 -4.6527e-02  1.0737e-01 -2.5696e-01  1.6391e-01 -0.4333 0.6647650    
+## Intercept2 -1.3641e-01  7.7082e-02 -2.8749e-01  1.4670e-02 -1.7697 0.0767852 .  
+## Intercept3  3.0183e-01  8.0776e-02  1.4351e-01  4.6015e-01  3.7366 0.0001865 ***
+## Intercept4  5.2319e-01  3.4074e-02  4.5640e-01  5.8997e-01 15.3544 < 2.2e-16 ***
+## Intercept5 -4.1586e-01  4.5161e-02 -5.0438e-01 -3.2735e-01 -9.2084 < 2.2e-16 ***
+## Intercept6 -4.1860e-01  4.6178e-02 -5.0910e-01 -3.2809e-01 -9.0648 < 2.2e-16 ***
+## Tau2_1_1    9.1852e-02  4.9958e-02 -6.0628e-03  1.8977e-01  1.8386 0.0659732 .  
+## Tau2_2_2    3.1860e-02  2.3009e-02 -1.3236e-02  7.6956e-02  1.3847 0.1661455    
+## Tau2_3_3    3.3772e-02  2.2989e-02 -1.1287e-02  7.8830e-02  1.4690 0.1418297    
+## Tau2_4_4    1.0000e-10  9.3027e-03 -1.8233e-02  1.8233e-02  0.0000 1.0000000    
+## Tau2_5_5    4.3802e-03  7.5349e-03 -1.0388e-02  1.9148e-02  0.5813 0.5610297    
+## Tau2_6_6    4.8565e-03  6.9905e-03 -8.8445e-03  1.8558e-02  0.6947 0.4872188    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Q statistic on the homogeneity of effect sizes: 155.9271
+## Q statistic on the homogeneity of effect sizes: 158.9473
 ## Degrees of freedom of the Q statistic: 46
-## P value of the Q statistic: 7.127632e-14
+## P value of the Q statistic: 2.38698e-14
 ## 
 ## Heterogeneity indices (based on the estimated Tau2):
 ##                              Estimate
-## Intercept1: I2 (Q statistic)   0.8432
-## Intercept2: I2 (Q statistic)   0.6496
-## Intercept3: I2 (Q statistic)   0.6845
+## Intercept1: I2 (Q statistic)   0.8467
+## Intercept2: I2 (Q statistic)   0.6583
+## Intercept3: I2 (Q statistic)   0.6889
 ## Intercept4: I2 (Q statistic)   0.0000
-## Intercept5: I2 (Q statistic)   0.2478
-## Intercept6: I2 (Q statistic)   0.2701
+## Intercept5: I2 (Q statistic)   0.2557
+## Intercept6: I2 (Q statistic)   0.2749
 ## 
 ## Number of studies (or clusters): 10
 ## Number of observed statistics: 52
 ## Number of estimated parameters: 12
 ## Degrees of freedom: 40
-## -2 log likelihood: -30.58644 
+## -2 log likelihood: -30.64656 
 ## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
 ## Other values may indicate problems.)
 ```
@@ -1365,11 +1363,11 @@ vec2symMat( coef(tssem.random1, select="fixed"), diag = FALSE)
 ```
 
 ```
-##             [,1]        [,2]       [,3]       [,4]
-## [1,]  1.00000000 -0.04711999 -0.1380243  0.3028857
-## [2,] -0.04711999  1.00000000  0.5232031 -0.4152227
-## [3,] -0.13802427  0.52320312  1.0000000 -0.4181686
-## [4,]  0.30288572 -0.41522272 -0.4181686  1.0000000
+##            [,1]       [,2]       [,3]       [,4]
+## [1,]  1.0000000 -0.0465269 -0.1364086  0.3018273
+## [2,] -0.0465269  1.0000000  0.5231885 -0.4158644
+## [3,] -0.1364086  0.5231885  1.0000000 -0.4185966
+## [4,]  0.3018273 -0.4158644 -0.4185966  1.0000000
 ```
 
 ## Stage 2 analysis
@@ -1393,12 +1391,12 @@ summary(tssem.random2)
 ## 95% confidence intervals: z statistic approximation
 ## Coefficients:
 ##            Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
-## CA2SP      0.122828  0.161543 -0.193791  0.439447  0.7603  0.447052    
-## SA2SP     -0.065812  0.126956 -0.314642  0.183017 -0.5184  0.604190    
-## SC2SP      0.326366  0.110877  0.109050  0.543682  2.9435  0.003245 ** 
-## CA2SC     -0.270476  0.061655 -0.391317 -0.149635 -4.3870 1.149e-05 ***
-## SA2SC     -0.276655  0.063012 -0.400157 -0.153153 -4.3905 1.131e-05 ***
-## Cor_CA_SA  0.523203  0.034801  0.454994  0.591413 15.0340 < 2.2e-16 ***
+## CA2SP      0.122559  0.161794 -0.194552  0.439669  0.7575  0.448751    
+## SA2SP     -0.064079  0.127255 -0.313494  0.185335 -0.5036  0.614577    
+## SC2SP      0.325972  0.110738  0.108929  0.543015  2.9436  0.003244 ** 
+## CA2SC     -0.271054  0.061589 -0.391767 -0.150341 -4.4010 1.078e-05 ***
+## SA2SC     -0.276784  0.062773 -0.399817 -0.153751 -4.4093 1.037e-05 ***
+## Cor_CA_SA  0.523189  0.034074  0.456404  0.589973 15.3544 < 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -1410,7 +1408,7 @@ summary(tssem.random2)
 ## p value of target model                      0.00
 ## Number of constraints imposed on "Smatrix"   0.00
 ## DF manually adjusted                         0.00
-## Chi-square of independence model           301.36
+## Chi-square of independence model           310.24
 ## DF of independence model                     6.00
 ## RMSEA                                        0.00
 ## RMSEA lower 95% CI                           0.00
@@ -1444,31 +1442,31 @@ summary(tssem.random3)
 ## 95% confidence intervals: z statistic approximation
 ## Coefficients:
 ##            Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
-## SC2SP      0.295664  0.075498  0.147690  0.443638  3.9162 8.997e-05 ***
-## CA2SC     -0.267194  0.061516 -0.387763 -0.146625 -4.3435 1.402e-05 ***
-## SA2SC     -0.279055  0.062755 -0.402054 -0.156057 -4.4467 8.720e-06 ***
-## Cor_CA_SA  0.523265  0.034788  0.455082  0.591448 15.0416 < 2.2e-16 ***
+## SC2SP      0.294159  0.075215  0.146740  0.441578  3.9109 9.196e-05 ***
+## CA2SC     -0.267828  0.061450 -0.388267 -0.147389 -4.3585 1.310e-05 ***
+## SA2SC     -0.279081  0.062520 -0.401617 -0.156544 -4.4639 8.050e-06 ***
+## Cor_CA_SA  0.523233  0.034061  0.456474  0.589992 15.3615 < 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Goodness-of-fit indices:
 ##                                               Value
 ## Sample size                                633.0000
-## Chi-square of target model                   0.5825
+## Chi-square of target model                   0.5772
 ## DF of target model                           2.0000
-## p value of target model                      0.7473
+## p value of target model                      0.7493
 ## Number of constraints imposed on "Smatrix"   0.0000
 ## DF manually adjusted                         0.0000
-## Chi-square of independence model           301.3627
+## Chi-square of independence model           310.2362
 ## DF of independence model                     6.0000
 ## RMSEA                                        0.0000
 ## RMSEA lower 95% CI                           0.0000
-## RMSEA upper 95% CI                           0.0544
+## RMSEA upper 95% CI                           0.0542
 ## SRMR                                         0.0313
-## TLI                                          1.0144
+## TLI                                          1.0140
 ## CFI                                          1.0000
-## AIC                                         -3.4175
-## BIC                                        -12.3184
+## AIC                                         -3.4228
+## BIC                                        -12.3237
 ## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
 ## Other values indicate problems.)
 ```
@@ -1496,6 +1494,8 @@ para <- data.frame(gls.fixed=gls.fixed.est, tssem.fixed=tssem.fixed.est,
 
 se <- data.frame(gls.fixed=gls.fixed.se, tssem.fixed=tssem.fixed.se, 
                  gls.random=gls.random.se, tssem.random=tssem.random.se)
+## Arrange rows according to para
+se <- se[row.names(para), ]
 
 knitr::kable(para, digits=4, caption="Parameter estimates of various methods (model with direct effects)")
 ```
@@ -1506,12 +1506,12 @@ Table: Parameter estimates of various methods (model with direct effects)
 
              gls.fixed   tssem.fixed   gls.random   tssem.random
 ----------  ----------  ------------  -----------  -------------
-CA2SP           0.0835        0.1279       0.0747         0.1228
-CA2SC          -0.2783       -0.2688      -0.2727        -0.2705
-SA2SP          -0.0328       -0.0589      -0.0146        -0.0658
-SA2SC          -0.2635       -0.2750      -0.2750        -0.2767
-SC2SP           0.3386        0.3999       0.2721         0.3264
-Cor_CA_SA       0.5237        0.5262       0.5232         0.5232
+CA2SP           0.0834        0.1281       0.0748         0.1226
+CA2SC          -0.2786       -0.2691      -0.2734        -0.2711
+SA2SP          -0.0322       -0.0585      -0.0134        -0.0641
+SA2SC          -0.2636       -0.2750      -0.2751        -0.2768
+SC2SP           0.3371        0.3985       0.2719         0.3260
+Cor_CA_SA       0.5237        0.5263       0.5232         0.5232
 
 ```r
 knitr::kable(se, digits=4, caption="Standard errors of various methods (model with direct effects)")
@@ -1523,12 +1523,12 @@ Table: Standard errors of various methods (model with direct effects)
 
              gls.fixed   tssem.fixed   gls.random   tssem.random
 ----------  ----------  ------------  -----------  -------------
-CA2SP           0.0474        0.0492       0.1727         0.1615
-SA2SP           0.0471        0.0484       0.1401         0.1270
-SC2SP           0.0426        0.0429       0.1191         0.1109
-CA2SC           0.0414        0.0429       0.0630         0.0617
-SA2SC           0.0414        0.0429       0.0604         0.0630
-Cor_CA_SA       0.0302        0.0302       0.0302         0.0348
+CA2SP           0.0471        0.0488       0.1724         0.1618
+CA2SC           0.0411        0.0426       0.0626         0.0616
+SA2SP           0.0467        0.0481       0.1397         0.1273
+SA2SC           0.0411        0.0426       0.0601         0.0628
+SC2SP           0.0423        0.0427       0.1189         0.1107
+Cor_CA_SA       0.0300        0.0300       0.0300         0.0341
 
 * We combined the results for the ease of comparisions for the model without direct effect.
 
@@ -1550,6 +1550,8 @@ para <- data.frame(gls.fixed=gls.fixed.est, tssem.fixed=tssem.fixed.est,
 
 se <- data.frame(gls.fixed=gls.fixed.se, tssem.fixed=tssem.fixed.se, 
                  gls.random=gls.random.se, tssem.random=tssem.random.se)
+## Arrange rows according to para
+se <- se[row.names(para), ]
 
 knitr::kable(para, digits=4, caption="Parameter estimates of various methods (model without direct effects)")
 ```
@@ -1560,10 +1562,10 @@ Table: Parameter estimates of various methods (model without direct effects)
 
              gls.fixed   tssem.fixed   gls.random   tssem.random
 ----------  ----------  ------------  -----------  -------------
-CA2SC          -0.2743       -0.2695      -0.2737        -0.2672
-SA2SC          -0.2660       -0.2740      -0.2750        -0.2791
-SC2SP           0.3201        0.3760       0.2499         0.2957
-Cor_CA_SA       0.5233        0.5326       0.5229         0.5233
+CA2SC          -0.2747       -0.2698      -0.2744        -0.2678
+SA2SC          -0.2660       -0.2740      -0.2751        -0.2791
+SC2SP           0.3184        0.3742       0.2491         0.2942
+Cor_CA_SA       0.5233        0.5327       0.5228         0.5232
 
 ```r
 knitr::kable(se, digits=4, caption="Standard errors of various methods (model without direct effects)")
@@ -1575,10 +1577,10 @@ Table: Standard errors of various methods (model without direct effects)
 
              gls.fixed   tssem.fixed   gls.random   tssem.random
 ----------  ----------  ------------  -----------  -------------
-SC2SP           0.0384        0.0378       0.0384         0.0755
-CA2SC           0.0414        0.0439       0.0414         0.0615
-SA2SC           0.0414        0.0436       0.0414         0.0628
-Cor_CA_SA       0.0301        0.0299       0.0302         0.0348
+CA2SC           0.0411        0.0436       0.0411         0.0614
+SA2SC           0.0411        0.0433       0.0411         0.0625
+SC2SP           0.0381        0.0376       0.0381         0.0752
+Cor_CA_SA       0.0299        0.0297       0.0299         0.0341
 
 ## Figures
 * We plotted the output of the model with the direct effects based on the TSSEM approach.
@@ -1598,7 +1600,7 @@ semPaths(my.plot1, whatLabels="est", nCharNodes=10, edge.label.cex=1.2,
          layout="spring", color="green")
 ```
 
-![](special_issue_intro_files/figure-html/unnamed-chunk-20-1.png)
+![](special_issue_intro_files/figure-html/unnamed-chunk-19-1.png)
 
 * We may plot the output of the model without the direct effects based on the TSSEM approach.
 
@@ -1610,7 +1612,7 @@ my.plot2 <- meta2semPlot(tssem.random3, manNames=c("SP", "CA", "SA", "SC"))
 semPaths(my.plot2, whatLabels="est", nCharNodes=10, edge.label.cex=1.2, color="yellow")
 ```
 
-![](special_issue_intro_files/figure-html/unnamed-chunk-21-1.png)
+![](special_issue_intro_files/figure-html/unnamed-chunk-20-1.png)
 
 ```r
 ## R settings for the analyses
@@ -1619,41 +1621,41 @@ sessionInfo()
 
 ```
 ## R version 3.2.3 (2015-12-10)
-## Platform: i686-redhat-linux-gnu (32-bit)
-## Running under: Fedora 23 (Workstation Edition)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 14.04.3 LTS
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8       
-##  [4] LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
-##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
-## [10] LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+##  [1] LC_CTYPE=en_SG.UTF-8       LC_NUMERIC=C               LC_TIME=en_SG.UTF-8       
+##  [4] LC_COLLATE=en_SG.UTF-8     LC_MONETARY=en_SG.UTF-8    LC_MESSAGES=en_SG.UTF-8   
+##  [7] LC_PAPER=en_SG.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
+## [10] LC_TELEPHONE=C             LC_MEASUREMENT=en_SG.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
 ## [1] parallel  stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] semPlot_1.0.1   metaSEM_0.9.7-1 OpenMx_2.3.1    MASS_7.3-45     digest_0.6.9   
+## [1] semPlot_1.0.1   metaSEM_0.9.7-2 OpenMx_2.5.2    Rcpp_0.12.3     Matrix_1.2-4    MASS_7.3-45    
+## [7] digest_0.6.9    rmarkdown_0.9.5
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.3         Formula_1.2-1       whisker_0.3-2       lisrelToR_0.1.4    
-##  [5] knitr_1.12.3        magrittr_1.5        cluster_2.0.3       splines_3.2.3      
-##  [9] mnormt_1.5-3        huge_1.2.7          ellipse_0.3-8       colorspace_1.2-6   
-## [13] lattice_0.20-33     quadprog_1.5-5      jpeg_0.1-8          qgraph_1.3.2       
-## [17] mi_1.0              d3Network_0.5.2.1   tcltk_3.2.3         visNetwork_0.2.1   
-## [21] latticeExtra_0.6-28 coda_0.18-1         sna_2.3-2           DiagrammeR_0.8.2   
-## [25] corpcor_1.6.8       gtools_3.5.0        MatrixModels_0.4-1  htmltools_0.3      
-## [29] lme4_1.1-10         abind_1.4-3         Matrix_1.2-3        rockchalk_1.8.98   
-## [33] acepack_1.3-3.3     rmarkdown_0.9.2     scales_0.3.0        Hmisc_3.17-1       
-## [37] boot_1.3-17         stats4_3.2.3        jsonlite_0.9.19     igraph_1.0.1       
-## [41] rstudioapi_0.5      munsell_0.4.2       fdrtool_1.2.15      ggm_2.3            
-## [45] pbivnorm_0.6.0      arm_1.8-6           sem_3.1-6           rjson_0.2.15       
-## [49] minqa_1.2.4         highr_0.5.1         plyr_1.8.3          stringr_1.0.0      
-## [53] car_2.1-1           matrixcalc_1.0-3    tools_3.2.3         grid_3.2.3         
-## [57] nnet_7.3-12         pbkrtest_0.4-6      nlme_3.1-124        gtable_0.1.2       
-## [61] mgcv_1.8-11         quantreg_5.19       png_0.1-7           psych_1.5.8        
-## [65] yaml_2.1.13         survival_2.38-3     lavaan_0.5-20       gridExtra_2.0.0    
-## [69] formatR_1.2.1       ggplot2_2.0.0       nloptr_1.0.4        reshape2_1.4.1     
-## [73] RColorBrewer_1.1-2  htmlwidgets_0.5     rpart_4.1-10        evaluate_0.8       
-## [77] stringi_1.0-1       XML_3.98-1.3        SparseM_1.7         foreign_0.8-66     
-## [81] glasso_1.8
+##  [1] jsonlite_0.9.19     splines_3.2.3       ellipse_0.3-8       gtools_3.5.0       
+##  [5] Formula_1.2-1       highr_0.5.1         stats4_3.2.3        latticeExtra_0.6-28
+##  [9] d3Network_0.5.2.1   yaml_2.1.13         lisrelToR_0.1.4     pbivnorm_0.6.0     
+## [13] lattice_0.20-33     quantreg_5.21       quadprog_1.5-5      RColorBrewer_1.1-2 
+## [17] ggm_2.3             minqa_1.2.4         colorspace_1.2-6    htmltools_0.3      
+## [21] plyr_1.8.3          psych_1.5.8         XML_3.98-1.4        SparseM_1.7        
+## [25] DiagrammeR_0.8.2    corpcor_1.6.8       scales_0.4.0        whisker_0.3-2      
+## [29] glasso_1.8          sna_2.3-2           jpeg_0.1-8          fdrtool_1.2.15     
+## [33] lme4_1.1-11         MatrixModels_0.4-1  huge_1.2.7          arm_1.8-6          
+## [37] rockchalk_1.8.101   mgcv_1.8-12         car_2.1-1           ggplot2_2.1.0      
+## [41] nnet_7.3-12         pbkrtest_0.4-6      mnormt_1.5-4        survival_2.38-3    
+## [45] magrittr_1.5        evaluate_0.8.3      nlme_3.1-125        foreign_0.8-66     
+## [49] tools_3.2.3         formatR_1.3         stringr_1.0.0       munsell_0.4.3      
+## [53] cluster_2.0.3       sem_3.1-6           grid_3.2.3          nloptr_1.0.4       
+## [57] rstudioapi_0.5      rjson_0.2.15        htmlwidgets_0.6     visNetwork_0.2.1   
+## [61] igraph_1.0.1        lavaan_0.5-20       tcltk_3.2.3         boot_1.3-18        
+## [65] mi_1.0              gtable_0.2.0        abind_1.4-3         reshape2_1.4.1     
+## [69] qgraph_1.3.2        gridExtra_2.2.1     knitr_1.12.3        Hmisc_3.17-2       
+## [73] stringi_1.0-1       matrixcalc_1.0-3    rpart_4.1-10        acepack_1.3-3.3    
+## [77] png_0.1-7           coda_0.18-1
 ```
