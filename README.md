@@ -8,8 +8,6 @@
 
 [Cheung, M. W.-L., & Cheung, S.-F. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung and Cheung 2016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*. Manuscript accepted for publication.
 
-[Cheung, M. W.-L., & Hafdahl, A. R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung and Hafdahl 2016). Special issue on meta-analytic structural equation modeling: Introduction from the Guest Editors. *Manuscript in preparation*.
+[Cheung, M. W.-L., & Hafdahl, A. R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung and Hafdahl 2016). Special issue on meta-analytic structural equation modeling: Introduction from the Guest Editors. *Research Synthesis Methods*. Manuscript accepted for publication.
 
-[Cheung, M. W.-L., & Vijayakumar, R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung and Vijayakumar 2016). An introduction to when and how to conduct a meta-analysis. *Manuscript in preparation*.
-
-
+[Cheung, M. W.-L., & Vijayakumar, R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung and Vijayakumar 2016). An introduction to when and how to conduct a meta-analysis. *Neuropsychology Review*. Manuscript accepted for publication.

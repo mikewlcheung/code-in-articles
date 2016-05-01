@@ -1,13 +1,13 @@
 # A Guide to Conducting a Meta-Analysis
 Mike W.-L. Cheung and Ranjith Vijayakumar  
-29 Feb 2016  
+1 May 2016  
 
 
 
 
 # Introduction
 * This page is a supporting document to Cheung and Vijayakumar (2016). It provides a quick introduction on how to conduct meta-analysis in various software packages. Since different default estimators are used in different packages, the results may be slightly different.
-* Cheung, M. W.-L., & Vijayakumar, R. (2016). *A guide to conducting a meta-analysis*. Manuscript in preparation. 
+* Cheung, M. W.-L., & Vijayakumar, R. (2016). A guide to conducting a meta-analysis. *Neuropsychology Review*. Manuscript accepted for publication. 
 
 # Descriptive statistics of the data
 * The sample data sets are available as [CSV](./stata/data.csv) and [plain text](./mplus/data.dat) formats.
@@ -15,11 +15,11 @@ Mike W.-L. Cheung and Ranjith Vijayakumar
 * Sampling variance (`v`): Sampling variance of `y`.
 * Moderator (`x`): Mean age of the participants.
 
-![](conduct_a_meta_analysis_files/figure-html/unnamed-chunk-2-1.png) 
+![](conduct_a_meta_analysis_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 
 * IV (x): Mean age of participants
 
-![](conduct_a_meta_analysis_files/figure-html/unnamed-chunk-3-1.png) 
+![](conduct_a_meta_analysis_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 
 # R
