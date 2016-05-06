@@ -1,0 +1,139 @@
+---
+title: "Comparisons of random split with with the World Values Survey data"
+author: "Mike Cheung and Suzanne Jak"
+date: "1 Apr 2016"
+output:
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document: default
+---
+
+
+# Multiple regression: Fixed-effects model
+* We randomly split the data into *k*=1 (raw data) to *k*=1000 *studies*.
+* We regress *satisfaction with your life* (A170) on *subjective state of health* (A009), *freedom of choice and control* (A173), *satisfaction with financial situation of household* (C006), *sex* (X001), and *age* (X003) in each *study*.
+* The following figure displays the regression model.
+
+```{r, echo=FALSE, message=FALSE}
+library("semPlot")
+library("lavaan")
+set.seed(1000)
+my.df <- data.frame(A170=rnorm(100), A009=rnorm(100), A173=rnorm(100),
+                    C006=rnorm(100), X001=rnorm(100), X003=rnorm(100))
+my.model <- "A170~y1*A009+y2*A173+y3*C006+y4*X001+y5*X003"
+my.fit <- sem(my.model, data=my.df)
+semPaths(my.fit, what="mod", nCharNodes=5, edge.label.cex=1.3, col="yellow")  
+```
+
+* The estimated regression coefficients with their estimated sampling covariance matrices are treated as multiple effect sizes for a multivariate fixed-effects meta-analysis.
+* The variables used in this demonstration are:
+    + *State of health (subjective)* (A009): 1 (Very good); 4 (Very poor) (it is reversed before the analyses)
+    + *Satisfaction with your life* (A170): 1 (Dissatisfied); 10 (Satisfied)
+    + *How much freedom of choice and control* (A173): 1 (None at all); 10 (A great deal)
+    + *Satisfaction with financial situation of household* (C006): 1 (None at all); 10 (A great deal)
+    + *Sex* (X001): 1 (Male); 2 (Female)
+    + *Age* (X003)
+    + Negative values in the original dataset represent missing values. They are recoded into missing values (NA) before the analysis.
+```{r, message=FALSE, cache=FALSE}
+## Load the libraries
+library("data.table")
+library("lavaan")
+library("metaSEM")
+
+## Load the data
+load("WVS.Rdata")
+  
+## Select the relevant variables to minimize the memory usage
+WVS <- WVS[, list(A009, A170, A173, C006, X001, X003, S002, S003)]
+
+## Reverse coding for A009
+## Recode all negative values as NA
+## Age (X003) is divided by 10 to improve numerical stability.
+WVS[, `:=`(A009 = 5-ifelse(A009 < 0, yes=NA, no=A009),
+           A170 =   ifelse(A170 < 0, yes=NA, no=A170),
+           A173 =   ifelse(A173 < 0, yes=NA, no=A173),
+           C006 =   ifelse(C006 < 0, yes=NA, no=C006),
+           X001 =   ifelse(X001 < 0, yes=NA, no=X001),
+           X003 =   ifelse(X003 < 0, yes=NA, no=X003/10))]
+  
+## x: no. of studies
+random_split <- function(x) {
+  ## Make a copy of WVS
+  my.df <- copy(WVS)
+
+  ## Randomly split the data into 100 studies
+  Study <- sample(1:nrow(my.df)) %% x + 1
+
+  ## Append "Study" into the dataset
+  my.df[, Study:=Study]
+
+  ## Set "Study" as the key for grouping
+  setkeyv(my.df, "Study")
+
+## Function to fit regression analysis
+## y1 to y5: Regression coefficients from A170, A009, A173, C006, X001, and X003.
+## v11 to v55: Sampling covariance matrix of the parameter estimates
+  fun.reg <- function(dt) { fit <- try(lm(A170~A009+A173+C006+X001+X003, data=dt), silent=TRUE)
+
+                            ## If there are errors during the analysis, it returns missing values.
+                            if (is.element("try-error", class(fit))) {
+                              list(y1=NaN,y2=NaN,y3=NaN,y4=NaN,y5=NaN,
+                                   v11=NaN,v21=NaN,v31=NaN,v41=NaN,v51=NaN,
+                                   v22=NaN,v32=NaN,v42=NaN,v52=NaN,v33=NaN,
+                                   v43=NaN,v53=NaN,v44=NaN,v54=NaN,v55=NaN)
+                            } else {
+                              ## Extract the regression coefficients excluding the intercept
+                              y <- coef(fit)
+                              ## Extract the sampling covariance matrix excluding the intercept
+                              v <- lav_matrix_vech(vcov(fit)[-1,-1])
+                              list(y1=y[2],y2=y[3],y3=y[4],y4=y[5],y5=y[6],
+                                   v11=v[1],v21=v[2],v31=v[3],v41=v[4],v51=v[5],
+                                   v22=v[6],v32=v[7],v42=v[8],v52=v[9],v33=v[10],
+                                   v43=v[11],v53=v[12],v44=v[13],v54=v[14],v55=v[15])
+                              }
+                            }
+
+  ########## Split data by "Study" and analyze data with the fun.reg() function on each "Study"
+  FEM1.reg <- my.df[, fun.reg(.SD), by=list(Study)]
+
+  ########## Meta-analyze results with a multivariate fixed-effects meta-analysis:
+  ########## Variance component is fixed at 0: RE.constraints=matrix(0, ncol=5, nrow=5)
+  FEM2.reg <- meta(y=cbind(y1,y2,y3,y4,y5),
+                   v=cbind(v11,v21,v31,v41,v51,v22,v32,v42,v52,v33,v43,v53,v44,v54,v55),
+                   data=FEM1.reg, RE.constraints=matrix(0, ncol=5, nrow=5),
+                   model.name="Regression analysis FEM")
+  FEM2.reg
+}
+
+## Set seed for replicability
+set.seed (871139100)
+my.reg <- lapply(list(5,10,50,100,500,1000), random_split)
+
+my.coeff <- sapply(my.reg, coef)
+my.se <- sapply(my.reg, function(x) sqrt(diag(vcov(x))))
+
+## Analysis of raw data (k=1)
+my.lm <- lm(A170~A009+A173+C006+X001+X003, data=WVS)
+
+my.coef <- cbind( coef(my.lm)[-1], my.coeff )
+colnames(my.coef) <- paste0("k=",c(1,5,10,50,100,500,1000))
+
+my.se <- cbind( sqrt(diag(vcov(my.lm)))[-1], my.se )
+colnames(my.se) <- paste0("k=",c(1,5,10,50,100,500,1000))
+
+write.csv(round(my.coef,4), file="coefficients.csv")
+write.csv(round(my.se,4), file="SEs.csv")
+
+knitr::kable(my.coef, digits=4, caption="Regression coefficients")
+knitr::kable(my.se, digits=4, caption="Standard errors")
+```
+
+# Settings of the R system
+```{r}
+sessionInfo()
+```

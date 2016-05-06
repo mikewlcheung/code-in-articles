@@ -1,0 +1,515 @@
+---
+title: "Illustrations with the World Values Survey data in R"
+author: "Mike Cheung and Suzanne Jak"
+date: "31 Mar 2016"
+output:
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document: default
+---
+
+# Data preparation
+* Before running the analyses, we need to install some R packages and download the data. The analyses should run fine in computer systems with at least 8GB RAM.
+
+## Installing the R packages
+* R can be downloaded at http://www.r-project.org/.
+* We only need to install the following packages once.
+```{r, eval=FALSE}
+## Installing the R packages from the CRAN
+install.packages(c("data.table", "lavaan", "semPlot", "metaSEM"))
+```
+
+## Preparing the dataset
+* The dataset is available at http://www.worldvaluessurvey.org/WVSDocumentationWVL.jsp. Users are required to register before downloading the data.
+* In this illustration, we use the dataset in the R format (WVS_Longitudinal_1981-2014_rdata_v_2015_04_18.zip).
+* The dataset contains data from 343,309 participants on 1,377 variables spanning across 100 regions and 6 waves (1981-1984, 1990-1994, 1995-1998, 1999-2004, 2005-2009, and 2010-2014).
+* The sizes of the data in harddisk and in RAM are 1,389 MB and 1,821 MB, respectively.
+* The latest version of the data may be slightly different from that used in this illustration.
+* The following R code is used to read and clean up the data. The final data set is named `WVS.Rdata` for ease of manipulations.
+```{r, eval=FALSE}
+## Library for efficiently handling large data
+library("data.table")
+
+## Unzip the downloaded file
+unzip("WVS_Longitudinal_1981-2014_rdata_v_2015_04_18.zip")
+
+## Load the data into R
+load("WVS_Longitudinal_1981_2014_R_v2015_04_18.rdata")
+
+## Display the size of the dataset
+print(object.size(x=lapply(ls(), get)), units="Mb")
+
+## 1895.3 Mb
+
+## Rename the object for ease of data analyses
+WVS <- `WVS_Longitudinal_1981_2014_R_v2015_04_18`
+
+## Remove the old one to clean up memory
+rm("WVS_Longitudinal_1981_2014_R_v2015_04_18")
+
+## Convert it into data.table for more efficient data analyses
+WVS <- data.table(WVS)
+
+## Save the data so that we do not need to read it from raw data each time
+save(WVS, file="WVS.Rdata")
+```
+
+# Multiple regression: Fixed-effects model
+* We randomly split the data into *k*=100 *studies*.
+* We regress *satisfaction with your life* (A170) on *subjective state of health* (A009), *freedom of choice and control* (A173), *satisfaction with financial situation of household* (C006), *sex* (X001), and *age* (X003) in each *study*.
+* The following figure displays the regression model.
+
+```{r, echo=FALSE, message=FALSE}
+library("semPlot")
+library("lavaan")
+set.seed(1000)
+my.df <- data.frame(A170=rnorm(100), A009=rnorm(100), A173=rnorm(100),
+                    C006=rnorm(100), X001=rnorm(100), X003=rnorm(100))
+my.model <- "A170~y1*A009+y2*A173+y3*C006+y4*X001+y5*X003"
+my.fit <- sem(my.model, data=my.df)
+semPaths(my.fit, what="mod", nCharNodes=5, edge.label.cex=1.3, col="yellow")  
+```
+
+* The estimated regression coefficients with their estimated sampling covariance matrices are treated as multiple effect sizes for a multivariate fixed-effects meta-analysis.
+* The variables used in this demonstration are:
+    + *State of health (subjective)* (A009): 1 (Very good); 4 (Very poor) (it is reversed before the analyses)
+    + *Satisfaction with your life* (A170): 1 (Dissatisfied); 10 (Satisfied)
+    + *How much freedom of choice and control* (A173): 1 (None at all); 10 (A great deal)
+    + *Satisfaction with financial situation of household* (C006): 1 (None at all); 10 (A great deal)
+    + *Sex* (X001): 1 (Male); 2 (Female)
+    + *Age* (X003)
+    + Negative values in the original dataset represent missing values. They are recoded into missing values (NA) before the analysis.
+```{r, message=FALSE, cache=FALSE}
+## Load the libraries
+library("data.table")
+library("lavaan")
+library("metaSEM")
+
+## library("OpenMx", lib.loc="~/local/Rlib_github")
+## library("metaSEM", lib.loc="~/local/Rlib_github")
+
+## Load the data
+load("WVS.Rdata")
+
+## Select the relevant variables to minimize the memory usage
+WVS <- WVS[, list(A009, A170, A173, C006, X001, X003, S002, S003)]
+
+## Reverse coding for A009
+## Recode all negative values as NA
+## Age (X003) is divided by 10 to improve numerical stability.
+WVS[, `:=`(A009 = 5-ifelse(A009 < 0, yes=NA, no=A009),
+           A170 =   ifelse(A170 < 0, yes=NA, no=A170),
+           A173 =   ifelse(A173 < 0, yes=NA, no=A173),
+           C006 =   ifelse(C006 < 0, yes=NA, no=C006),
+           X001 =   ifelse(X001 < 0, yes=NA, no=X001),
+           X003 =   ifelse(X003 < 0, yes=NA, no=X003/10))]
+
+## No. of studies
+k <- 100
+
+## Set seed for replicability
+set.seed (871139100)
+
+## Randomly split the data into 100 studies
+Study <- sample(1:nrow(WVS)) %% k + 1
+
+## Show the sample sizes in the studies
+table(Study)
+
+## Append "Study" into the dataset
+WVS[, Study:=Study]
+
+## Set "Study" as the key for grouping
+setkeyv(WVS, "Study")
+
+## Function to fit regression analysis
+## y1 to y5: Regression coefficients from A170, A009, A173, C006, X001, and X003.
+## v11 to v55: Sampling covariance matrix of the parameter estimates
+fun.reg <- function(dt) { fit <- try(lm(A170~A009+A173+C006+X001+X003, data=dt), silent=TRUE)
+
+                          ## If there are errors during the analysis, it returns missing values.
+                          if (is.element("try-error", class(fit))) {
+                            list(y1=NaN,y2=NaN,y3=NaN,y4=NaN,y5=NaN,
+                                 v11=NaN,v21=NaN,v31=NaN,v41=NaN,v51=NaN,
+                                 v22=NaN,v32=NaN,v42=NaN,v52=NaN,v33=NaN,
+                                 v43=NaN,v53=NaN,v44=NaN,v54=NaN,v55=NaN)
+                          } else {
+                            ## Extract the regression coefficients excluding the intercept
+                            y <- coef(fit)
+                            ## Extract the sampling covariance matrix excluding the intercept
+                            v <- lav_matrix_vech(vcov(fit)[-1,-1])
+                            list(y1=y[2],y2=y[3],y3=y[4],y4=y[5],y5=y[6],
+                                 v11=v[1],v21=v[2],v31=v[3],v41=v[4],v51=v[5],
+                                 v22=v[6],v32=v[7],v42=v[8],v52=v[9],v33=v[10],
+                                 v43=v[11],v53=v[12],v44=v[13],v54=v[14],v55=v[15])
+                            }
+                          }
+
+########## Split data by "Study" and analyze data with the fun.reg() function on each "Study"
+FEM1.reg <- WVS[, fun.reg(.SD), by=list(Study)]
+
+## Show part of the results
+head(FEM1.reg)
+
+########## Meta-analyze results with a multivariate fixed-effects meta-analysis:
+########## Variance component is fixed at 0: RE.constraints=matrix(0, ncol=5, nrow=5)
+FEM2.reg <- meta(y=cbind(y1,y2,y3,y4,y5),
+                 v=cbind(v11,v21,v31,v41,v51,v22,v32,v42,v52,v33,v43,v53,v44,v54,v55),
+                 data=FEM1.reg, RE.constraints=matrix(0, ncol=5, nrow=5),
+                 model.name="Regression analysis FEM")
+summary(FEM2.reg)
+```
+
+* As a comparison we also test the regression analysis on all data (*N*=343,309).
+```{r, cache=FALSE}
+summary( lm(A170~A009+A173+C006+X001+X003, data=WVS) )
+```
+
+# Multiple regression and mediation analysis: Random-effects models
+* The data are grouped according to `Wave` and `Country`.
+* Random-effects models are used to account for the differences in `Wave` and `Country` and mixed-effects models are also fitted by using `Wave` as a moderator.
+```{r, cache=FALSE}
+## Clear all objects in the work space
+rm(list=ls())
+
+## Load the data
+load("WVS.Rdata")
+
+## Sample sizes of S002 (Wave) and S003 (Country)
+## Please refer to http://www.worldvaluessurvey.org/WVSDocumentationWVL.jsp
+## for the country names.
+table(WVS[, c("S002","S003"), with=FALSE])
+
+## Select the relevant variables to minimize memory usage
+WVS <- WVS[, list(A009, A170, A173, C006, X001, X003, S002, S003)]
+
+## Set Wave and Country as key variables for fast reference
+## S002: Wave (1 to 6)
+## S003: Country
+setkeyv(WVS, c("S002", "S003"))
+
+## Reverse coding for A009
+## Recode all negative values as NA
+## Age (X003) is divided by 10 to improve numerical stability.
+WVS[, `:=`(A009 = 5-ifelse(A009 < 0, yes=NA, no=A009),
+           A170 =   ifelse(A170 < 0, yes=NA, no=A170),
+           A173 =   ifelse(A173 < 0, yes=NA, no=A173),
+           C006 =   ifelse(C006 < 0, yes=NA, no=C006),
+           X001 =   ifelse(X001 < 0, yes=NA, no=X001),
+           X003 =   ifelse(X003 < 0, yes=NA, no=X003/10))]
+```
+
+## Multiple regression
+* We conduct the same regression analysis in each `Wave` and `Country`.
+* `Wave` is used as a moderator in predicting the estimated regression coefficients (effect sizes).
+```{r, cache=FALSE}
+## Function to fit regression model
+## y1 to y5: Regression coefficients from A170, A009, A173, C006, X001, and X003.
+## v11 to v55: Sampling covariance matrix of the parameter estimates
+fun.reg <- function(dt) { fit <- try(lm(A170~A009+A173+C006+X001+X003, data=dt), silent=TRUE)
+
+                          ## If there are errors during the analysis, it returns missing values.
+                          if (is.element("try-error", class(fit))) {
+                            list(y1=NaN,y2=NaN,y3=NaN,y4=NaN,y5=NaN,
+                                 v11=NaN,v21=NaN,v31=NaN,v41=NaN,v51=NaN,
+                                 v22=NaN,v32=NaN,v42=NaN,v52=NaN,v33=NaN,
+                                 v43=NaN,v53=NaN,v44=NaN,v54=NaN,v55=NaN)
+                          } else {
+                            ## Extract the regression coefficients excluding the intercept
+                            y <- coef(fit)
+                            ## Extract the sampling covariance matrix excluding the intercept
+                            v <- lav_matrix_vech(vcov(fit)[-1,-1])
+                            list(y1=y[2],y2=y[3],y3=y[4],y4=y[5],y5=y[6],
+                                 v11=v[1],v21=v[2],v31=v[3],v41=v[4],v51=v[5],
+                                 v22=v[6],v32=v[7],v42=v[8],v52=v[9],v33=v[10],
+                                 v43=v[11],v53=v[12],v44=v[13],v54=v[14],v55=v[15])
+                            }
+                          }
+
+########## Split data by Wave and Country and analyze with the fun.reg() function
+REM1.reg <- WVS[, fun.reg(.SD), by=list(S002,S003)]
+
+########## Meta-analyze results with a mixed-effects meta-analysis by using "Wave"" as a predictor
+REM2.reg <- meta(y=cbind(y1,y2,y3,y4,y5),
+                   v=cbind(v11,v21,v31,v41,v51,v22,v32,v42,v52,v33,v43,v53,v44,v54,v55),
+                   x=S002, data=REM1.reg,
+                   #RE.constraints=Diag(paste(0.1, "*Tau2_", 1:5, "_", 1:5, sep = "")),
+                   #RE.lbound=NA,
+                   model.name="Regression analysis REM")
+## Rerun the analysis to remove error code
+## REM2.reg <- rerun(REM2.reg)
+summary(REM2.reg)
+```
+
+## Mediation analysis
+* A mediation model is fitted by using *satisfaction with your life* (A170), *freedom of choice and control* (A173), and *subjective state of health* (A009) as the dependent variable, the mediator, and the predictor, respectively.
+* The following figure displays the mediation model.
+
+```{r, echo=FALSE, message=FALSE}
+set.seed(1000)
+my.df <- data.frame(A170=rnorm(100), A009=rnorm(100), A173=rnorm(100))
+my.model <- "A170 ~ b*A173 + c*A009
+             A173 ~ a*A009"
+my.fit <- sem(my.model, data=my.df)
+semPaths(my.fit, what="mod", nCharNodes=5, edge.label.cex=1.3, col="yellow")  
+```
+
+```{r, results='hide', cache=FALSE}
+## Function to fit a mediation model using sem() function in lavaan,
+## where the path coefficients are labelled with "a", "b", and "c."
+## y1 and y2: indirect (a*b) and direct effects (c)
+## v11, v21, and v22: Sampling covariance matrix of the indirect and direct effects
+fun.med <- function(dt) { model.med <- 'A170 ~ b*A173 + c*A009
+                                        A173 ~ a*A009
+                                        indirect := a*b
+                                        direct := c'
+
+                          ## If there are errors during the analysis, it returns missing values.
+                          fit <- try(sem(model.med, data=dt), silent=TRUE)
+
+                          if (is.element("try-error", class(fit))) {
+                            list(y1=NaN,y2=NaN,v11=NaN,v21=NaN,v22=NaN)
+                          } else {
+                            ## y: indirect effect and direct effect
+                            y <- fit@Model@def.function(.x.=fit@Fit@x)
+                            ## x: all parameter estimates
+                            x <- fit@Fit@x
+                            ## Variance covariance matrix of the parameter estimates
+                            VCOV <- vcov(fit)
+                            ## Compute the jacobian for 'defined parameters'
+                            JAC <- lavaan:::lavJacobianD(func=fit@Model@def.function, x=x)
+                            ## Compute the sampling covariance matrix using delta method
+                            v <- JAC %*% VCOV %*% t(JAC)
+                            list(y1=y[1],y2=y[2],v11=v[1,1],v21=v[2,1],v22=v[2,2]) }}
+
+########## Split data by Wave and Country and analyze with the fun.med() function
+REM1.med <- WVS[, fun.med(.SD), by=list(S002,S003)]
+```
+
+```{r, cache=FALSE}
+## Show part of the results
+head(REM1.med)
+
+########## Meta-analyze results with a random-effects meta-analysis
+REM2.med <- meta(y=cbind(y1,y2), v=cbind(v11,v21,v22), data=REM1.med,
+                 model.name="Mediation analysis REM")
+
+summary(REM2.med)
+```
+
+* The following plot shows a multivariate generalization of the average effect size and its 95% confidence interval in univariate meta-analysis.
+    + The black dots and the black dashed ellipses are the observed effect sizes and their 95% confidence ellipses in the primary studies.
+    + The blue diamond represents the estimated average population effect sizes, while the red ellipse is the 95% confidence
+ellipse of estimated population average effect sizes.
+    + The green ellipse is the 95% confidence ellipse of the random effects. Ninety-five percent of the studies with average population effect sizes falls inside this confidence ellipse in the long run.
+
+```{r, fig.wide=8, fig.height=8, warning=FALSE, cache=FALSE, eval=FALSE, echo=FALSE}
+postscript("fig2b.eps", horizontal=FALSE, paper="special", height=8, width=8)
+plot(REM2.med, main="Multivariate meta-analysis",
+     axis.label=c("Indirect effect", "Direct effect"),
+     study.min.cex=0.6, randeff.ellipse.lty=2,
+     randeff.ellipse.lwd=3)
+dev.off()
+```
+
+```{r, fig.wide=8, fig.height=8, cache=FALSE}
+plot(REM2.med, main="Multivariate meta-analysis",
+     axis.label=c("Indirect effect", "Direct effect"),
+     study.min.cex=0.6, randeff.ellipse.lty=2,
+     randeff.ellipse.lwd=3)
+```
+
+```{r, cache=FALSE}
+########## Meta-analyze results with a mixed-effects meta-analysis
+## by using "Wave" (S002) as a predictor
+REM3.med <- meta(y=cbind(y1,y2), v=cbind(v11,v21,v22), x=S002, data=REM1.med,
+                 model.name="Mediation analysis REM")
+
+summary(REM3.med)
+```
+
+# Confirmatory factor analysis and reliability generalization: Random-effects models
+* The data are grouped according to `Wave` and `Country`.
+* Random-effects models are used to account for the differences in `Wave` and `Country`.
+* Items used in the analysis:
+    + *Justifiable: claiming government benefits to which you are not entitled* (F114)
+    + *Justifiable: avoiding a fare on public transport* (F115)
+    + *Justifiable: cheating on taxes* (F116)
+    + *Justifiable: someone accepting a bribe in the course of their duties* (F117)
+    + 1 (Never justifiable) to 10 (Always justifiable); negative values represent missing values. They were recoded into missing values before the analysis.
+```{r, cache=FALSE}
+## Clear all objects in the work space
+rm(list=ls())
+
+## Load the data
+load("WVS.Rdata")
+
+## Select the relevant variables to minimize memory usage
+WVS <- WVS[, list(F114, F115, F116, F117, S002, S003)]
+
+## Set Wave and Country as key variables for fast reference
+## S002: Wave
+## S003: Country
+setkeyv(WVS, c("S002", "S003"))
+
+## Recode all negative values as NA
+WVS[, `:=`(F114 = ifelse(F114 < 0, yes=NA, no=F114),
+           F115 = ifelse(F115 < 0, yes=NA, no=F115),
+           F116 = ifelse(F116 < 0, yes=NA, no=F116),
+           F117 = ifelse(F117 < 0, yes=NA, no=F117))]
+```
+
+## Confirmatory factor analysis using the TSSEM approach
+* We estimate the correlation matrix in each `Wave` and `Country`.
+* The correlation matrices are used to fit a one-factor confirmatory factor analysis with the random-effects two-stage structural equation modeling (TSSEM) approach.
+```{r, warning=FALSE, message=FALSE, cache=FALSE}
+## Function to extract correlation matrix and sample sizes
+## c21 to c43: Correlation matrix based on pairwise deletion among F114, F115, F116, and F117.
+## n: Sample size based on the harmonic mean of the sample sizes in the correlation coefficients.
+fun.cor <- function(dt) { ## Calculate the correlation matrix with pairwise deletion
+                          fit <- try(suppressWarnings(cor(dt[, 1:4, with=FALSE],
+                                     use="pairwise.complete.obs")), silent=TRUE)
+
+                          ## Calculate the sample sizes based on harmonic mean
+                          na.n <- t(!is.na(dt[, 1:4, with=FALSE])) %*% !is.na(dt[, 1:4, with=FALSE])
+                          pairwise.n <- na.n[lower.tri(na.n)]
+                          pairwise.n[pairwise.n==0] <- NA
+                          ## harmonic mean
+                          n <- as.integer(1/mean(1/pairwise.n, na.rm=TRUE))
+
+                          if (is.element("try-error", class(fit))) {
+                            list(c21=NaN,c31=NaN,c41=NaN,c32=NaN,
+                                 c42=NaN,c43=NaN,n=NaN)
+                          } else {
+                            ## regression coefficients excluding the intercept
+                            list(c21=fit[2,1],c31=fit[3,1],c41=fit[4,1],
+                                 c32=fit[3,2],c42=fit[4,2],c43=fit[4,3],n=n)
+                            }
+                          }
+
+########## Split data by Wave and Country and extract the correlation matrices
+########## and sample size with the fun.cor() function
+stage0.cor <- WVS[, fun.cor(.SD), by=list(S002,S003)]
+
+## Exclude studies without any data
+stage0.cor <- stage0.cor[!is.na(n)]
+
+## Show part of the results
+head(stage0.cor)
+
+## Split the data into a list for ease of data analyses
+data.splitted <- split(as.data.frame(stage0.cor), 1:nrow(stage0.cor))
+
+## Convert correlation coefficients into correlation matrices
+data.cor <- lapply(data.splitted, function(x) vec2symMat(unlist(x[, 3:8]), diag=FALSE) )
+
+## Extract the sample sizes
+data.n <- sapply(data.splitted, function(x) x[, 9])
+
+########## Meta-analyze results with the TSSEM random-effects model
+REM1.cfa <- tssem1(data.cor, data.n, method="REM", RE.type="Diag",
+                   model.name="One factor model REM")
+## Rerun the analysis to remove error code
+## REM1.cfa <- rerun(REM1.cfa)
+summary(REM1.cfa)
+
+## Show the pooled correlation matrix
+vec2symMat(coef(REM1.cfa, select="fixed"), diag=FALSE)
+
+## Show the variance components of the random effects
+Diag(coef(REM1.cfa, select="random"))
+
+## Setup a one-factor CFA model in RAM specification
+A1 <- matrix(c("0.2*F114", "0.2*F115", "0.2*F116", "0.2*F117",0), ncol=1)
+A1 <- cbind(matrix(0, ncol=4, nrow=5), A1)
+dimnames(A1)[[1]] <- dimnames(A1)[[2]] <- c("F114","F115","F116","F117","Fraud")
+
+## A matrix for regression coefficients and factor loadings
+A1
+
+S1 <- Diag(c("0.2*ErrVar_F114", "0.2*ErrVar_F115",
+             "0.2*ErrVar_F116", "0.2*ErrVar_F117", "1") )
+dimnames(S1)[[1]] <- dimnames(S1)[[2]] <- c("F114","F115","F116","F117","Fraud")
+
+## S matrix for variances and covariances
+S1
+
+F1 <- create.Fmatrix(c(1,1,1,1,0), as.mxMatrix=FALSE)
+dimnames(F1)[[1]] <- c("F114","F115","F116","F117")
+dimnames(F1)[[2]] <- c("F114","F115","F116","F117","Fraud")
+
+## F matrix to select observed variables
+F1
+
+########## Fit a one-factor CFA model on the average correlation matrix
+REM2.cfa <- tssem2(REM1.cfa, Amatrix=A1, Smatrix=S1, Fmatrix=F1, diag.constraints=TRUE,
+                   intervals.type="LB", model.name="One factor model REM Stage 2 analysis")
+summary(REM2.cfa)
+
+## Convert the model to semPlotModel object
+library("semPlot")
+my.plot <- meta2semPlot(REM2.cfa, manNames=c("F114","F115","F116","F117"),
+                        latNames=c("Fraud"))
+
+## Plot the model with labels
+semPaths(my.plot, whatLabels="est", nCharEdges=10, nCharNodes=10,
+         edge.label.cex=1.3, color="yellow")
+```
+
+
+## Reliability generalizability with a random-effects model
+* The coefficient alpha and its sampling variance are estimated in each `Wave` and `Country`.
+* Random- and mixed-effects meta-analyses are tested.
+```{r, cache=FALSE}
+## Function to extract coefficient alpha and its sampling variance
+## y: estimated coefficient alpha
+## v: sampling variance of coefficient alpha
+fun.rel <- function(dt) { Cov <- try(cov(dt[, 1:4, with=FALSE],
+                                         use="pairwise.complete.obs"), silent=TRUE)
+                          na.n <- t(!is.na(dt[, 1:4, with=FALSE])) %*% !is.na(dt[, 1:4, with=FALSE])
+                          pairwise.n <- na.n[lower.tri(na.n, diag=TRUE)]
+                          pairwise.n[pairwise.n==0] <- NA
+                          ## harmonic mean
+                          n <- as.integer(1/mean(1/pairwise.n, na.rm=TRUE))
+
+                          if (is.element("try-error", class(Cov))) {
+                            list(y=NaN,v=NaN)
+                          } else {
+                            if (any(is.na(Cov))) {
+                              list(y=NaN,v=NaN)
+                            } else {
+                              ## no. of items
+                              q <- ncol(Cov)
+                              var.item <- sum(diag(Cov))
+                              var.scale <- sum(Cov)
+                              ## y: coefficient alpha
+                              y <- q*(1-var.item/var.scale)/(q-1)
+                              ## Bonett (2010, Eq.5)
+                              ## v: sampling variance of y (Bonett, 2010, Eq. 5)
+                              v <- 2*q*(1-y)^2/((q-1)*(n-2))
+                              list(y=y,v=v)
+                            }
+                          }
+                        }
+
+########## Split data by Wave and Country and analyze data with the fun.rel() function
+REM1.rel <- WVS[, fun.rel(.SD), by=list(S002,S003)]
+
+## Adjust the scale so that Wave 1 is S002=0.
+REM1.rel[, `:=`(S002 = S002-1)]
+
+########## Meta-analyze results with a random-effects meta-analysis by using "Wave"" as a predictor
+REM2.rel <- meta(y=y, v=v, x=S002, data=REM1.rel,
+                 model.name="Reliability generalization REM")
+summary(REM2.rel)
+```
+
+# Settings of the R system
+```{r}
+sessionInfo()
+```

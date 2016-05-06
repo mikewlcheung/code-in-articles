@@ -11,3 +11,5 @@
 [Cheung, M. W.-L., & Hafdahl, A. R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung and Hafdahl 2016). Special issue on meta-analytic structural equation modeling: Introduction from the Guest Editors. *Research Synthesis Methods*. Manuscript accepted for publication.
 
 [Cheung, M. W.-L., & Vijayakumar, R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung and Vijayakumar 2016). An introduction to when and how to conduct a meta-analysis. *Neuropsychology Review*. Manuscript accepted for publication.
+
+[Cheung, M. W.-L., & Jak, S. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung and Jak 2016). Analyzing big data in psychology: A split/analyze/meta-analyze approach. *Frontiers in Psychology*. Manuscript accepted for publication.

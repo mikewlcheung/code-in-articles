@@ -1,0 +1,545 @@
+---
+title: "Illustrations with the Airlines data in R"
+author: "Mike Cheung and Suzanne Jak"
+date: "31 Mar 2016"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+  word_document: default
+---
+
+# Data preparation
+* Before running the analyses, we need to install some R packages and download the data. The analyses should run fine in computer systems with at least 8GB RAM.
+
+## Installing the R packages
+* R can be downloaded at http://www.r-project.org/.
+* We only need to install them once.
+```{r, eval=FALSE}
+## Installing R packages from the CRAN
+install.packages(c("RSQLite", "dplyr", "lme4", "R.utils", "metaSEM"))
+```
+
+## Preparing the datasets
+* The datasets include more than 123 million records on 29 variables.
+* The datasets are available at http://stat-computing.org/dataexpo/2009/the-data.html.
+* The following R code is used to download the compressed files and uncompress them in the local harddisk.
+* The compressed data sets are 1.7 GB in size, while the uncompressed files are 12 GB in size.
+* Please make sure that there is enough space to store the files. Moreover, it may take a long time to download the files and uncompress them.
+```{r, message=FALSE}
+library("R.utils")
+
+## Years of the data
+years <- 1987:2008
+
+## Create http addresses for download
+http.names <- paste("http://stat-computing.org/dataexpo/2009/",
+                    years, ".csv.bz2", sep="")
+
+## Show the first few items
+head(http.names)
+
+## Create file names to save in the local harddisk
+file.names <- paste(years, ".csv.bz2", sep="")
+
+## Show the first few items
+head(file.names)
+```
+
+```{r, eval=FALSE}
+## Download the files
+## This may take a while depending on the internet connectivity.
+for (i in 1:length(http.names)) {
+  download.file(http.names[i], file.names[i])
+}
+
+## Uncompress the files
+## remove=FALSE: not to remove the compressed files
+for (i in 1:length(file.names)) {
+  bunzip2(file.names[i], overwrite=TRUE, remove=FALSE)
+  cat("Completed file: ", file.names[i], "\n")
+}
+```
+
+* Since most big data sets are stored in database format, we convert the downloaded data sets into a database. This illustrates how the proposed split-analyze-combine model can be applied to realistic environments.
+* After running the following R code, a [SQLite database](http://www.sqlite.org/) called `1987_2008.sqlite`, which is about 14.3 GB in size, will be created. The following analyses are based on this file.
+```{r, eval=FALSE}
+library("RSQLite")
+
+## Set up a connection and create empty database in the working directory
+## Name of the dBase: 1987_2008.sqlite
+db <- dbConnect(SQLite(), dbname="1987_2008.sqlite")
+
+## Create empty table 'ontime' in database, define variable names and type of fields
+## int = integer, varachar(n) = string of length n
+## The full list of variable names is available at
+## http://stat-computing.org/dataexpo/2009/the-data.html
+dbSendQuery(conn = db,
+"create table ontime (
+  Year int,
+  Month int,
+  DayofMonth int,
+  DayOfWeek int,
+  DepTime int,
+  CRSDepTime int,
+  ArrTime int,
+  CRSArrTime int,
+  UniqueCarrier varchar(5),
+  FlightNum int,
+  TailNum varchar(8),
+  ActualElapsedTime int,
+  CRSElapsedTime int,
+  AirTime int,
+  ArrDelay int,
+  DepDelay int,
+  Origin varchar(3),
+  Dest varchar(3),
+  Distance int,
+  TaxiIn int,
+  TaxiOut int,
+  Cancelled int,
+  CancellationCode varchar(1),
+  Diverted varchar(1),
+  CarrierDelay int,
+  WeatherDelay int,
+  NASDelay int,
+  SecurityDelay int,
+  LateAircraftDelay int
+)")
+
+## Create a vector with the names of the .csv files (files are in the working directory)
+datasets <- paste(1987:2008, ".csv", sep="")
+
+## Putting the data in the database
+## for the first dataset, the header is read in, for the following,
+## the first line (header) is skipped
+## It took about 16 minutes in our computer.
+for (i in 1:length(datasets)){
+  if (i == 1) {
+    dbWriteTable(conn = db, name = "ontime", value = datasets[i],
+                 row.names = FALSE, header = TRUE, append = TRUE)
+   } else {
+		dbWriteTable(conn = db, name = "ontime", value = datasets[i],
+                 row.names = FALSE, header = FALSE, append = TRUE, skip = 1) }  
+    cat("Completed dataset: ", datasets[i], "\n")
+}
+
+## Create indexes for year and Origin, which speeds up later analysis
+## It took about 15 minutes in our computer.
+dbGetQuery(conn=db, 'create index year on ontime(year)')
+dbGetQuery(conn=db, 'create index Origin on ontime(Origin)')
+
+## Show the tables that are in the database
+dbListTables(db)
+
+## Show the variables in the table
+dbListFields(db, "ontime")
+
+## Close connection to the database
+dbDisconnect(db)
+```
+
+## Descriptive statistics
+* We first demonstrate how to obtain some descriptive statistics before conducting inferential statistics.
+
+## Read the database into R
+* Since it takes some time to process large data, we will read the database file only if the R image `airlines1.Rdata`, which has been saved before, is not available. In general, it is a good idea to save the processed data for further analyses.
+* We summarize the means of the arrival delay, departure delay, and distance between airports per year and month.
+```{r, eval=FALSE}
+## Library to read SQLite data and process the data
+library("dplyr")
+
+## Read the SQLite data only if the R image is not available
+if (!file.exists("airlines1.Rdata")) {
+
+  ## Read the SQLite data
+  my.db <- src_sqlite("1987_2008.sqlite")
+
+  ## Read the table "ontime" into "my.df"
+  my.df <- tbl(my.db, "ontime")
+
+  ## Calculate the means of ArrDelay, DepDelay, and total no. of flights
+  ## by year and month
+  my.summary <- my.df %>%
+    group_by(Year, Month) %>%
+    summarise(arr_delay=mean(ArrDelay),
+              dep_delay=mean(DepDelay),
+              distance=mean(Distance),
+              flights=n())
+
+  ## Convert it into data.frame to avoid rerunning it again
+  my.summary <- data.frame(my.summary)
+
+  ## Sort it by Year and Month
+  my.summary <- arrange(my.summary, Year, as.numeric(Month))
+
+  ## Save it to avoid rerunning it again
+  save(my.summary, file="airlines1.Rdata")
+}
+```
+
+## Display the summary and figures
+* The red lines in the figures refer to the *September 11 attacks*.
+```{r, cache=FALSE}
+## Load the summary from R image
+load("airlines1.Rdata")
+
+## Display the first few cases of the aggregated means
+head(my.summary)
+
+## Display the last few cases of the aggregated means
+tail(my.summary)
+
+## values for x axis
+x <- 1:nrow(my.summary)
+
+## Plot the no. of flights
+plot(x, my.summary$flights, type="l", xaxt="n",
+     xlab="Year", ylab="Numbers of flights per month",
+     main="Numbers of flights per month by years (1987-2008)")
+abline(v=c(x[my.summary$Month=="1"],256), lty=2)
+abline(v=168, lwd=3, col="red")
+axis(1, at=c(-3, x[my.summary$Month=="6"]), labels=1987:2008)
+
+## Plot the delay time
+par(mfrow=c(3,1))
+plot(x, my.summary$arr_delay, type="l", xaxt="n",
+     xlab="Year", ylab="Arrival delay (min)",
+     main="Arrival delay by years and months")
+abline(v=c(x[my.summary$Month=="1"],256), lty=2)
+abline(v=168, lwd=3, col="red")
+axis(1, at=c(-3, x[my.summary$Month=="6"]), labels=1987:2008)
+
+plot(x, my.summary$dep_delay, type="l", xaxt="n",
+     xlab="Year", ylab="Departure delay (min)",
+     main="Departure delay by years and months")
+abline(v=c(x[my.summary$Month=="1"],256), lty=2)
+abline(v=168, lwd=3, col="red")
+axis(1, at=c(-3, x[my.summary$Month=="6"]), labels=1987:2008)
+
+plot(x, with(my.summary, arr_delay-dep_delay), type="l", xaxt="n",
+     xlab="Year", ylab="Departure delay (min)",
+     main="Arrival minus departure delay by years and months")
+abline(v=c(x[my.summary$Month=="1"],256), lty=2)
+abline(v=168, lwd=3, col="red")
+abline(h=0, lty=2)
+axis(1, at=c(-3, x[my.summary$Month=="6"]), labels=1987:2008)
+
+## Plot the scatter plot
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor=2, ...)
+{
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(0, 1, 0, 1))
+    r <- cor(x, y)
+    txt <- format(c(r, 0.123456789), digits = digits)[1]
+    txt <- paste0(prefix, txt)
+    text(0.5, 0.5, txt, cex = cex.cor)
+}
+
+panel.hist <- function(x, ...)
+{
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(usr[1:2], 0, 1.5) )
+    h <- hist(x, plot = FALSE)
+    breaks <- h$breaks; nB <- length(breaks)
+    y <- h$counts; y <- y/max(y)
+    rect(breaks[-nB], 0, breaks[-1], y, col = "grey", ...)
+}
+
+pairs(my.summary[, c("arr_delay", "dep_delay", "distance")],
+      lower.panel = panel.smooth, upper.panel = panel.cor,
+      diag.panel = panel.hist)
+
+## Ecological analysis: Regression analysis on the aggregated means
+## I(distance/1000): Distance is divided by 1000 to improve numerical stability.
+summary( lm(arr_delay~dep_delay+I(distance/1000), data=my.summary) )
+```
+
+```{r, echo=FALSE, results='hide', eval=FALSE}
+## Plot the figures in EPS
+
+## values for x axis
+x <- 1:length(my.summary$arr_delay)
+
+postscript("no_flights.eps", horizontal=FALSE, paper="special",  height=4, width=9)
+plot(x, my.summary$flights, type="l", xaxt="n",
+     xlab="Year", ylab="Numbers of flights per month",
+     main="Numbers of flights per month by years (1987-2008)")
+abline(v=c(x[my.summary$Month=="1"],256), lty=2)
+abline(v=168, lwd=3, col="red")
+axis(1, at=c(-3,x[my.summary$Month=="6"]), labels=1987:2008)
+dev.off()
+
+postscript("delay.eps", horizontal=FALSE, paper="special", height=11.5, width=9)
+par(mfrow=c(3,1))
+plot(x, my.summary$arr_delay, type="l", xaxt="n",
+     xlab="Year", ylab="Arrival delay (min)",
+     main="Arrival delay by years and months")
+abline(v=c(x[my.summary$Month=="1"],256), lty=2)
+abline(v=168, lwd=3, col="red")
+axis(1, at=c(-3,x[my.summary$Month=="6"]), labels=1987:2008)
+
+plot(x, my.summary$dep_delay, type="l", xaxt="n",
+     xlab="Year", ylab="Departure delay (min)",
+     main="Departure delay by years and months")
+abline(v=c(x[my.summary$Month=="1"],256), lty=2)
+abline(v=168, lwd=3, col="red")
+axis(1, at=c(-3,x[my.summary$Month=="6"]), labels=1987:2008)
+
+plot(x, with(my.summary, arr_delay-dep_delay), type="l", xaxt="n",
+     xlab="Year", ylab="Departure delay (min)",
+     main="Arrival minus departure delay by years and months")
+abline(v=c(x[my.summary$Month=="1"],256), lty=2)
+abline(v=168, lwd=3, col="red")
+abline(h=0, lty=2)
+axis(1, at=c(-3,x[my.summary$Month=="6"]), labels=1987:2008)
+dev.off()
+
+## Plot the scatter plot
+postscript("matrix_plot.eps", horizontal=FALSE, paper="special", height=8, width=8)
+pairs(my.summary[,-c(1:2)], lower.panel = panel.smooth, upper.panel = panel.cor,
+                 diag.panel = panel.hist)
+dev.off()
+```
+
+# Regression analysis
+* We regress `ArrDelay` on `DepDelay` and `Distance` on each year.
+* The following figure displays the regression model.
+
+```{r, echo=FALSE, message=FALSE}
+library("semPlot")
+library("lavaan")
+set.seed(1000)
+my.df <- data.frame(ArrDelay=rnorm(100), DepDelay=rnorm(100), Distance=rnorm(100))
+my.model <- "ArrDelay~y1*DepDelay+y2*Distance"
+my.fit <- sem(my.model, data=my.df)
+semPaths(my.fit, what="mod", nCharNodes=8, edge.label.cex=1.3, sizeMan=8, col="yellow")  
+```
+
+## Read and process data from the database
+```{r, eval=FALSE}
+library("dplyr")
+
+## Read the SQLite data only if the R image is not available
+if (!file.exists("airlines2.Rdata")) {
+
+  ## Function to fit regression analysis
+  ## I(Distance/1000): Distance is divided by 1000 to improve numerical stability.
+  ## y1 and y2: Regression coefficients from Distance and DepDelay.
+  ## v11 to v22: Sampling covariance matrix of the parameter estimates
+  fun.reg <- function(dt) { fit <- try(lm(ArrDelay~DepDelay+I(Distance/1000), data=dt), silent=TRUE)
+
+                          if (is.element("try-error", class(fit))) {
+                            list(y1=NaN,y2=NaN,
+                                 v11=NaN,v21=NaN,v22=NaN)
+                          } else {
+                            ## regression coefficients excluding the intercept
+                            y <- coef(fit)
+                            ## sampling variance covariance matrix excluding the intercept
+                            v <- vech(vcov(fit)[-1,-1])
+                            list(y1=y[2],y2=y[3],
+                                 v11=v[1],v21=v[2],v22=v[3])}}
+
+  ## Connect to database
+  my.db <- src_sqlite("1987_2008.sqlite", create = FALSE)
+
+  ## Connect to table
+  my.df <- tbl(my.db, "ontime")
+
+  ## Analyze the data per year
+
+  ## Data.frame to store output
+  meta.df <- data.frame(year=NA,y1=NA,y2=NA,v11=NA,v21=NA,v22=NA)
+
+  years <- 1987:2008
+
+  ## It took about 9 minutes in our computer
+  for (i in 1:length(years)){
+
+    ## Select year and variables
+    c0 <- filter(my.df, Year==years[i])
+    c1 <- dplyr::select(c0, ArrDelay, DepDelay, Distance)
+    ## Pull data into R
+    data <- collect(c1)
+
+    ## Fit regression model and store results
+    meta.df[i,] <- c(years[i], unlist(fun.reg(data)))
+
+    ## Clear memory
+    rm(data)
+    cat("Completed year: ", years[i], "\n")
+  }
+
+  ## Save the data for further analyses
+  save(meta.df, file = "airlines2.RData")
+}
+```
+## Conducting a multivariate random and mixed-effects meta-analysis
+* The regression coefficients on `DepDelay` (y1) and on `Distance` (y2) are considered as multiple effect sizes.
+* Random-effects multivariate meta-analysis is conducted to account for the differences in `year`. Moreover, `year` is included as a study characteristic in a mixed-effects multivariate meta-analysis.
+```{r, message=FALSE}
+library("metaSEM")
+
+## library("OpenMx", lib.loc="~/local/Rlib_github")
+## library("metaSEM", lib.loc="~/local/Rlib_github")
+
+load("airlines2.RData")
+
+## Display the first few cases of the data
+head(meta.df)
+
+## Meta-analyze results by using a random-effects meta-analysis
+## y1: regression coefficient of DepDelay
+## y2: regression coefficient of Distance/1000
+REM.reg <- meta(y=cbind(y1,y2), v=cbind(v11,v21,v22), data=meta.df,
+                model.name="Regression analysis REM")
+
+summary(REM.reg)
+
+## Variance components of the random effects
+VarComp.reg <- vec2symMat(coef(REM.reg, select="random"))
+
+## Correlation between the random effects
+cov2cor(VarComp.reg)
+
+## Plot the effect sizes
+plot(REM.reg, axis.labels=c("Regression coefficient DepDelay",
+                            "Regression coefficient Distance"),
+     ylim=c(-2.5,0.5), xlim=c(0.65,1.1), study.min.cex = 0.6)
+
+## Mixed effects meta-analysis with year as moderator
+## year was centered before the analysis.
+REM.reg_mod <- meta(y=cbind(y1,y2), v=cbind(v11,v21,v22),
+                    x = scale(year, scale=FALSE), data=meta.df,
+                    model.name="Regression analysis REM with year as moderator")
+
+summary(REM.reg_mod)
+```
+
+# Mixed-effects model
+* A mixed-effects model is fitted to account for the nested structure of the data. The seasonal variation is approximately accounted for by considering the data nested within *Month*, *Day of Month*, *Day Of Week*, while geographical differences is approximately accounted for by considering the data nested within *origin* and *destination* airports.
+
+## Read and process data from the database
+* Since it takes some time to process large data, the database file is read only if the R data, which has been saved before, is not available.
+```{r, eval=FALSE}
+## Library to read SQLite data and process the data
+library("dplyr")
+library("lme4")
+
+## Read the SQLite data only if the R image is not available
+if (!file.exists("airlines3.Rdata")) {
+
+  ## Read the SQLite data
+  my.db <- src_sqlite("1987_2008.sqlite")
+
+  ## Read the table "ontime" into "my.df"
+  my.df <- tbl(my.db, "ontime")
+
+  ## Function to fit regression analysis  
+  ## y1 to y3: Intercept, DepDelay and Distance/1000.
+  ## v11 to v33: Sampling covariance matrix of the parameter estimates
+  fun.lmer <- function(dt) {  fit <- try(lmer(ArrDelay~DepDelay+I(Distance/1000)+
+                                             (1|Month)+(1|DayofMonth)+(1|DayOfWeek)+
+                                             (1|Origin)+(1|Dest),
+                                             REML=FALSE, na.action="na.omit",
+                                             data=dt), silent=TRUE)
+                              if (is.element("try-error", class(fit))) {
+                                c(y1=NaN, y2=NaN, v11=NaN, v21=NaN, v22=NaN)
+                                } else {
+                                ## regression coefficients excluding the intercept
+                                y <- unname(fixef(fit)[-1])
+                                ## sampling variance covariance matrix excluding the intercept
+                                v <- vcov(fit)[-1, -1]
+                                c(y1=y[1], y2=y[2], v11=v[1,1],v21=v[2,1],v22=v[2,2])}}
+
+  ## A list of effect sizes and their sampling covariance matrices
+  my.list <- list()
+  years <- 1987:2008
+
+  for (i in 1:length(years)) {
+    my.tbl0 <- filter(my.df, Year==years[i])
+    my.tbl1 <- select(my.tbl0, Year, Month, DayofMonth, DayOfWeek, ArrDelay,
+                      DepDelay, Origin, Dest, Distance)
+    my.data <- collect(my.tbl1)
+    my.list[[i]] <- fun.lmer(my.data)
+    cat("Completed year: ", years[i], "\n")
+  }
+
+  ## Convert my.list into a data frame
+  meta.df <- data.frame(Year=years, t(sapply(my.list, function(x) x)))
+
+  ## Save it to avoid rerunning it again
+  save(meta.df, file="airlines3.Rdata")
+}
+```
+
+## Conducting a multivariate random-effects meta-analysis
+* The regression coefficients on `DepDelay` (y1) and on `Distance` (y2) are considered as multiple effect sizes.
+```{r, message=FALSE}
+library("metaSEM")
+
+## library("OpenMx", lib.loc="~/local/Rlib_github")
+## library("metaSEM", lib.loc="~/local/Rlib_github")
+
+load("airlines3.Rdata")
+
+## Display the first few cases of the data
+head(meta.df)
+
+## Meta-analyze results by using a random-effects meta-analysis
+## y1: regression coefficient of DepDelay
+## y2: regression coefficient of Distance/1000
+meta.rem <- meta(y=cbind(y1,y2), v=cbind(v11,v21,v22), data=meta.df,
+                 model.name="Random effects model")
+summary(meta.rem)
+
+## Variance component of the random effects
+VarComp.lmer <- vec2symMat(coef(meta.rem, select="random"))
+
+## Correlation between the random effects
+cov2cor(VarComp.lmer)
+
+plot(meta.rem, axis.labels=c("Regression coefficient on DepDelay",
+                             "Regression coefficient on Distance"),
+     ylim=c(-2.5,0), xlim=c(0.65,1.1), study.min.cex = 0.6)
+```
+
+```{r, echo=FALSE, eval=FALSE}
+#postscript("fig1.eps", horizontal=FALSE, paper="special", height=10, width=10)
+plot(meta.rem, axis.labels=c("Regression coefficient on DepDelay",
+                             "Regression coefficient on Distance"),
+     ylim=c(-2.5,0), xlim=c(0.65,1.1), study.min.cex = 0.6)
+#dev.off()
+```
+
+## Conducting a multivariate mixed-effects meta-analysis
+* A multivariate mixed-effects meta-analysis is conducted by using `Year` as the moderator.
+```{r}
+## Meta-analyze results with a mixed-effects meta-analysis with year as a predictor
+## It may be necessary to use better starting values
+## since the variances of the variance components are very different.
+meta.mem <- meta(y=cbind(y1,y2), v=cbind(v11,v21,v22), data=meta.df,
+                 RE.startvalues=c(0.1,1), x=scale(Year, scale=FALSE),
+                 model.name="Mixed effects model with year as a predictor")
+summary(meta.mem)
+```
+
+```{r, echo=FALSE, results='hide', eval=FALSE}
+## Plot the figures in EPS
+postscript("REM.eps", horizontal=FALSE,
+           paper="special",  height=5, width=5)
+plot(meta.rem, axis.labels=c("Regression coefficient on DepDelay",
+                             "Regression coefficient on Distance"),
+     ylim=c(-2.5,0), xlim=c(0.65,1.1), study.min.cex = 0.3,
+     randeff.ellipse.lty=2)
+dev.off()
+```
+
+# Settings of the R system
+```{r, warning=FALSE}
+sessionInfo()
+```
