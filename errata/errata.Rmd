@@ -1,0 +1,20 @@
+---
+title: "Errata in published articles"
+author: Mike W.-L. Cheung
+date:  '`r format(Sys.time(), "%d %B, %Y")`'
+linestretch: 1.5
+header-includes:
+   - \usepackage{etoolbox}
+   - \usepackage{bm}
+   - \usepackage{color}
+output: pdf_document
+fontsize: 12pt
+---
+
+* The followings are a list of errors identified after the publication.
+
+* Cheung, M. W.-L. (2013). Implementing restricted maximum likelihood estimation in structural equation models. *Structural Equation Modeling: A Multidisciplinary Journal*, *20*(1), 157–167. http://doi.org/10.1080/10705511.2013.742404
+    + P. 161, Eq. 7. $\mathrm{log}l_{REML}(G, R; \bm{y}) = \frac{-1}{2}\sum (\mathrm{log}|V| + (\bm{y}-X\bm{\alpha})' V^{-1} (\bm{y}-X\bm{\alpha}) + |X'V^{-1}X|)$ should be $\mathrm{log}l_{REML}(G, R; \bm{y}) = \frac{-1}{2}\sum (\mathrm{log}|V| + (\bm{y}-X\bm{\alpha})' V^{-1} (\bm{y}-X\bm{\alpha}) + \textcolor{red}{\mathrm{log}} |X'V^{-1}X|)$.
+
+* Cheung, M. W.-L. (2007). Comparison of methods of handling missing time-invariant covariates in latent growth models under the assumption of missing completely at random. *Organizational Research Methods*, *10*(4), 609–634. http://doi.org/10.1177/1094428106295499
+    + P. 615, Eq. 11. $\hat{SE}(\bar{\theta})=\sqrt{\bar{U}+B/(1+m)}$ should be $\hat{SE}(\bar{\theta})=\sqrt{\bar{U}+ \textcolor{red}{ B+B/m}}$ . 
