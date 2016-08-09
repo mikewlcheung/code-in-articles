@@ -2,7 +2,7 @@
 title: 'Special Issue on Meta-analytic Structural Equation Modeling: Introduction
   from the Guest Editors'
 author: "Mike W.-L. Cheung and Adam R. Hafdahl"
-date: "10 Mar 2016"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     keep_md: yes
@@ -15,6 +15,8 @@ output:
 ---
 
 # Introduction
+* This is the online appendix to Cheung and Hafdahl (2016):
+    + Cheung, M. W.-L., & Hafdahl, A. R. (2016). Special issue on meta-analytic structural equation modeling: Introduction from the guest editors. *Research Synthesis Methods*, *7*(2), 112–120. http://doi.org/10.1002/jrsm.1212
 *  Becker (2009) tested a mediation model on "Sport Performance" (`SP`). The independent variables were "Cognitive Anxiety" (`CA`) and "Somatic Anxiety" (`SA`) while the mediator was "Self confidence" (`SC`). The following figure displays the model with the labels of the parameters.
 
 ```{r, engine='dot', echo=FALSE, eval=TRUE, fig.align='center'}

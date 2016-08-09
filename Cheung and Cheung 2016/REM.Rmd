@@ -1,7 +1,7 @@
 ---
 title: "Correlation-based versus parameter-based MASEM"
 author: "Mike W.-L. Cheung and Shu Fai Cheung"
-date: "19 Feb 2016"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     keep_md: yes
@@ -15,7 +15,7 @@ output:
 
 This file includes examples used in Cheung and Cheung (2016):
 
-Cheung, M.W.-L., and Cheung, S.-F. (2016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*. Manuscript accepted for publication.
+Cheung, M.W.-L., and Cheung, S.-F. (2016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*, *7*(2), 140–155. http://doi.org/10.1002/jrsm.1166.
 
 # Installing the R packages
 * R can be downloaded at http://www.r-project.org/.
