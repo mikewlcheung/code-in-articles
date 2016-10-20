@@ -1,0 +1,167 @@
+---
+title: 'Illustration of MASEM: Theory of planned behavior'
+author: "Mike Cheung and Ryan Hong"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  word_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+---
+
+This file includes examples used in Cheung and Hong (in press):
+Cheung, M. W.-L., & Hong, R. Y. (in press). Applications of meta-analytic structural equation modeling in health psychology: Examples, issues, and recommendations. *Health Psychology Review*.
+
+# Displaying some descriptive statistics of the data
+```{r, message=FALSE}
+## Load the libraries required for the analysis
+library("metaSEM")
+library("semPlot")
+
+## Read the data
+# source("Cooke16.R")
+
+## Check whether the correlation matrices are valid (positive definite)
+## Since the correlation matrix in Study 3 is not valid, we excluded it from the analyses.
+is.pd(Cooke16$data)
+
+## Since the correlation matrix in Study 3 is not positive definite,
+## we may exclude it the following analyses
+my.data <- Cooke16$data[-3]
+my.n <- Cooke16$n[-3]
+
+## Show the no. of studies per correlation
+pattern.na(my.data, show.na = FALSE)
+
+## Show the total sample sizes per correlation
+pattern.n(my.data, my.n)
+```
+
+# Stage 1 analysis
+```{r, message=FALSE}
+## Fixed-effects model: method="FEM"
+fixed1 <- tssem1(my.data, my.n, method="FEM")
+summary(fixed1)
+
+## Common correlation matrix under a fixed-effects model
+coef(fixed1)
+
+## Random-effects model
+random1 <- tssem1(my.data, my.n, method="REM", RE.type="Diag")
+summary(random1)
+
+## Average correlation matrix under a random-effects model
+vec2symMat(coef(random1, select="fixed"), diag = FALSE)
+```
+
+# Stage 2 analysis: original model (Model A)
+* The models are specified in the [RAM formulation](http://openmx.psyc.virginia.edu/docs/OpenMx/latest/Examples_Matrix.html). Matrices `A`, `S` and `F` represent the regression coefficients, variance-covariance matrix of variables, and selection matrix of the latent variables, respectively. We may skip the `F` matrix when there is no latent variable.
+* Consider the element `SN2BI` in `A1` as an example. It is the regression coefficient from `SN` to `BI` with a starting value of 0.2.
+```{r, message=FALSE}
+A1 <- create.mxMatrix(c(0,0,0,0,0,
+                        0,0,0,0,0,
+                        0,0,0,0,0,
+                        "0.2*SN2BI","0.2*ATT2BI","0.2*PBC2BI",0,0,
+                        0,0,"0.2*PBC2BEH","0.2*BI2BEH",0),
+                        type="Full", ncol=5, nrow=5,
+                        byrow=TRUE, as.mxMatrix=FALSE)
+
+## This step is not necessary but it is useful for inspecting the model.
+dimnames(A1)[[1]] <- dimnames(A1)[[2]] <- colnames(Cooke16$data[[1]])
+
+## Display A1
+A1
+
+S1 <- create.mxMatrix(c(1,
+                        "0.1*ATT_SN", 1,
+                        "0.1*PBC_SN", "0.1*PBC_ATT", 1,
+                        0, 0, 0, "0.5*VarBI",
+                        0, 0, 0, 0, "0.5*VarBEH"),
+                      type = "Symm", ncol=5, nrow=5,
+                      byrow=TRUE, as.mxMatrix=FALSE)
+
+dimnames(S1)[[1]] <- dimnames(S1)[[2]] <- colnames(Cooke16$data[[1]])
+S1
+```
+
+* The columns `lbound` and `ubound` are the lower and upper bounds of the 95% confidence intervals. If they include 0, the parameter estimates are not statistically significant at $\alpha=.05$.
+```{r}
+ModelA <- tssem2(random1, Amatrix=A1, Smatrix=S1, diag.constraints=TRUE, intervals.type="LB")
+summary(ModelA)
+```
+
+* To facilitate the interpretations, we may print the model with the parameter estimates using the `semPlot` package.
+```{r}
+## Convert the model to semPlotModel object
+my.plota <- meta2semPlot(ModelA)
+
+## Plot the parameter estimates
+semPaths(my.plota, whatLabels="est", edge.label.cex=1, color="yellow")
+```
+
+# Stage 2 analysis: no direct effect from PBC (Model C)
+```{r}
+## Delete the direct effect from PBC to BEH
+A2 <- create.mxMatrix(c(0,0,0,0,0,
+                        0,0,0,0,0,
+                        0,0,0,0,0,
+                        "0.2*SN2BI","0.2*ATT2BI","0.2*PBC2BI",0,0,
+                        0,0,0,"0.2*BI2BEH",0),
+                        type="Full", ncol=5, nrow=5,
+                        byrow=TRUE, as.mxMatrix=FALSE)
+
+## This step is not necessary but it is useful for inspecting the model.
+dimnames(A2)[[1]] <- dimnames(A2)[[2]] <- colnames(Cooke16$data[[1]])
+
+## Display A1
+A2
+
+ModelC <- tssem2(random1, Amatrix=A2, Smatrix=S1, diag.constraints=TRUE, intervals.type="LB")
+summary(ModelC)
+
+## Convert the model to semPlotModel object
+my.plotc <- meta2semPlot(ModelC)
+
+## Plot the parameter estimates
+semPaths(my.plotc, whatLabels="est", edge.label.cex=1, color="yellow")
+```
+
+# Stage 2 analysis: all direct effects (Model B)
+```{r}
+## Delete the direct effect from PBC to BEH
+A3 <- create.mxMatrix(c(0,0,0,0,0,
+                        0,0,0,0,0,
+                        0,0,0,0,0,
+                        "0.2*SN2BI","0.2*ATT2BI","0.2*PBC2BI",0,0,
+                        "0.2*SN2BEH","0.2*ATT2BEH","0.2*PBC2BEH","0.2*BI2BEH",0),
+                        type="Full", ncol=5, nrow=5,
+                        byrow=TRUE, as.mxMatrix=FALSE)
+
+## This step is not necessary but it is useful for inspecting the model.
+dimnames(A3)[[1]] <- dimnames(A3)[[2]] <- colnames(Cooke16$data[[1]])
+
+## Display A1
+A3
+```
+
+* We may calculate functions of parameters with the `mx.algebras` argument. In this example, we calculate the indirect and direct effects. After the analysis, 95% CI on the indirect and direct effects are estimated.
+```{r}
+ModelB <- tssem2(random1, Amatrix=A3, Smatrix=S1, diag.constraints=TRUE, intervals.type="LB",
+                 mx.algebras=list(indirect=mxAlgebra((SN2BI+ATT2BI+PBC2BI)*BI2BEH, name="indirect"),
+                                  direct=mxAlgebra(SN2BEH+ATT2BEH+PBC2BEH, name="direct")))
+summary(ModelB)
+
+## Convert the model to semPlotModel object
+my.plotb <- meta2semPlot(ModelB)
+
+## Plot the parameter estimates
+semPaths(my.plotb, whatLabels="est", edge.label.cex=1, color="yellow")
+
+## Settings of R for the analysis
+sessionInfo()
+```

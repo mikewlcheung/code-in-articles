@@ -15,3 +15,5 @@
 [Cheung, M. W.-L., & Vijayakumar, R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung and Vijayakumar 2016). An introduction to when and how to conduct a meta-analysis. *Neuropsychology Review*, *26*(2), 121–128. http://doi.org/10.1007/s11065-016-9319-z
 
 [Cheung, M. W.-L., & Jak, S. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung and Jak 2016). Analyzing big data in psychology: A split/analyze/meta-analyze approach. *Frontiers in Psychology*, *7* (738). http://doi.org/10.3389/fpsyg.2016.00738
+
+[Cheung, M. W.-L., & Hong, R. Y. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung and Hong 2016). Cheung, M. W.-L., & Hong, R. Y. (in press). Applications of meta-analytic structural equation modeling in health psychology: Examples, issues, and recommendations. *Health Psychology Review*.
