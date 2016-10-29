@@ -140,7 +140,7 @@ summary(meta(y=y, v=v, x=x, data=my.df))
 ## 95% confidence intervals: z statistic approximation
 ## Coefficients:
 ##              Estimate  Std.Error     lbound     ubound z value  Pr(>|z|)
-## Intercept1 -0.4439440  0.1214428 -0.6819675 -0.2059206 -3.6556 0.0002566
+## Intercept1 -0.4439440  0.1214427 -0.6819674 -0.2059207 -3.6556 0.0002566
 ## Slope1_1   -0.0071136  0.0029137 -0.0128244 -0.0014029 -2.4414 0.0146292
 ## Tau2_1_1    0.0214313  0.0132301 -0.0044992  0.0473618  1.6199 0.1052553
 ##               
