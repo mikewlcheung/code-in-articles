@@ -2,8 +2,8 @@
 Mike Cheung and Ryan Hong  
 `r format(Sys.Date(), "%B %d, %Y")`  
 
-This file includes examples used in Cheung and Hong (in press):
-Cheung, M. W.-L., & Hong, R. Y. (in press). Applications of meta-analytic structural equation modeling in health psychology: Examples, issues, and recommendations. *Health Psychology Review*.
+This file includes examples used in Cheung and Hong (2017):
+Cheung, M. W.-L., & Hong, R. Y. (2017). Applications of meta-analytic structural equation modeling in health psychology: Examples, issues, and recommendations. *Health Psychology Review*, *11*(3), 265-279. http://doi.org/10.1080/17437199.2017.1343678
 
 # Displaying some descriptive statistics of the data
 
@@ -141,16 +141,16 @@ summary(fixed1)
 ## 
 ## Coefficients:
 ##         Estimate Std.Error z value  Pr(>|z|)    
-## S[1,2] 0.4214478 0.0093858 44.9029 < 2.2e-16 ***
-## S[1,3] 0.2368401 0.0107845 21.9612 < 2.2e-16 ***
-## S[1,4] 0.4728029 0.0091735 51.5399 < 2.2e-16 ***
-## S[1,5] 0.1686525 0.0161884 10.4181 < 2.2e-16 ***
-## S[2,3] 0.2924019 0.0105892 27.6131 < 2.2e-16 ***
-## S[2,4] 0.5461977 0.0084691 64.4929 < 2.2e-16 ***
-## S[2,5] 0.2030472 0.0158716 12.7931 < 2.2e-16 ***
-## S[3,4] 0.3623555 0.0104896 34.5442 < 2.2e-16 ***
-## S[3,5] 0.0613639 0.0170263  3.6041 0.0003133 ***
-## S[4,5] 0.3934428 0.0153318 25.6618 < 2.2e-16 ***
+## S[1,2] 0.4214478 0.0093842 44.9105 < 2.2e-16 ***
+## S[1,3] 0.2368401 0.0107831 21.9640 < 2.2e-16 ***
+## S[1,4] 0.4728029 0.0091713 51.5524 < 2.2e-16 ***
+## S[1,5] 0.1686525 0.0161875 10.4187 < 2.2e-16 ***
+## S[2,3] 0.2924019 0.0105878 27.6168 < 2.2e-16 ***
+## S[2,4] 0.5461977 0.0084675 64.5049 < 2.2e-16 ***
+## S[2,5] 0.2030472 0.0158711 12.7935 < 2.2e-16 ***
+## S[3,4] 0.3623555 0.0104881 34.5492 < 2.2e-16 ***
+## S[3,5] 0.0613639 0.0170259  3.6041 0.0003132 ***
+## S[4,5] 0.3934428 0.0153311 25.6631 < 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -205,25 +205,25 @@ summary(random1)
 ## 95% confidence intervals: z statistic approximation
 ## Coefficients:
 ##               Estimate  Std.Error     lbound     ubound z value  Pr(>|z|)
-## Intercept1   0.4200803  0.0283378  0.3645393  0.4756213 14.8240 < 2.2e-16
-## Intercept2   0.1760095  0.0356971  0.1060444  0.2459746  4.9306 8.196e-07
-## Intercept3   0.4095000  0.0287724  0.3531071  0.4658929 14.2324 < 2.2e-16
-## Intercept4   0.1608071  0.0462024  0.0702521  0.2513622  3.4805 0.0005005
-## Intercept5   0.2540752  0.0465866  0.1627672  0.3453831  5.4538 4.930e-08
-## Intercept6   0.5623700  0.0326337  0.4984091  0.6263309 17.2328 < 2.2e-16
-## Intercept7   0.2781562  0.0530788  0.1741236  0.3821889  5.2404 1.602e-07
-## Intercept8   0.2985260  0.0598783  0.1811668  0.4158852  4.9855 6.179e-07
-## Intercept9   0.0385757  0.0782508 -0.1147929  0.1919444  0.4930 0.6220296
-## Intercept10  0.4280688  0.0736125  0.2837910  0.5723466  5.8152 6.057e-09
-## Tau2_1_1     0.0226389  0.0065919  0.0097191  0.0355588  3.4344 0.0005939
-## Tau2_2_2     0.0369123  0.0100773  0.0171612  0.0566634  3.6629 0.0002494
-## Tau2_3_3     0.0200702  0.0063447  0.0076348  0.0325056  3.1633 0.0015600
-## Tau2_4_4     0.0352121  0.0125255  0.0106626  0.0597616  2.8112 0.0049351
-## Tau2_5_5     0.0671042  0.0175074  0.0327904  0.1014181  3.8329 0.0001266
-## Tau2_6_6     0.0284970  0.0079681  0.0128797  0.0441142  3.5764 0.0003484
-## Tau2_7_7     0.0490049  0.0169657  0.0157528  0.0822571  2.8885 0.0038712
-## Tau2_8_8     0.1001031  0.0272638  0.0466669  0.1535393  3.6716 0.0002410
-## Tau2_9_9     0.1113731  0.0372766  0.0383122  0.1844339  2.9877 0.0028104
+## Intercept1   0.4200809  0.0283378  0.3645397  0.4756220 14.8240 < 2.2e-16
+## Intercept2   0.1760101  0.0356973  0.1060447  0.2459755  4.9306 8.197e-07
+## Intercept3   0.4095008  0.0287725  0.3531078  0.4658938 14.2324 < 2.2e-16
+## Intercept4   0.1608085  0.0462025  0.0702532  0.2513638  3.4805 0.0005005
+## Intercept5   0.2540755  0.0465868  0.1627672  0.3453839  5.4538 4.930e-08
+## Intercept6   0.5623705  0.0326338  0.4984095  0.6263315 17.2328 < 2.2e-16
+## Intercept7   0.2781574  0.0530789  0.1741247  0.3821902  5.2405 1.602e-07
+## Intercept8   0.2985265  0.0598784  0.1811669  0.4158861  4.9855 6.179e-07
+## Intercept9   0.0385766  0.0782510 -0.1147926  0.1919459  0.4930 0.6220228
+## Intercept10  0.4280697  0.0736125  0.2837919  0.5723475  5.8152 6.057e-09
+## Tau2_1_1     0.0226391  0.0065919  0.0097192  0.0355590  3.4344 0.0005939
+## Tau2_2_2     0.0369127  0.0100774  0.0171615  0.0566640  3.6629 0.0002493
+## Tau2_3_3     0.0200703  0.0063447  0.0076348  0.0325058  3.1633 0.0015599
+## Tau2_4_4     0.0352123  0.0125255  0.0106627  0.0597619  2.8112 0.0049350
+## Tau2_5_5     0.0671048  0.0175075  0.0327907  0.1014189  3.8329 0.0001266
+## Tau2_6_6     0.0284971  0.0079682  0.0128798  0.0441144  3.5764 0.0003484
+## Tau2_7_7     0.0490051  0.0169658  0.0157528  0.0822574  2.8885 0.0038712
+## Tau2_8_8     0.1001037  0.0272640  0.0466672  0.1535402  3.6716 0.0002410
+## Tau2_9_9     0.1113739  0.0372769  0.0383125  0.1844352  2.9877 0.0028104
 ## Tau2_10_10   0.0997398  0.0330917  0.0348812  0.1645984  3.0140 0.0025779
 ##                
 ## Intercept1  ***
@@ -249,7 +249,7 @@ summary(random1)
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Q statistic on the homogeneity of effect sizes: 6627.499
+## Q statistic on the homogeneity of effect sizes: 6627.506
 ## Degrees of freedom of the Q statistic: 252
 ## P value of the Q statistic: 0
 ## 
@@ -270,7 +270,7 @@ summary(random1)
 ## Number of observed statistics: 262
 ## Number of estimated parameters: 20
 ## Degrees of freedom: 242
-## -2 log likelihood: -32.2498 
+## -2 log likelihood: -32.24907 
 ## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
 ## Other values may indicate problems.)
 ```
@@ -282,11 +282,11 @@ vec2symMat(coef(random1, select="fixed"), diag = FALSE)
 
 ```
 ##           [,1]      [,2]       [,3]      [,4]       [,5]
-## [1,] 1.0000000 0.4200803 0.17600953 0.4095000 0.16080712
-## [2,] 0.4200803 1.0000000 0.25407515 0.5623700 0.27815623
-## [3,] 0.1760095 0.2540752 1.00000000 0.2985260 0.03857574
-## [4,] 0.4095000 0.5623700 0.29852601 1.0000000 0.42806880
-## [5,] 0.1608071 0.2781562 0.03857574 0.4280688 1.00000000
+## [1,] 1.0000000 0.4200809 0.17601010 0.4095008 0.16080851
+## [2,] 0.4200809 1.0000000 0.25407554 0.5623705 0.27815744
+## [3,] 0.1760101 0.2540755 1.00000000 0.2985265 0.03857663
+## [4,] 0.4095008 0.5623705 0.29852648 1.0000000 0.42806966
+## [5,] 0.1608085 0.2781574 0.03857663 0.4280697 1.00000000
 ```
 
 # Stage 2 analysis: original model (Model A)
@@ -359,16 +359,16 @@ summary(ModelA)
 ## 95% confidence intervals: Likelihood-based statistic
 ## Coefficients:
 ##          Estimate Std.Error    lbound    ubound z value Pr(>|z|)
-## SN2BI    0.191328        NA  0.111581  0.267447      NA       NA
-## ATT2BI   0.449443        NA  0.361769  0.535924      NA       NA
-## PBC2BI   0.151839        NA  0.015280  0.284518      NA       NA
-## PBC2BEH -0.100206        NA -0.294226  0.081172      NA       NA
-## BI2BEH   0.476466        NA  0.343550  0.618420      NA       NA
-## ATT_SN   0.420175        NA  0.364633  0.475716      NA       NA
-## PBC_SN   0.176849        NA  0.106965  0.246703      NA       NA
+## BI2BEH   0.476467        NA  0.343551  0.618420      NA       NA
+## PBC2BEH -0.100206        NA -0.294219  0.081169      NA       NA
+## ATT2BI   0.449443        NA  0.361810  0.535924      NA       NA
+## PBC2BI   0.151839        NA  0.015286  0.284514      NA       NA
+## SN2BI    0.191328        NA  0.111581  0.267448      NA       NA
+## ATT_SN   0.420176        NA  0.364636  0.475715      NA       NA
+## VarBEH   0.791467        NA  0.657918  0.883379      NA       NA
+## VarBI    0.621455        NA  0.543113  0.688221      NA       NA
 ## PBC_ATT  0.251642        NA  0.160458  0.342905      NA       NA
-## VarBI    0.621456        NA  0.543098  0.688221      NA       NA
-## VarBEH   0.791469        NA  0.657920  0.883379      NA       NA
+## PBC_SN   0.176850        NA  0.106971  0.246702      NA       NA
 ## 
 ## Goodness-of-fit indices:
 ##                                                Value
@@ -378,7 +378,7 @@ summary(ModelA)
 ## p value of target model                       0.7316
 ## Number of constraints imposed on "Smatrix"    2.0000
 ## DF manually adjusted                          0.0000
-## Chi-square of independence model            782.6452
+## Chi-square of independence model            782.6509
 ## DF of independence model                     10.0000
 ## RMSEA                                         0.0000
 ## RMSEA lower 95% CI                            0.0000
@@ -449,15 +449,15 @@ summary(ModelC)
 ## 95% confidence intervals: Likelihood-based statistic
 ## Coefficients:
 ##           Estimate Std.Error     lbound     ubound z value Pr(>|z|)
-## SN2BI    0.1942871        NA  0.1144419  0.2704321      NA       NA
-## ATT2BI   0.4530917        NA  0.3650477  0.5398159      NA       NA
-## PBC2BI   0.1293778        NA -0.0010325  0.2562694      NA       NA
-## BI2BEH   0.4301733        NA  0.3276167  0.5340960      NA       NA
-## ATT_SN   0.4201689        NA  0.3646283  0.4757119      NA       NA
-## PBC_SN   0.1759434        NA  0.1059759  0.2459079      NA       NA
-## PBC_ATT  0.2543738        NA  0.1630667  0.3456844      NA       NA
-## VarBI    0.6275790        NA  0.5525930  0.6925185      NA       NA
-## VarBEH   0.8149510        NA  0.7147508  0.8928874      NA       NA
+## BI2BEH   0.4301748        NA  0.3276283  0.5340757      NA       NA
+## ATT2BI   0.4530919        NA  0.3650729  0.5398119      NA       NA
+## PBC2BI   0.1293778        NA -0.0010319  0.2561868      NA       NA
+## SN2BI    0.1942875        NA  0.1144424  0.2704043      NA       NA
+## ATT_SN   0.4201695        NA  0.3646303  0.4757087      NA       NA
+## VarBEH   0.8149497        NA  0.7147632  0.8926597      NA       NA
+## VarBI    0.6275782        NA  0.5525931  0.6925178      NA       NA
+## PBC_ATT  0.2543742        NA  0.1630667  0.3456816      NA       NA
+## PBC_SN   0.1759440        NA  0.1059799  0.2459081      NA       NA
 ## 
 ## Goodness-of-fit indices:
 ##                                                Value
@@ -467,7 +467,7 @@ summary(ModelC)
 ## p value of target model                       0.6215
 ## Number of constraints imposed on "Smatrix"    2.0000
 ## DF manually adjusted                          0.0000
-## Chi-square of independence model            782.6452
+## Chi-square of independence model            782.6509
 ## DF of independence model                     10.0000
 ## RMSEA                                         0.0000
 ## RMSEA lower 95% CI                            0.0000
@@ -540,23 +540,23 @@ summary(ModelB)
 ## 95% confidence intervals: Likelihood-based statistic
 ## Coefficients:
 ##          Estimate Std.Error    lbound    ubound z value Pr(>|z|)
-## SN2BI    0.197620        NA  0.115813  0.275563      NA       NA
-## ATT2BI   0.440798        NA  0.349554  0.530085      NA       NA
+## ATT2BEH  0.075531        NA -0.128632  0.270608      NA       NA
+## BI2BEH   0.427917        NA  0.182890  0.681225      NA       NA
+## PBC2BEH -0.103440        NA -0.293781  0.076180      NA       NA
+## SN2BEH  -0.027946        NA -0.162520  0.102501      NA       NA
+## ATT2BI   0.440799        NA  0.349555  0.530085      NA       NA
 ## PBC2BI   0.151747        NA  0.016496  0.283172      NA       NA
-## SN2BEH  -0.027947        NA -0.162520  0.102502      NA       NA
-## ATT2BEH  0.075530        NA -0.128632  0.270610      NA       NA
-## PBC2BEH -0.103440        NA -0.293783  0.076180      NA       NA
-## BI2BEH   0.427917        NA  0.182890  0.681224      NA       NA
-## ATT_SN   0.420080        NA  0.364540  0.475621      NA       NA
-## PBC_SN   0.176010        NA  0.106044  0.245980      NA       NA
-## PBC_ATT  0.254075        NA  0.162768  0.345383      NA       NA
-## VarBI    0.625882        NA  0.547068  0.692931      NA       NA
-## VarBEH   0.804297        NA  0.639227  0.903561      NA       NA
+## SN2BI    0.197621        NA  0.115813  0.275563      NA       NA
+## ATT_SN   0.420081        NA  0.364540  0.475622      NA       NA
+## VarBEH   0.804297        NA  0.639226  0.903561      NA       NA
+## VarBI    0.625881        NA  0.547062  0.692934      NA       NA
+## PBC_ATT  0.254076        NA  0.162768  0.345384      NA       NA
+## PBC_SN   0.176010        NA  0.106045  0.245981      NA       NA
 ## 
 ## mxAlgebras objects (and their 95% likelihood-based CIs):
-##                   lbound    Estimate    ubound
-## indirect[1,1]  0.1429922  0.33812515 0.5693834
-## direct[1,1]   -0.3522901 -0.05585679 0.2151004
+##                   lbound   Estimate    ubound
+## indirect[1,1]  0.1429937  0.3381256 0.5693841
+## direct[1,1]   -0.3522892 -0.0558552 0.2151028
 ## 
 ## Goodness-of-fit indices:
 ##                                              Value
@@ -596,9 +596,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.3.1 (2016-06-21)
+## R version 3.4.1 (2017-06-30)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Linux Mint 18
+## Running under: Linux Mint 18.2
+## 
+## Matrix products: default
+## BLAS: /usr/lib/openblas-base/libblas.so.3
+## LAPACK: /usr/lib/libopenblasp-r0.2.18.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_SG.UTF-8       LC_NUMERIC=C              
@@ -609,39 +613,40 @@ sessionInfo()
 ## [11] LC_MEASUREMENT=en_SG.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
-## [1] parallel  stats     graphics  grDevices utils     datasets  methods  
-## [8] base     
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] semPlot_1.0.1      metaSEM_0.9.11-5   OpenMx_2.6.9      
-## [4] Rcpp_0.12.7        Matrix_1.2-7.1     MASS_7.3-45       
-## [7] digest_0.6.10      rmarkdown_1.0.9015
+## [1] semPlot_1.1    metaSEM_0.9.14 OpenMx_2.7.13  rmarkdown_1.6 
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] splines_3.3.1        ellipse_0.3-8        gtools_3.5.0        
-##  [4] network_1.13.0       Formula_1.2-1        assertthat_0.1      
-##  [7] stats4_3.3.1         latticeExtra_0.6-28  d3Network_0.5.2.1   
-## [10] yaml_2.1.13          lisrelToR_0.1.4      pbivnorm_0.6.0      
-## [13] lattice_0.20-34      quantreg_5.29        quadprog_1.5-5      
-## [16] chron_2.3-47         RColorBrewer_1.1-2   ggm_2.3             
-## [19] minqa_1.2.4          colorspace_1.2-6     htmltools_0.3.5     
-## [22] plyr_1.8.4           psych_1.6.9          XML_3.98-1.4        
-## [25] SparseM_1.72         corpcor_1.6.8        scales_0.4.0        
-## [28] whisker_0.3-2        glasso_1.8           sna_2.4             
-## [31] jpeg_0.1-8           fdrtool_1.2.15       lme4_1.1-12         
-## [34] MatrixModels_0.4-1   huge_1.2.7           arm_1.9-1           
-## [37] tibble_1.2           rockchalk_1.8.101    mgcv_1.8-15         
-## [40] car_2.1-3            ggplot2_2.1.0        nnet_7.3-12         
-## [43] pbkrtest_0.4-6       mnormt_1.5-4         survival_2.39-5     
-## [46] magrittr_1.5         statnet.common_3.3.0 evaluate_0.9        
-## [49] nlme_3.1-128         foreign_0.8-67       tools_3.3.1         
-## [52] data.table_1.9.6     formatR_1.4          stringr_1.1.0       
-## [55] munsell_0.4.3        cluster_2.0.4        sem_3.1-8           
-## [58] grid_3.3.1           nloptr_1.0.4         rjson_0.2.15        
-## [61] igraph_1.0.1         lavaan_0.5-22        boot_1.3-18         
-## [64] mi_1.0               gtable_0.2.0         abind_1.4-5         
-## [67] reshape2_1.4.1       qgraph_1.3.5         gridExtra_2.2.1     
-## [70] knitr_1.14           Hmisc_3.17-4         stringi_1.1.1       
-## [73] matrixcalc_1.0-3     rpart_4.1-10         acepack_1.3-3.3     
-## [76] png_0.1-7            coda_0.18-1
+##  [1] splines_3.4.1        ellipse_0.3-8        gtools_3.5.0        
+##  [4] network_1.13.0       Formula_1.2-2        semTools_0.4-14     
+##  [7] stats4_3.4.1         latticeExtra_0.6-28  d3Network_0.5.2.1   
+## [10] yaml_2.1.14          lisrelToR_0.1.4      pbivnorm_0.6.0      
+## [13] backports_1.1.0      lattice_0.20-35      quantreg_5.33       
+## [16] quadprog_1.5-5       digest_0.6.12        RColorBrewer_1.1-2  
+## [19] checkmate_1.8.3      ggm_2.3              minqa_1.2.4         
+## [22] colorspace_1.3-2     htmltools_0.3.6      Matrix_1.2-10       
+## [25] plyr_1.8.4           psych_1.7.5          XML_3.98-1.9        
+## [28] SparseM_1.77         corpcor_1.6.9        mvtnorm_1.0-6       
+## [31] scales_0.4.1         whisker_0.3-2        glasso_1.8          
+## [34] sna_2.4              jpeg_0.1-8           fdrtool_1.2.15      
+## [37] lme4_1.1-13          MatrixModels_0.4-1   huge_1.2.7          
+## [40] arm_1.9-3            tibble_1.3.3         htmlTable_1.9       
+## [43] rockchalk_1.8.101    mgcv_1.8-18          car_2.1-5           
+## [46] ggplot2_2.2.1        nnet_7.3-12          lazyeval_0.2.0      
+## [49] pbkrtest_0.4-7       mnormt_1.5-5         statnet.common_3.3.0
+## [52] survival_2.41-3      magrittr_1.5         evaluate_0.10.1     
+## [55] nlme_3.1-131         MASS_7.3-47          foreign_0.8-69      
+## [58] tools_3.4.1          data.table_1.10.4    stringr_1.2.0       
+## [61] munsell_0.4.3        cluster_2.0.6        compiler_3.4.1      
+## [64] sem_3.1-9            rlang_0.1.1          grid_3.4.1          
+## [67] nloptr_1.0.4         rjson_0.2.15         htmlwidgets_0.9     
+## [70] igraph_1.0.1         lavaan_0.5-23.1097   base64enc_0.1-3     
+## [73] boot_1.3-20          mi_1.0               gtable_0.2.0        
+## [76] abind_1.4-5          reshape2_1.4.2       qgraph_1.4.3        
+## [79] gridExtra_2.2.1      knitr_1.16           Hmisc_4.0-3         
+## [82] rprojroot_1.2        stringi_1.1.5        matrixcalc_1.0-3    
+## [85] parallel_3.4.1       Rcpp_0.12.12         rpart_4.1-11        
+## [88] acepack_1.4.1        png_0.1-7            coda_0.19-1
 ```

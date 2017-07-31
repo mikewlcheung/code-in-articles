@@ -14,8 +14,8 @@ output:
     toc: yes
 ---
 
-This file includes examples used in Cheung and Hong (in press):
-Cheung, M. W.-L., & Hong, R. Y. (in press). Applications of meta-analytic structural equation modeling in health psychology: Examples, issues, and recommendations. *Health Psychology Review*.
+This file includes examples used in Cheung and Hong (2017):
+Cheung, M. W.-L., & Hong, R. Y. (2017). Applications of meta-analytic structural equation modeling in health psychology: Examples, issues, and recommendations. *Health Psychology Review*, *11*(3), 265-279. http://doi.org/10.1080/17437199.2017.1343678
 
 # Displaying some descriptive statistics of the data
 ```{r, message=FALSE}
@@ -96,7 +96,7 @@ summary(ModelA)
 ```
 
 * To facilitate the interpretations, we may print the model with the parameter estimates using the `semPlot` package.
-```{r}
+```{r, warning=FALSE}
 ## Convert the model to semPlotModel object
 my.plota <- meta2semPlot(ModelA)
 
@@ -105,7 +105,7 @@ semPaths(my.plota, whatLabels="est", edge.label.cex=1, color="yellow")
 ```
 
 # Stage 2 analysis: no direct effect from PBC (Model C)
-```{r}
+```{r, warning=FALSE}
 ## Delete the direct effect from PBC to BEH
 A2 <- create.mxMatrix(c(0,0,0,0,0,
                         0,0,0,0,0,
@@ -150,7 +150,7 @@ A3
 ```
 
 * We may calculate functions of parameters with the `mx.algebras` argument. In this example, we calculate the indirect and direct effects. After the analysis, 95% CI on the indirect and direct effects are estimated.
-```{r}
+```{r, warning=FALSE}
 ModelB <- tssem2(random1, Amatrix=A3, Smatrix=S1, diag.constraints=TRUE, intervals.type="LB",
                  mx.algebras=list(indirect=mxAlgebra((SN2BI+ATT2BI+PBC2BI)*BI2BEH, name="indirect"),
                                   direct=mxAlgebra(SN2BEH+ATT2BEH+PBC2BEH, name="direct")))

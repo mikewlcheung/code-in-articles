@@ -16,4 +16,4 @@
 
 [Cheung, M. W.-L., & Jak, S. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Jak%202016). Analyzing big data in psychology: A split/analyze/meta-analyze approach. *Frontiers in Psychology*, *7* (738). http://doi.org/10.3389/fpsyg.2016.00738
 
-[Cheung, M. W.-L., & Hong, R. Y. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Hong%202016). Cheung, M. W.-L., & Hong, R. Y. (in press). Applications of meta-analytic structural equation modeling in health psychology: Examples, issues, and recommendations. *Health Psychology Review*.
+[Cheung, M. W.-L., & Hong, R. Y. (2017)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Hong%202017). Cheung, M. W.-L., & Hong, R. Y. (in press). Applications of meta-analytic structural equation modeling in health psychology: Examples, issues, and recommendations. *Health Psychology Review*, *11*(3), 265-279. http://doi.org/10.1080/17437199.2017.1343678
