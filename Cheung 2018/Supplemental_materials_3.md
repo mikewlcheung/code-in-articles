@@ -1,6 +1,20 @@
-# Supplemental Materials #3: Demonstration of the Incorrect Population Correlation Matrices and Model Specifications in Study 1 in Yu et al. (2016)
-Mike W.-L. Cheung  
-`r format(Sys.Date(), "%B %d, %Y")`  
+---
+title: 'Supplemental Materials #3: Demonstration of the Incorrect Population Correlation
+  Matrices and Model Specifications in Study 1 in Yu et al. (2016)'
+author: 'Mike W.-L. Cheung'
+date: 'July 13, 2018'
+output:
+  pdf_document:
+    toc: yes
+    keep_tex: true
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes 
+  word_document:
+    toc: no
+---
 
 # Figure 1 in Yu et al. (2016)
 
@@ -55,18 +69,19 @@ summary(fit.incorrect1)
 ```
 
 ```
-## lavaan (0.5-23.1097) converged normally after   9 iterations
+## lavaan (0.6-1) converged normally after   9 iterations
 ## 
 ##   Number of observations                          1000
 ## 
 ##   Estimator                                         ML
-##   Minimum Function Test Statistic               59.215
+##   Model Fit Test Statistic                      59.215
 ##   Degrees of freedom                                 2
 ##   P-value (Chi-square)                           0.000
 ## 
 ## Parameter Estimates:
 ## 
 ##   Information                                 Expected
+##   Information saturated (h1) model          Structured
 ##   Standard Errors                             Standard
 ## 
 ## Regressions:
@@ -121,17 +136,18 @@ summary(fit.incorrect2)
 ```
 
 ```
-## lavaan (0.5-23.1097) converged normally after  12 iterations
+## lavaan (0.6-1) converged normally after  12 iterations
 ## 
 ##   Number of observations                          1000
 ## 
 ##   Estimator                                         ML
-##   Minimum Function Test Statistic                0.000
+##   Model Fit Test Statistic                       0.000
 ##   Degrees of freedom                                 0
 ## 
 ## Parameter Estimates:
 ## 
 ##   Information                                 Expected
+##   Information saturated (h1) model          Structured
 ##   Standard Errors                             Standard
 ## 
 ## Regressions:
@@ -249,18 +265,19 @@ summary(fit.correct1)
 ```
 
 ```
-## lavaan (0.5-23.1097) converged normally after  10 iterations
+## lavaan (0.6-1) converged normally after  10 iterations
 ## 
 ##   Number of observations                          1000
 ## 
 ##   Estimator                                         ML
-##   Minimum Function Test Statistic                0.000
+##   Model Fit Test Statistic                       0.000
 ##   Degrees of freedom                                 2
 ##   P-value (Chi-square)                           1.000
 ## 
 ## Parameter Estimates:
 ## 
 ##   Information                                 Expected
+##   Information saturated (h1) model          Structured
 ##   Standard Errors                             Standard
 ## 
 ## Regressions:
@@ -490,18 +507,19 @@ summary(fit.incorrect3)
 ```
 
 ```
-## lavaan (0.5-23.1097) converged normally after   9 iterations
+## lavaan (0.6-1) converged normally after   9 iterations
 ## 
 ##   Number of observations                          1000
 ## 
 ##   Estimator                                         ML
-##   Minimum Function Test Statistic             1276.262
+##   Model Fit Test Statistic                    1276.262
 ##   Degrees of freedom                                 8
 ##   P-value (Chi-square)                           0.000
 ## 
 ## Parameter Estimates:
 ## 
 ##   Information                                 Expected
+##   Information saturated (h1) model          Structured
 ##   Standard Errors                             Standard
 ## 
 ## Regressions:
@@ -574,18 +592,18 @@ summary(fit.incorrect4)
 ```
 
 ```
-## lavaan (0.5-23.1097) converged normally after  19 iterations
+## lavaan (0.6-1) converged normally after  19 iterations
 ## 
 ##   Number of observations                          1000
 ## 
 ##   Estimator                                         ML
-##   Minimum Function Test Statistic                0.000
+##   Model Fit Test Statistic                       0.000
 ##   Degrees of freedom                                 0
-##   Minimum Function Value               0.0000000000000
 ## 
 ## Parameter Estimates:
 ## 
 ##   Information                                 Expected
+##   Information saturated (h1) model          Structured
 ##   Standard Errors                             Standard
 ## 
 ## Regressions:
@@ -730,18 +748,19 @@ summary(fit.correct2)
 ```
 
 ```
-## lavaan (0.5-23.1097) converged normally after  10 iterations
+## lavaan (0.6-1) converged normally after  10 iterations
 ## 
 ##   Number of observations                          1000
 ## 
 ##   Estimator                                         ML
-##   Minimum Function Test Statistic                0.000
+##   Model Fit Test Statistic                       0.000
 ##   Degrees of freedom                                 8
 ##   P-value (Chi-square)                           1.000
 ## 
 ## Parameter Estimates:
 ## 
 ##   Information                                 Expected
+##   Information saturated (h1) model          Structured
 ##   Standard Errors                             Standard
 ## 
 ## Regressions:
@@ -989,59 +1008,64 @@ sessionInfo()
 ```
 
 ```
-## R version 3.4.2 (2017-09-28)
+## R version 3.5.1 (2018-07-02)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Linux Mint 18.2
+## Running under: Ubuntu 18.04 LTS
 ## 
 ## Matrix products: default
-## BLAS: /usr/lib/openblas-base/libblas.so.3
-## LAPACK: /usr/lib/libopenblasp-r0.2.18.so
+## BLAS: /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_SG.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_SG.UTF-8        LC_COLLATE=en_SG.UTF-8    
-##  [5] LC_MONETARY=en_SG.UTF-8    LC_MESSAGES=en_SG.UTF-8   
-##  [7] LC_PAPER=en_SG.UTF-8       LC_NAME=C                 
-##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_SG.UTF-8 LC_IDENTIFICATION=C       
+##  [1] LC_CTYPE=en_US.utf8       LC_NUMERIC=C             
+##  [3] LC_TIME=en_US.utf8        LC_COLLATE=en_US.utf8    
+##  [5] LC_MONETARY=en_US.utf8    LC_MESSAGES=en_US.utf8   
+##  [7] LC_PAPER=en_US.utf8       LC_NAME=C                
+##  [9] LC_ADDRESS=C              LC_TELEPHONE=C           
+## [11] LC_MEASUREMENT=en_US.utf8 LC_IDENTIFICATION=C      
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] metaSEM_0.9.17-0   OpenMx_2.7.18      knitr_1.17        
-## [4] semPlot_1.1        lavaan_0.5-23.1097 rmarkdown_1.6     
+## [1] metaSEM_1.1.1  OpenMx_2.9.9   knitr_1.20     semPlot_1.1   
+## [5] lavaan_0.6-1   rmarkdown_1.10
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] splines_3.4.2        ellipse_0.3-8        gtools_3.5.0        
-##  [4] network_1.13.0       Formula_1.2-2        highr_0.6           
-##  [7] semTools_0.4-14      BDgraph_2.41         stats4_3.4.2        
-## [10] latticeExtra_0.6-28  d3Network_0.5.2.1    yaml_2.1.14         
-## [13] lisrelToR_0.1.4      pbivnorm_0.6.0       backports_1.1.1     
-## [16] lattice_0.20-35      quantreg_5.33        quadprog_1.5-5      
-## [19] digest_0.6.12        RColorBrewer_1.1-2   checkmate_1.8.4     
-## [22] ggm_2.3              minqa_1.2.4          colorspace_1.3-2    
-## [25] htmltools_0.3.6      Matrix_1.2-11        plyr_1.8.4          
-## [28] psych_1.7.8          XML_3.98-1.9         pkgconfig_2.0.1     
-## [31] SparseM_1.77         mvtnorm_1.0-6        corpcor_1.6.9       
-## [34] scales_0.5.0         whisker_0.3-2        glasso_1.8          
-## [37] sna_2.4              jpeg_0.1-8           fdrtool_1.2.15      
-## [40] lme4_1.1-14          MatrixModels_0.4-1   huge_1.2.7          
-## [43] arm_1.9-3            tibble_1.3.4         htmlTable_1.9       
-## [46] rockchalk_1.8.101    mgcv_1.8-22          car_2.1-5           
-## [49] ggplot2_2.2.1        nnet_7.3-12          lazyeval_0.2.0      
-## [52] pbkrtest_0.4-7       mnormt_1.5-5         statnet.common_4.0.0
-## [55] survival_2.41-3      magrittr_1.5         evaluate_0.10.1     
-## [58] nlme_3.1-131         MASS_7.3-47          foreign_0.8-69      
-## [61] tools_3.4.2          data.table_1.10.4-2  stringr_1.2.0       
-## [64] munsell_0.4.3        cluster_2.0.6        compiler_3.4.2      
-## [67] sem_3.1-9            rlang_0.1.2          grid_3.4.2          
-## [70] nloptr_1.0.4         rjson_0.2.15         htmlwidgets_0.9     
-## [73] igraph_1.1.2         base64enc_0.1-3      boot_1.3-20         
-## [76] mi_1.0               gtable_0.2.0         abind_1.4-5         
-## [79] reshape2_1.4.2       qgraph_1.4.4         gridExtra_2.3       
-## [82] Hmisc_4.0-3          rprojroot_1.2        stringi_1.1.5       
-## [85] matrixcalc_1.0-3     parallel_3.4.2       Rcpp_0.12.13        
-## [88] rpart_4.1-11         acepack_1.4.1        png_0.1-7           
-## [91] coda_0.19-1
+##   [1] nlme_3.1-137         RColorBrewer_1.1-2   rprojroot_1.3-2     
+##   [4] mi_1.0               tools_3.5.1          backports_1.1.2     
+##   [7] R6_2.2.2             d3Network_0.5.2.1    rpart_4.1-13        
+##  [10] Hmisc_4.1-1          lazyeval_0.2.1       colorspace_1.3-2    
+##  [13] nnet_7.3-12          tidyselect_0.2.4     gridExtra_2.3       
+##  [16] mnormt_1.5-5         curl_3.2             compiler_3.5.1      
+##  [19] qgraph_1.5           fdrtool_1.2.15       htmlTable_1.12      
+##  [22] network_1.13.0.1     scales_0.5.0         checkmate_1.8.5     
+##  [25] mvtnorm_1.0-8        psych_1.8.4          pbapply_1.3-4       
+##  [28] sem_3.1-9            stringr_1.3.1        digest_0.6.15       
+##  [31] pbivnorm_0.6.0       foreign_0.8-70       minqa_1.2.4         
+##  [34] rio_0.5.10           base64enc_0.1-3      jpeg_0.1-8          
+##  [37] pkgconfig_2.0.1      htmltools_0.3.6      lme4_1.1-17         
+##  [40] lisrelToR_0.1.4      highr_0.7            htmlwidgets_1.2     
+##  [43] rlang_0.2.1          readxl_1.1.0         huge_1.2.7          
+##  [46] rstudioapi_0.7       bindr_0.1.1          gtools_3.8.1        
+##  [49] statnet.common_4.1.4 acepack_1.4.1        dplyr_0.7.6         
+##  [52] zip_1.0.0            car_3.0-0            magrittr_1.5        
+##  [55] Formula_1.2-3        Matrix_1.2-14        Rcpp_0.12.17        
+##  [58] munsell_0.5.0        abind_1.4-5          rockchalk_1.8.111   
+##  [61] whisker_0.3-2        stringi_1.2.3        yaml_2.1.19         
+##  [64] carData_3.0-1        MASS_7.3-50          plyr_1.8.4          
+##  [67] matrixcalc_1.0-3     grid_3.5.1           parallel_3.5.1      
+##  [70] forcats_0.3.0        lattice_0.20-35      haven_1.1.2         
+##  [73] splines_3.5.1        hms_0.4.2            sna_2.4             
+##  [76] pillar_1.2.3         igraph_1.2.1         rjson_0.2.20        
+##  [79] boot_1.3-20          corpcor_1.6.9        BDgraph_2.51        
+##  [82] reshape2_1.4.3       stats4_3.5.1         XML_3.98-1.11       
+##  [85] glue_1.2.0           evaluate_0.10.1      latticeExtra_0.6-28 
+##  [88] data.table_1.11.4    png_0.1-7            nloptr_1.0.4        
+##  [91] cellranger_1.1.0     gtable_0.2.0         purrr_0.2.5         
+##  [94] assertthat_0.2.0     ggplot2_3.0.0        openxlsx_4.1.0      
+##  [97] semTools_0.5-0       coda_0.19-1          glasso_1.8          
+## [100] survival_2.42-3      tibble_1.4.2         arm_1.10-1          
+## [103] ggm_2.3              ellipse_0.4.1        bindrcpp_0.2.2      
+## [106] cluster_2.0.7-1
 ```

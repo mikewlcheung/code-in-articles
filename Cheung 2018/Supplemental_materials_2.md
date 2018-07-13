@@ -1,6 +1,19 @@
-# Supplemental Materials #2: Re-analysis of Study 14 (Monnot et al., 2011) in Yu et al. (2016)
-Mike W.-L. Cheung  
-`r format(Sys.Date(), "%B %d, %Y")`  
+---
+title: 'Supplemental Materials #2: Re-analysis of Study 14 (Monnot et al., 2011) in Yu et al. (2016)'
+author: 'Mike W.-L. Cheung'
+date: 'July 13, 2018'
+output:
+  pdf_document:
+    toc: yes
+    keep_tex: true
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+  word_document:
+    toc: yes
+---
 
 # Functions for the analysis
 * This function is modified from the one in Yu et al. (2016) Supplemental Materials #1 with three key differences:
@@ -358,35 +371,34 @@ sessionInfo()
 ```
 
 ```
-## R version 3.4.2 (2017-09-28)
+## R version 3.5.1 (2018-07-02)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Linux Mint 18.2
+## Running under: Ubuntu 18.04 LTS
 ## 
 ## Matrix products: default
-## BLAS: /usr/lib/openblas-base/libblas.so.3
-## LAPACK: /usr/lib/libopenblasp-r0.2.18.so
+## BLAS: /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_SG.UTF-8       LC_NUMERIC=C              
-##  [3] LC_TIME=en_SG.UTF-8        LC_COLLATE=en_SG.UTF-8    
-##  [5] LC_MONETARY=en_SG.UTF-8    LC_MESSAGES=en_SG.UTF-8   
-##  [7] LC_PAPER=en_SG.UTF-8       LC_NAME=C                 
-##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-## [11] LC_MEASUREMENT=en_SG.UTF-8 LC_IDENTIFICATION=C       
+##  [1] LC_CTYPE=en_US.utf8       LC_NUMERIC=C             
+##  [3] LC_TIME=en_US.utf8        LC_COLLATE=en_US.utf8    
+##  [5] LC_MONETARY=en_US.utf8    LC_MESSAGES=en_US.utf8   
+##  [7] LC_PAPER=en_US.utf8       LC_NAME=C                
+##  [9] LC_ADDRESS=C              LC_TELEPHONE=C           
+## [11] LC_MEASUREMENT=en_US.utf8 LC_IDENTIFICATION=C      
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] Matrix_1.2-11      psych_1.7.8        MASS_7.3-47       
-## [4] lavaan_0.5-23.1097 matrixcalc_1.0-3   plyr_1.8.4        
-## [7] rmarkdown_1.6     
+## [1] Matrix_1.2-14    psych_1.8.4      MASS_7.3-50      lavaan_0.6-1    
+## [5] matrixcalc_1.0-3 plyr_1.8.4       rmarkdown_1.10  
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.13    knitr_1.17      magrittr_1.5    mnormt_1.5-5   
-##  [5] pbivnorm_0.6.0  lattice_0.20-35 quadprog_1.5-5  stringr_1.2.0  
-##  [9] tools_3.4.2     parallel_3.4.2  grid_3.4.2      nlme_3.1-131   
-## [13] htmltools_0.3.6 yaml_2.1.14     rprojroot_1.2   digest_0.6.12  
-## [17] evaluate_0.10.1 stringi_1.1.5   compiler_3.4.2  backports_1.1.1
-## [21] stats4_3.4.2    foreign_0.8-69
+##  [1] Rcpp_0.12.17    knitr_1.20      magrittr_1.5    mnormt_1.5-5   
+##  [5] pbivnorm_0.6.0  lattice_0.20-35 stringr_1.3.1   tools_3.5.1    
+##  [9] parallel_3.5.1  grid_3.5.1      nlme_3.1-137    htmltools_0.3.6
+## [13] yaml_2.1.19     rprojroot_1.3-2 digest_0.6.15   evaluate_0.10.1
+## [17] stringi_1.2.3   compiler_3.5.1  backports_1.1.2 stats4_3.5.1   
+## [21] foreign_0.8-70
 ```
