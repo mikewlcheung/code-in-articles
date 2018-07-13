@@ -2,13 +2,14 @@
 
 [Errata in published articles](./errata/errata.pdf)
 
-[Cheung, M. W.-L. (in press)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20in%20press). [Issues in solving the problem of effect size heterogeneity in meta-analytic structural equation modeling: A commentary and simulation study on Yu, Downes, Carter, and O'Boyle (2016)](https://psyarxiv.com/37p2z). *Journal of Applied Psychology*.
 
 [Cheung, M. W.-L. (2008)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202008). A model for integrating fixed-, random-, and mixed-effects meta-analyses into structural equation modeling. *Psychological Methods*, *13*(3), 182-202. http://dx.doi.org/10.1037/a0013163.
 
 [Cheung, M. W.-L. (2010)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202010). Fixed-effects meta-analyses as multiple-group structural equation models. *Structural Equation Modeling: A Multidisciplinary Journal*, *17*(3), 481-509. http://dx.doi.org/10.1080/10705511.2010.489367.
 
 [Cheung, M. W.-L. (2013a)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202013a). Multivariate meta-analysis as structural equation models. *Structural Equation Modeling: A Multidisciplinary Journal*, *20*(3),  429-454. http://dx.doi.org/10.1080/10705511.2013.797827.
+
+[Cheung, M. W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202018). [Issues in solving the problem of effect size heterogeneity in meta-analytic structural equation modeling: A commentary and simulation study on Yu, Downes, Carter, and O'Boyle (2016)](https://psyarxiv.com/37p2z). *Journal of Applied Psychology*, *103*(7), 787-803. http://dx.doi.org/10.1037/apl0000284
 
 [Cheung, M. W.-L., & Cheung, S.-F. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Cheung%202016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*, *7*(2), 140–155. http://doi.org/10.1002/jrsm.1166.
 
