@@ -1,0 +1,217 @@
+---
+title: "MASEM on Gnambs et al. (2018)"
+author: "Suzanne Jak and Mike Cheung"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: no
+  word_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+# Data preparation
+```{r}
+library(metaSEM)
+
+## Create a new dataset without missing value in Individualism
+index_na <- is.na(Gnambs18$Individualism)
+Gnambs18 <- lapply(Gnambs18, function(x) x[!index_na])
+
+## Select data with the correlation matrices, i.e., exclude studies with factor loadings
+index <- Gnambs18$CorMat==1
+Gnambs18 <- lapply(Gnambs18, function(x) x[index])
+
+my.df <- Cor2DataFrame(Gnambs18$data, Gnambs18$n, acov = "weighted")
+
+## Add the standardized individualism as the moderator
+## Standardization of the moderator improves the convergence.
+my.df$data <- data.frame(my.df$data,
+                         Individualism=scale(Gnambs18$Individualism),
+                         check.names=FALSE)
+summary(my.df)
+```
+
+# TSSEM
+## One general factor model
+
+```{r}
+rand1 <- tssem1(Gnambs18$data, Gnambs18$n, method="REM", RE.type="Diag")
+summary(rand1)
+
+## One general factor
+model1 <- "G =~ g1*I1 + g2*I2 + g3*I3 + g4*I4 + g5*I5 +
+                g6*I6 + g7*I7 + g8*I8 + g9*I9 + g10*I10"
+
+RAM1 <- lavaan2RAM(model1, obs.variables = paste0("I", 1:10))
+RAM1
+
+rand2a <- tssem2(rand1, Amatrix = RAM1$A, Smatrix = RAM1$S, Fmatrix = RAM1$F)
+summary(rand2a)
+plot(rand2a, col="green")
+```
+
+## Bifactor model with positive and negative Self-Esteem
+```{r}
+model2 <- "G =~ g1*I1 + g2*I2 + g3*I3 + g4*I4 + g5*I5 + 
+                g6*I6 + g7*I7 + g8*I8 + g9*I9 + g10*I10
+           POS =~ p1*I1 + p3*I3 + p4*I4 + p7*I7 + p10*I10
+           NEG =~ n2*I2 + n5*I5 + n6*I6 + n8*I8 + n9*I9"
+
+RAM2 <- lavaan2RAM(model2, obs.variables = paste0("I", 1:10))
+RAM2
+
+rand2b <- tssem2(rand1, Amatrix = RAM2$A, Smatrix = RAM2$S, Fmatrix = RAM2$F)
+summary(rand2b)
+plot(rand2b, col="green")
+
+## Compare the one general factor to the bifactor model
+anova(rand2b, rand2a)
+```
+
+## Models with two subgroup analysis
+```{r}
+# Data for studies with individualism below the mean
+data_g1 <- Gnambs18$data[my.df$data$Individualism < 0 ]
+n_g1 <- Gnambs18$n[my.df$data$Individualism < 0 ]
+
+# Data for studies with individualism above or equal the mean
+data_g2 <- Gnambs18$data[my.df$data$Individualism >= 0 ]
+n_g2 <- Gnambs18$n[my.df$data$Individualism >= 0 ]
+```
+
+### Fitting a random-effects Stage 1 model in two subgroups
+```{r, message=FALSE}
+## Stage 1 analysis per subgroup (random-effects analysis)
+stage1_g1.fit <- tssem1(Cov = data_g1, n = n_g1, method = "REM", RE.type = "Diag")
+stage1_g2.fit <- tssem1(Cov = data_g2, n = n_g2, method = "REM", RE.type = "Diag")
+
+summary(stage1_g1.fit)
+summary(stage1_g2.fit)
+```
+
+### Fitting the Stage 2 bifactor model in both subgroups
+```{r}
+## Stage 2 analysis per subgroup (random-effect analysis)
+stage2_g1.fit <- tssem2(stage1_g1.fit, Amatrix=RAM2$A, Smatrix=RAM2$S, Fmatrix=RAM2$F)
+stage2_g2.fit <- tssem2(stage1_g2.fit, Amatrix=RAM2$A, Smatrix=RAM2$S, Fmatrix=RAM2$F)
+
+summary(stage2_g1.fit)
+summary(stage2_g2.fit)
+```
+
+# OSMASEM
+## One general factor model without any moderator
+```{r}
+## Create matrices with implicit diagonal constraints
+M0a <- create.vechsR(A0=RAM1$A, S0=RAM1$S, F0=RAM1$F)
+
+## Create heterogeneity variances
+T0a <- create.Tau2(RAM=RAM1, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
+
+fit0a <- osmasem(model.name="No moderator", Mmatrix=M0a, Tmatrix=T0a, data=my.df)
+summary(fit0a, Saturated=TRUE)
+
+## SRMR
+osmasemSRMR(fit0a)
+
+## Show the heterogeneity variances
+diag(VarCorr(fit0a))
+```
+
+## One general factor model with `Individualism` as a moderator on the A matrix
+```{r, error=TRUE}
+## Replace the A matrix with the moderator "Individualism"
+Ax1a <- RAM1$A
+Ax1a[grep("\\*", Ax1a)] <- "0*data.Individualism"
+Ax1a
+
+## Create matrices with implicit diagonal constraints
+M1a <- create.vechsR(A0=RAM1$A, S0=RAM1$S, F0=RAM1$F, Ax=Ax1a)
+
+fit1a <- osmasem(model.name="Moderator with individualism", Mmatrix=M1a, Tmatrix=T0a, data=my.df)
+summary(fit1a)
+
+## Get the R2
+osmasemR2(fit1a, fit0a)
+
+## Compare the models with and without Individualism
+anova(fit1a, fit0a)
+
+## Get the estimated A0 and A1
+A0 <- mxEval(A0, fit1a$mx.fit)
+A0
+A1 <- mxEval(A1, fit1a$mx.fit)
+A1
+
+## Compute the estimated A matrix at -1SD (-1) of the standardized individualism
+A0 - A1
+
+## Compute the estimated A matrix at 0 (mean) of the standardized individualism
+A0
+
+## Compute the estimated A matrix at +1SD (+1) of the standardized individualism
+A0 + A1
+```
+
+## Bifactor model without any moderator
+```{r}
+## Create matrices with implicit diagonal constraints
+M0b <- create.vechsR(A0=RAM2$A, S0=RAM2$S, F0=RAM2$F)
+
+## Create heterogeneity variances
+T0b <- create.Tau2(RAM=RAM2, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
+
+fit0b <- osmasem(model.name="No moderator", Mmatrix=M0b, Tmatrix=T0b, data=my.df)
+summary(fit0b, Saturated=TRUE)
+
+## SRMR
+osmasemSRMR(fit0b)
+
+diag(VarCorr(fit0b))
+```
+
+## Bifactor model  with `Individualism` as a moderator on the A matrix
+```{r, error=TRUE}
+## Replace the A matrix with the moderator "Individualism"
+Ax1b <- RAM2$A
+Ax1b[grep("\\*", Ax1b)] <- "0*data.Individualism"
+Ax1b
+
+## Create matrices with implicit diagonal constraints
+M1b <- create.vechsR(A0=RAM2$A, S0=RAM2$S, F0=RAM2$F, Ax=Ax1b)
+
+fit1b <- osmasem(model.name="Moderator with individualism", Mmatrix=M1b, Tmatrix=T0b, data=my.df)
+summary(fit1b)
+
+## Get the R2
+osmasemR2(fit1b, fit0b)
+
+## Compare the models with and without Individualism
+anova(fit1b, fit0b)
+
+## Get the estimated A0 and A1
+A0 <- mxEval(A0, fit1b$mx.fit)
+A0
+A1 <- mxEval(A1, fit1b$mx.fit)
+A1
+
+## Compute the estimated A matrix at -1SD (-1) of the standardized individualism
+A0 - A1
+
+## Compute the estimated A matrix at 0 (mean) of the standardized individualism
+A0
+
+## Compute the estimated A matrix at +1SD (+1) of the standardized individualism
+A0 + A1
+
+save.image(file="Gnambs2018.RData")
+
+sessionInfo()
+```
+

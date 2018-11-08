@@ -11,12 +11,14 @@
 
 [Cheung, M. W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202018). [Issues in solving the problem of effect size heterogeneity in meta-analytic structural equation modeling: A commentary and simulation study on Yu, Downes, Carter, and O'Boyle (2016)](https://psyarxiv.com/37p2z). *Journal of Applied Psychology*, *103*(7), 787-803. http://dx.doi.org/10.1037/apl0000284
 
-[Cheung, M. W.-L., & Cheung, S.-F. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Cheung%202016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*, *7*(2), 140–155. http://doi.org/10.1002/jrsm.1166.
+[Cheung, M. W.-L. & Cheung, S.-F. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Cheung%202016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*, *7*(2), 140–155. http://doi.org/10.1002/jrsm.1166.
 
-[Cheung, M. W.-L., & Hafdahl, A. R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Hafdahl%202016). Special issue on meta-analytic structural equation modeling: Introduction from the Guest Editors. *Research Synthesis Methods*, *7*(2), 112–120. http://doi.org/10.1002/jrsm.1212.
+[Cheung, M. W.-L. & Hafdahl, A. R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Hafdahl%202016). Special issue on meta-analytic structural equation modeling: Introduction from the Guest Editors. *Research Synthesis Methods*, *7*(2), 112–120. http://doi.org/10.1002/jrsm.1212.
 
-[Cheung, M. W.-L., & Hong, R. Y. (2017)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Hong%202017). Applications of meta-analytic structural equation modeling in health psychology: Examples, issues, and recommendations. *Health Psychology Review*, *11*(3), 265-279. http://doi.org/10.1080/17437199.2017.1343678
+[Cheung, M. W.-L. & Hong, R. Y. (2017)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Hong%202017). Applications of meta-analytic structural equation modeling in health psychology: Examples, issues, and recommendations. *Health Psychology Review*, *11*(3), 265-279. http://doi.org/10.1080/17437199.2017.1343678
 
-[Cheung, M. W.-L., & Jak, S. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Jak%202016). Analyzing big data in psychology: A split/analyze/meta-analyze approach. *Frontiers in Psychology*, *7* (738). http://doi.org/10.3389/fpsyg.2016.00738.
+[Cheung, M. W.-L. & Jak, S. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Jak%202016). Analyzing big data in psychology: A split/analyze/meta-analyze approach. *Frontiers in Psychology*, *7* (738). http://doi.org/10.3389/fpsyg.2016.00738.
 
-[Cheung, M. W.-L., & Vijayakumar, R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Vijayakumar%202016). An introduction to when and how to conduct a meta-analysis. *Neuropsychology Review*, *26*(2), 121–128. http://doi.org/10.1007/s11065-016-9319-z.
+[Cheung, M. W.-L. & Vijayakumar, R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Vijayakumar%202016). An introduction to when and how to conduct a meta-analysis. *Neuropsychology Review*, *26*(2), 121–128. http://doi.org/10.1007/s11065-016-9319-z.
+
+[Jak, S. & Cheung, W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/blob/master/Jak%20andCheung%202018). Meta-analytic structural equation modeling with moderators. *Manuscript in preparation*.
