@@ -21,4 +21,4 @@
 
 [Cheung, M. W.-L. & Vijayakumar, R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Vijayakumar%202016). An introduction to when and how to conduct a meta-analysis. *Neuropsychology Review*, *26*(2), 121–128. http://doi.org/10.1007/s11065-016-9319-z.
 
-[Jak, S. & Cheung, W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/tree/master/Jak%20and%20Cheung%202018). Meta-analytic structural equation modeling with moderators. *Manuscript in preparation*.
+[Jak, S. & Cheung, W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/tree/master/Jak%20and%20Cheung%202018). Meta-analytic structural equation modeling with moderating effects on SEM parameters . *Manuscript in preparation*.
