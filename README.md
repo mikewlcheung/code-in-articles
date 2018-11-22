@@ -9,7 +9,9 @@
 
 [Cheung, M. W.-L. (2013a)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202013a). Multivariate meta-analysis as structural equation models. *Structural Equation Modeling: A Multidisciplinary Journal*, *20*(3),  429-454. http://dx.doi.org/10.1080/10705511.2013.797827.
 
-[Cheung, M. W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202018). [Issues in solving the problem of effect size heterogeneity in meta-analytic structural equation modeling: A commentary and simulation study on Yu, Downes, Carter, and O'Boyle (2016)](https://psyarxiv.com/37p2z). *Journal of Applied Psychology*, *103*(7), 787-803. http://dx.doi.org/10.1037/apl0000284
+[Cheung, M. W.-L. (2018a)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202018a). [Computing multivariate effect sizes and their sampling covariance matrices with structural equation modeling: Theory, examples, and computer simulations](https://doi.org/10.3389/fpsyg.2018.01387). *Frontiers in Psychology*, *9*(1387).
+
+[Cheung, M. W.-L. (2018b)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202018b). [Issues in solving the problem of effect size heterogeneity in meta-analytic structural equation modeling: A commentary and simulation study on Yu, Downes, Carter, and O'Boyle (2016)](https://psyarxiv.com/37p2z). *Journal of Applied Psychology*, *103*(7), 787-803. http://dx.doi.org/10.1037/apl0000284
 
 [Cheung, M. W.-L. & Cheung, S.-F. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Cheung%202016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*, *7*(2), 140–155. http://doi.org/10.1002/jrsm.1166.
 

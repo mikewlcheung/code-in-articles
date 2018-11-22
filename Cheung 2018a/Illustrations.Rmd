@@ -1,0 +1,93 @@
+---
+title: "Illustrations: Gleser and Olkin (1994)"
+author: "Mike Cheung"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: no
+  pdf_document:
+    toc: no
+  word_document: default
+---
+
+# Multiple-treatment studies
+```{r, message=FALSE}
+library(lavaan)
+library(metaSEM)
+
+## First study of the multiple-treatment studies in Gleser and Olkin (1994)
+(mts <- Gleser94$MTS[1, ])
+```
+
+## MTS assuming the homogeneity of variances
+```{r}
+with(mts, smdMTS(m=c(Mean.C, Mean.E1, Mean.E2, Mean.E3),
+                 v=c(SD.C, SD.E1, SD.E2, SD.E3)^2,
+                 n=c(N.C, N.E1, N.E2, N.E3),
+                 homogeneity="variance"))
+
+## Testing the assumption of homogeneity of variances
+lavaan.1 <- with(mts, smdMTS(m=c(Mean.C, Mean.E1, Mean.E2, Mean.E3),
+                             v=c(SD.C, SD.E1, SD.E2, SD.E3)^2,
+                             n=c(N.C, N.E1, N.E2, N.E3),
+                             homogeneity="variance", lavaan.output = TRUE))
+summary(lavaan.1, fit.measures=TRUE)
+```
+
+## MTS without the assuming homogeneity of variances
+```{r}
+with(mts, smdMTS(m=c(Mean.C, Mean.E1, Mean.E2, Mean.E3),
+                 v=c(SD.C, SD.E1, SD.E2, SD.E3)^2,
+                 n=c(N.C, N.E1, N.E2, N.E3),
+                 homogeneity="none"))
+```
+
+# Multiple-endpoint studies
+```{r}
+## First study of the multiple-endpoint studies in Gleser and Olkin (1994)
+(mes <- Gleser94$MES[1, ])
+
+## Calculate the sampling variances and covariance matrices
+Uncoached.V <- with(mes, vec2symMat(c(SD.Uncoached.Math^2,
+                                      SD.Uncoached.Math*Cor.Math.Verbal*SD.Uncoached.Verbal, 
+                                      SD.Uncoached.Verbal^2)))
+Uncoached.V
+
+Coached.V <- with(mes, vec2symMat(c(SD.Coached.Math^2,
+                                    SD.Coached.Math*Cor.Math.Verbal*SD.Coached.Verbal, 
+                                    SD.Coached.Verbal^2)))
+Coached.V
+```
+## MES assuming the homogeneity of covariance matrices
+```{r}
+with(mes, smdMES(m1=c(Mean.Uncoached.Math, Mean.Uncoached.Verbal),
+                 m2=c(Mean.Coached.Math, Mean.Coached.Verbal),
+                 V1=Uncoached.V, V2=Coached.V,
+                 n1=N.Uncoached, n2=N.Coached,
+                 homogeneity="covariance", list.output=TRUE))
+
+## Testing the assumption of homogeneity of variances
+lavaan.3 <- with(mes, smdMES(m1=c(Mean.Uncoached.Math, Mean.Uncoached.Verbal),
+                             m2=c(Mean.Coached.Math, Mean.Coached.Verbal),
+                             V1=Uncoached.V, 
+                             V2=Coached.V,
+                             n1=N.Uncoached, 
+                             n2=N.Coached,
+                             homogeneity="covariance", 
+                             lavaan.output=TRUE))
+summary(lavaan.3, fit.measures=TRUE)
+```
+
+## MES without the assuming homogeneity of variances
+```{r}
+with(mes, smdMES(m1=c(Mean.Uncoached.Math, Mean.Uncoached.Verbal),
+                 m2=c(Mean.Coached.Math, Mean.Coached.Verbal),
+                 V1=Uncoached.V, V2=Coached.V,
+                 n1=N.Uncoached, n2=N.Coached,
+                 homogeneity="none", list.output=TRUE))
+
+sessionInfo()
+```
