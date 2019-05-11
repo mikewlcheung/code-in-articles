@@ -3,31 +3,38 @@ title: "MASEM on Gnambs et al. (2018)"
 author: "Suzanne Jak and Mike Cheung"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output:
+  pdf_document:
+    toc: yes
   html_document:
     keep_md: yes
     self_contained: yes
     theme: united
     toc: yes
-  pdf_document:
-    toc: no
   word_document: default
 editor_options: 
   chunk_output_type: console
 ---
 
-# Data preparation  
-```{r, message=FALSE}
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 100)
+knitr::opts_chunk$set(message=FALSE)
+```
+
+# Data preparation
+```{r}
 library(metaSEM)
+
+## Use more cores to speed up the analysis
+mxOption(NULL, 'Number of Threads', parallel::detectCores()-2)
 
 ## Create a new dataset without missing value in Individualism
 index_na <- is.na(Gnambs18$Individualism)
 Gnambs18 <- lapply(Gnambs18, function(x) x[!index_na])
 
-## Select data with the correlation matrices, i.e., exclude studies with only factor loadings
+## Select data with the correlation matrices, i.e., exclude studies with factor loadings
 index <- Gnambs18$CorMat==1
 Gnambs18 <- lapply(Gnambs18, function(x) x[index])
 
-## Create a dataframe with the data and the asymptotic variances and covariances (acov)
 my.df <- Cor2DataFrame(Gnambs18$data, Gnambs18$n, acov = "weighted")
 
 ## Add the standardized individualism as the moderator
@@ -38,92 +45,44 @@ my.df$data <- data.frame(my.df$data,
 summary(my.df)
 ```
 
-# One-Stage MASEM
-## Bifactor model without moderation
-```{r, cache=TRUE}
-## Specify the bifactor model
-
-model0 <- "G =~  g1*I1 + g2*I2 + g3*I3 + g4*I4 + g5*I5 + 
-                 g6*I6 + g7*I7 + g8*I8 + g9*I9 + g10*I10
-          POS =~ p1*I1 + p3*I3 + p4*I4 + p7*I7 + p10*I10
-          NEG =~ n2*I2 + n5*I5 + n6*I6 + n8*I8 + n9*I9"
-
-RAM0 <- lavaan2RAM(model0, obs.variables = paste0("I", 1:10))
-RAM0
-
-## Create matrices with implicit diagonal constraints
-M0 <- create.vechsR(A0=RAM0$A, S0=RAM0$S, F0=RAM0$F)
-
-## Create heterogeneity variances
-T0 <- create.Tau2(RAM=RAM0, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
-
-## Fit the bifactor model with One-Stage MASEM
-fit0 <- osmasem(model.name="No moderator", Mmatrix=M0, Tmatrix=T0, data=my.df)
-summary(fit0, Saturated=TRUE)
-
-## SRMR
-osmasemSRMR(fit0)
-
-## Estimated Tau2
-diag(VarCorr(fit0))
-```
-
-## Bifactor model  with `Individualism` as a moderator on the A matrix
-```{r, error=TRUE,, cache=TRUE}
-## Create the A1 matrix with moderator effects of "Individualism"
-Ax1 <- RAM0$A
-Ax1[grep("\\*", Ax1)] <- "0*data.Individualism"
-Ax1
-
-## Create matrices with implicit diagonal constraints
-M1 <- create.vechsR(A0=RAM0$A, S0=RAM0$S, F0=RAM0$F, Ax=Ax1)
-
-## Fit the bifactor model with moderator
-fit1 <- osmasem(model.name="Moderation by individualism", Mmatrix=M1, Tmatrix=T0, data=my.df)
-summary(fit1)
-
-## Get the R2
-osmasemR2(fit1, fit0)
-
-## Compare the models with and without moderator
-anova(fit1, fit0)
-
-## Get the estimated A0 (intercepts of factor loadings) and 
-## A1 (regression coefficients of moderator on factor loadings)
-A0 <- mxEval(A0, fit1$mx.fit)
-A0
-A1 <- mxEval(A1, fit1$mx.fit)
-A1
-
-# To calculate simple slopes
-## Compute the estimated A matrix at -1SD (-1) of the standardized individualism
-A0 - A1
-
-## Compute the estimated A matrix at 0 (mean) of the standardized individualism
-A0
-
-## Compute the estimated A matrix at +1SD (+1) of the standardized individualism
-A0 + A1
-```
-
-
 # TSSEM
-## Bifactor model without moderation
-```{r,, cache=TRUE}
-# Stage 1 analysis with TSSEM
-overall_stage1_tssem.fit <- tssem1(Gnambs18$data, Gnambs18$n, 
-                                   method="REM", RE.type="Diag")
-summary(overall_stage1_tssem.fit)
+## One general factor model
 
-# Stage 2 analysis with TSSEM
-overall_stage2_tssem.fit <- tssem2(overall_stage1_tssem.fit, Amatrix = RAM0$A, 
-                                   Smatrix = RAM0$S, Fmatrix = RAM0$F)
-summary(overall_stage2_tssem.fit)
+```{r}
+rand1 <- tssem1(Gnambs18$data, Gnambs18$n, method="REM", RE.type="Diag")
+summary(rand1)
 
-plot(overall_stage2_tssem.fit, col="green")
+## One general factor
+model1 <- "G =~ g1*I1 + g2*I2 + g3*I3 + g4*I4 + g5*I5 +
+                g6*I6 + g7*I7 + g8*I8 + g9*I9 + g10*I10"
+
+RAM1 <- lavaan2RAM(model1, obs.variables = paste0("I", 1:10))
+RAM1
+
+rand2a <- tssem2(rand1, Amatrix = RAM1$A, Smatrix = RAM1$S, Fmatrix = RAM1$F)
+summary(rand2a)
+plot(rand2a, col="green")
 ```
 
-## Subgroup analysis
+## Bifactor model with positive and negative Self-Esteem
+```{r}
+model2 <- "G =~ g1*I1 + g2*I2 + g3*I3 + g4*I4 + g5*I5 + 
+                g6*I6 + g7*I7 + g8*I8 + g9*I9 + g10*I10
+           POS =~ p1*I1 + p3*I3 + p4*I4 + p7*I7 + p10*I10
+           NEG =~ n2*I2 + n5*I5 + n6*I6 + n8*I8 + n9*I9"
+
+RAM2 <- lavaan2RAM(model2, obs.variables = paste0("I", 1:10))
+RAM2
+
+rand2b <- tssem2(rand1, Amatrix = RAM2$A, Smatrix = RAM2$S, Fmatrix = RAM2$F)
+summary(rand2b)
+plot(rand2b, col="green")
+
+## Compare the one general factor to the bifactor model
+anova(rand2b, rand2a)
+```
+
+## Models with two subgroup analysis
 ```{r}
 # Data for studies with individualism below the mean
 data_g1 <- Gnambs18$data[my.df$data$Individualism < 0 ]
@@ -134,100 +93,132 @@ data_g2 <- Gnambs18$data[my.df$data$Individualism >= 0 ]
 n_g2 <- Gnambs18$n[my.df$data$Individualism >= 0 ]
 ```
 
-### Fitting the Stage 1 model in two subgroups
-```{r, message=FALSE, , cache=TRUE}
+### Fitting a random-effects Stage 1 model in two subgroups
+```{r, message=FALSE}
 ## Stage 1 analysis per subgroup (random-effects analysis)
 stage1_g1.fit <- tssem1(Cov = data_g1, n = n_g1, method = "REM", RE.type = "Diag")
 stage1_g2.fit <- tssem1(Cov = data_g2, n = n_g2, method = "REM", RE.type = "Diag")
+
+summary(stage1_g1.fit)
+summary(stage1_g2.fit)
 ```
 
 ### Fitting the Stage 2 bifactor model in both subgroups
 ```{r}
 ## Stage 2 analysis per subgroup (random-effect analysis)
-stage2_g1.fit <- tssem2(stage1_g1.fit, Amatrix=RAM0$A, 
-                        Smatrix=RAM0$S, Fmatrix=RAM0$F)
-
-stage2_g2.fit <- tssem2(stage1_g2.fit, Amatrix=RAM0$A, 
-                        Smatrix=RAM0$S, Fmatrix=RAM0$F)
+stage2_g1.fit <- tssem2(stage1_g1.fit, Amatrix=RAM2$A, Smatrix=RAM2$S, Fmatrix=RAM2$F)
+stage2_g2.fit <- tssem2(stage1_g2.fit, Amatrix=RAM2$A, Smatrix=RAM2$S, Fmatrix=RAM2$F)
 
 summary(stage2_g1.fit)
 summary(stage2_g2.fit)
 ```
 
-
+# OSMASEM
+## One general factor model without any moderator
 ```{r}
-# Create matrices for subgroup analyses (same labels for factor loadings, 
-# but not for residual variances)
-CFAmodel.g2 <- 'G =~   g1*I1 + g2*I2 + g3*I3 + g4*I4 + g5*I5 + 
-                       g6*I6 + g7*I7 + g8*I8 + g9*I9 + g10*I10
-                POS =~ p1*I1 + p3*I3 + p4*I4 + p7*I7 + p10*I10
-                NEG =~ n2*I2 + n5*I5 + n6*I6 + n8*I8 + n9*I9
-                
-                # Residual variances
-                I1 ~~ hight1*I1
-                I2 ~~ hight2*I2
-                I3 ~~ hight3*I3
-                I4 ~~ hight4*I4
-                I5 ~~ hight5*I5
-                I6 ~~ hight6*I6
-                I7 ~~ hight7*I7
-                I8 ~~ hight8*I8
-                I9 ~~ hight9*I9
-                I10 ~~ hight10*I10'
+## Create matrices with implicit diagonal constraints
+M0a <- create.vechsR(A0=RAM1$A, S0=RAM1$S, F0=RAM1$F)
 
-RAM0.g2 <- lavaan2RAM(CFAmodel.g2, obs.variables=paste0("I",1:10))
+## Create heterogeneity variances
+T0a <- create.Tau2(RAM=RAM1, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
 
+fit0a <- osmasem(model.name="No moderator", Mmatrix=M0a, Tmatrix=T0a, data=my.df)
+summary(fit0a, Saturated=TRUE)
 
-# Create the models for the two groups, make sure to set the argument run=FALSE
-stage2_g1 <- tssem2(stage1_g1.fit, Amatrix=RAM0$A, Smatrix=RAM0$S, 
-                    Fmatrix=RAM0$F, run=FALSE, model.name="low")
+## SRMR
+osmasemSRMR(fit0a)
 
-stage2_g2 <- tssem2(stage1_g2.fit, Amatrix=RAM0.g2$A, Smatrix=RAM0.g2$S, 
-                    Fmatrix=RAM0.g2$F, run=FALSE, model.name="high")
-
-
-# Create the multigroup model
-stage2_constrained <- mxModel(model="same_loadings", stage2_g1, stage2_g2,
-                              mxFitFunctionMultigroup(c("low", "high")))
-
-# Fit multigroup model with equality constraints
-Stage2_constrained.fit <- mxRun(stage2_constrained, intervals=FALSE)
-
-
-# load function from website
-source("http://www.suzannejak.nl/subgroup.functions.R")
-
-# Make a list of the fitted models in the separate groups
-submodels.fit <- list(stage2_g1.fit,stage2_g2.fit)
-
-# Ask for summary, compare fit of constrained and unconstrained model
-subgroup.summary(submodels.fit,Stage2_constrained.fit)
+## Show the heterogeneity variances
+diag(VarCorr(fit0a))
 ```
 
-### Plots of factor loadings in subgroups
+## One general factor model with `Individualism` as a moderator on the A matrix
+```{r, error=TRUE}
+## Replace the A matrix with the moderator "Individualism"
+Ax1a <- RAM1$A
+Ax1a[grep("\\*", Ax1a)] <- "0*data.Individualism"
+Ax1a
+
+## Create matrices with implicit diagonal constraints
+M1a <- create.vechsR(A0=RAM1$A, S0=RAM1$S, F0=RAM1$F, Ax=Ax1a)
+
+fit1a <- osmasem(model.name="Moderator with individualism", Mmatrix=M1a, Tmatrix=T0a, data=my.df)
+summary(fit1a)
+
+## Get the R2
+osmasemR2(fit1a, fit0a)
+
+## Compare the models with and without Individualism
+anova(fit1a, fit0a)
+
+## Get the estimated A0 and A1
+A0 <- mxEval(A0, fit1a$mx.fit)
+A0
+A1 <- mxEval(A1, fit1a$mx.fit)
+A1
+
+## Compute the estimated A matrix at -1SD (-1) of the standardized individualism
+A0 - A1
+
+## Compute the estimated A matrix at 0 (mean) of the standardized individualism
+A0
+
+## Compute the estimated A matrix at +1SD (+1) of the standardized individualism
+A0 + A1
+```
+
+## Bifactor model without any moderator
 ```{r}
-# General factor (red = low individualism, blue = high individualism)
-loadings.general.low <- c(stage2_g1.fit$mx.fit$Amatrix$values[1:10,11])
-loadings.general.high <- c(stage2_g2.fit$mx.fit$Amatrix$values[1:10,11])
+## Create matrices with implicit diagonal constraints
+M0b <- create.vechsR(A0=RAM2$A, S0=RAM2$S, F0=RAM2$F)
 
-plot(loadings.general.low, type = "p", pch = 16, col = "red", ylim = c(-.1,1))
-points(loadings.general.high, type = "p", pch = 17, col = "blue")
+## Create heterogeneity variances
+T0b <- create.Tau2(RAM=RAM2, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
 
-# Positive factor(red = low individualism, blue = high individualism)
-loadings.positive.low <- c(stage2_g1.fit$mx.fit$Amatrix$values[c(1,3,4,7,10),13])
-loadings.positive.high <- c(stage2_g2.fit$mx.fit$Amatrix$values[c(1,3,4,7,10),13])
+fit0b <- osmasem(model.name="No moderator", Mmatrix=M0b, Tmatrix=T0b, data=my.df)
+summary(fit0b, Saturated=TRUE)
 
-plot(loadings.positive.low, type = "p", pch = 16, col = "red", ylim = c(-.1,1))
-points(loadings.positive.high, type = "p", pch = 17, col = "blue")
+## SRMR
+osmasemSRMR(fit0b)
 
-# Negative factor (red = low individualism, blue = high individualism)
-loadings.negative.low <- c(stage2_g1.fit$mx.fit$Amatrix$values[c(2,5,6,8,9),12])
-loadings.negative.high <- c(stage2_g2.fit$mx.fit$Amatrix$values[c(2,5,6,8,9),12])
+diag(VarCorr(fit0b))
+```
 
-plot(loadings.negative.low, type = "p", pch = 16, col = "red", ylim = c(-.1,1))
-points(loadings.negative.high, type = "p", pch = 17, col = "blue")
+## Bifactor model  with `Individualism` as a moderator on the A matrix
+```{r, error=TRUE}
+## Replace the A matrix with the moderator "Individualism"
+Ax1b <- RAM2$A
+Ax1b[grep("\\*", Ax1b)] <- "0*data.Individualism"
+Ax1b
 
-save.image(file="AnalysisGnambs2018.RData")
+## Create matrices with implicit diagonal constraints
+M1b <- create.vechsR(A0=RAM2$A, S0=RAM2$S, F0=RAM2$F, Ax=Ax1b)
+
+fit1b <- osmasem(model.name="Moderator with individualism", Mmatrix=M1b, Tmatrix=T0b, data=my.df)
+summary(fit1b)
+
+## Get the R2
+osmasemR2(fit1b, fit0b)
+
+## Compare the models with and without Individualism
+anova(fit1b, fit0b)
+
+## Get the estimated A0 and A1
+A0 <- mxEval(A0, fit1b$mx.fit)
+A0
+A1 <- mxEval(A1, fit1b$mx.fit)
+A1
+
+## Compute the estimated A matrix at -1SD (-1) of the standardized individualism
+A0 - A1
+
+## Compute the estimated A matrix at 0 (mean) of the standardized individualism
+A0
+
+## Compute the estimated A matrix at +1SD (+1) of the standardized individualism
+A0 + A1
+
+save.image(file="Gnambs2018.RData")
 
 sessionInfo()
 ```
