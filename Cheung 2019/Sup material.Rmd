@@ -1,0 +1,438 @@
+---
+title: 'Supplementary Materials for "A Guide to Conducting a Meta-Analysis with Non-Independent Effect Sizes"'
+author: Mike W.-L. Cheung
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+* Latest version of the R and Mplus code is available at https://github.com/mikewlcheung/code-in-articles.
+
+# Multivariate meta-analysis with a dataset from Nam, Mengersen, and Garthwaite (2003)
+
+## Preparation
+```{r, message=FALSE}
+## Required packages in this paper
+lib2install <- c("metaSEM", "metafor")
+
+## Install them automatically if they are not available in your computer
+for (i in lib2install) {
+  if (!(i %in% rownames(installed.packages()))) install.packages(i)
+}
+
+## Load the libraries
+library(metaSEM)
+library(metafor)
+
+## Display the first few lines of the data
+head(Nam03)
+```
+
+## Univariate meta-analyses
+```{r}
+## Univariate meta-analysis on Asthma
+summary(meta(y=Asthma_logOR, v=Asthma_v, data=Nam03))
+
+## Univariate meta-analysis on LRD
+summary(meta(y=LRD_logOR, v=LRD_v, data=Nam03))
+```
+
+## Multivariate meta-analysis (assuming cor=0.5 between asthma and LRD)
+### Without any moderator
+```{r, warning=FALSE}
+fit0a <- meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_05, LRD_v),
+              data=Nam03,
+              model.name="Multi MA")
+summary(fit0a)
+
+## Correlation between the population effect sizes
+cov2cor(VarCorr(fit0a))
+
+## Plot the (complete) effect sizes and their 95% confidence ellipses
+plot(fit0a, xlim=c(-0.5, 1), ylim=c(-0.5, 1), axis.labels=c("Asthma", "LRD"),
+     study.ellipse.plot = FALSE, diag.panel=TRUE,
+     randeff.ellipse.lty=2, 
+     main="Log-odds ratio")
+
+forest(rma(yi=Asthma_logOR, vi=Asthma_v, slab=ID, data=Nam03),
+       xlab="Log-odds ratio")
+title("Forest plot of Asthma")
+
+forest(rma(yi=LRD_logOR, vi=LRD_v, slab=ID, data=Nam03),
+       xlab="Log-odds ratio")
+title("Forest plot of LRD")
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+pdf("Fig1.pdf", width = 10, height = 10)
+## Plot the effect sizes (complete studies only)
+plot(fit0a, xlim=c(-0.5, 1), ylim=c(-0.5, 1), axis.labels=c("Asthma", "LRD"),
+     study.ellipse.plot = FALSE, diag.panel=TRUE,
+     randeff.ellipse.lty=2, 
+     main="Log-odds ratio (assuming Cor=0.5)")
+
+forest(rma(yi=Asthma_logOR, vi=Asthma_v, slab=ID, data=Nam03),
+       xlab="Log-odds ratio")
+title("Forest plot of Asthma")
+
+forest(rma(yi=LRD_logOR, vi=LRD_v, slab=ID, data=Nam03),
+       xlab="Log-odds ratio")
+title("Forest plot of LRD")
+dev.off()
+```
+
+```{r}
+## Test whether (1) the population effect sizes and 
+## (2) heterogeneity variances are the same for Asthma and LRD
+fit1a <- meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_05, LRD_v),
+              data=Nam03,
+              intercept.constraints=c("0*Intercept", "0*Intercept"),
+              RE.constraints=matrix(c("0.1*Tau2_1_1", "0*Tau2_2_1",
+                                      "0*Tau2_2_1", "0.1*Tau2_1_1"),
+                                    ncol=2, nrow=2),
+              model.name="Equality constraints")
+## Compare the models with and without the equality constraints
+anova(fit0a, fit1a)
+
+summary(fit1a)
+```
+
+### With the mean `Age` as a moderator
+```{r}
+fit2a <- meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_05, LRD_v),
+              ## Center Age for ease of interpretations
+              x=scale(Age, scale=FALSE),
+              ## Fix the covariance of between the random effects at 0
+              ## as there is not enough data
+              RE.constraints=matrix(c("0.1*Tau2_1_1", "0",
+                                      "0", "0.1*Tau2_2_2"),
+                                    ncol=2, nrow=2), 
+              data=Nam03,
+              model.name="Mixed MA")
+summary(fit2a)
+
+## Test whether the effect of mean Age the same for Asthma and LRD
+fit3a <- meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_05, LRD_v),
+              ## Center Age for ease of interpretations
+              x=scale(Age, scale=FALSE),
+              ## Fix the covariance of between the random effects at 0
+              ## as there is not enough data
+              RE.constraints=matrix(c("0.1*Tau2_1_1", "0",
+                                      "0", "0.1*Tau2_2_2"),
+                                    ncol=2, nrow=2), 
+              ## Fix the regression coefficients to be identical by
+              ## using the same label `Slope1`.
+              coef.constraints=matrix(matrix(c("0*Slope1", "0*Slope1"),
+                                             nrow=1)),
+              data=Nam03,
+              model.name="Equality constraints")
+
+## Compare the models with and without the equality constraints
+anova(fit2a, fit3a)
+
+summary(fit3a)
+```
+
+## Multivariate meta-analysis (assuming cor=0 between asthma and LRD)
+### Without any moderator
+```{r}
+## Create a variable of sampling correlation=0
+Nam03$AsthmaLRD_cov_0 <- 0
+
+fit0b <- meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_0, LRD_v),
+              data=Nam03,
+              model.name="Multi MA")
+summary(fit0b)
+
+## Correlation between the population effect sizes
+cov2cor(VarCorr(fit0b))
+
+## Plot the (complete) effect sizes and their 95% confidence ellipses
+plot(fit0b, xlim=c(-0.5, 1), ylim=c(-0.5, 1), axis.labels=c("Asthma", "LRD"),
+     study.ellipse.plot = FALSE, diag.panel=TRUE,
+     randeff.ellipse.lty=2, 
+     main="Log-odds ratio (assuming Cor=0)")
+
+forest(rma(yi=Asthma_logOR, vi=Asthma_v, slab=ID, data=Nam03),
+       xlab="Log-odds ratio")
+title("Forest plot of Asthma")
+
+forest(rma(yi=LRD_logOR, vi=LRD_v, slab=ID, data=Nam03),
+       xlab="Log-odds ratio")
+title("Forest plot of LRD")
+```
+
+```{r}
+## Test whether (1) the population effect sizes and 
+## (2) heterogeneity variances are the same for Asthma and LRD
+fit1b <- meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_0, LRD_v),
+              data=Nam03,
+              intercept.constraints=c("0*Intercept", "0*Intercept"),
+              RE.constraints=matrix(c("0.1*Tau2_1_1", "0*Tau2_2_1",
+                                      "0*Tau2_2_1", "0.1*Tau2_1_1"),
+                                    ncol=2, nrow=2),
+              model.name="Equality constraints")
+## Compare the models with and without the equality constraints
+anova(fit0b, fit1b)
+
+summary(fit1b)
+```
+
+### With the mean `Age` as a moderator
+```{r}
+fit2b <- meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_0, LRD_v),
+              ## Center Age for ease of interpretations
+              x=scale(Age, scale=FALSE),
+              ## Fix the covariance of between the random effects at 0
+              ## as there is not enough data
+              RE.constraints=matrix(c("0.1*Tau2_1_1", "0",
+                                      "0", "0.1*Tau2_2_2"),
+                                    ncol=2, nrow=2), 
+              data=Nam03,
+              model.name="Mixed MA")
+summary(fit2b)
+
+## Test whether the effect of mean Age the same for Asthma and LRD
+fit3b <- meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_0, LRD_v),
+              ## Center Age for ease of interpretations
+              x=scale(Age, scale=FALSE),
+              ## Fix the covariance of between the random effects at 0
+              ## as there is not enough data
+              RE.constraints=matrix(c("0.1*Tau2_1_1", "0",
+                                      "0", "0.1*Tau2_2_2"),
+                                    ncol=2, nrow=2), 
+              ## Fix the regression coefficients to be identical by
+              ## using the same label `Slope1`.
+              coef.constraints=matrix(matrix(c("0*Slope1", "0*Slope1"),
+                                             nrow=1)),
+              data=Nam03,
+              model.name="Equality constraints")
+
+## Compare the models with and without the equality constraints
+anova(fit2b, fit3b)
+
+summary(fit3b)
+```
+
+## Multivariate meta-analysis (assuming cor=0.8 between asthma and LRD)
+### Without any moderator
+```{r}
+## Create a variable of sampling correlation=0
+Nam03$AsthmaLRD_cov_08 <- with(Nam03, 0.8*sqrt(Asthma_v)*sqrt(LRD_v))
+
+fit0c <- meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_08, LRD_v),
+              data=Nam03,
+              model.name="Multi MA")
+summary(fit0c)
+
+## Correlation between the population effect sizes
+cov2cor(VarCorr(fit0c))
+
+## Plot the (complete) effect sizes and their 95% confidence ellipses
+plot(fit0c, xlim=c(-0.5, 1), ylim=c(-0.5, 1), axis.labels=c("Asthma", "LRD"),
+     study.ellipse.plot = FALSE, diag.panel=TRUE,
+     randeff.ellipse.lty=2, 
+     main="Log-odds ratio (assuming Cor=0.8)")
+
+forest(rma(yi=Asthma_logOR, vi=Asthma_v, slab=ID, data=Nam03),
+       xlab="Log-odds ratio")
+title("Forest plot of Asthma")
+
+forest(rma(yi=LRD_logOR, vi=LRD_v, slab=ID, data=Nam03),
+       xlab="Log-odds ratio")
+title("Forest plot of LRD")
+```
+
+```{r}
+## Test whether (1) the population effect sizes and 
+## (2) heterogeneity variances are the same for Asthma and LRD
+fit1c <- meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_08, LRD_v),
+              data=Nam03,
+              intercept.constraints=c("0*Intercept", "0*Intercept"),
+              RE.constraints=matrix(c("0.1*Tau2_1_1", "0*Tau2_2_1",
+                                      "0*Tau2_2_1", "0.1*Tau2_1_1"),
+                                    ncol=2, nrow=2),
+              model.name="Equality constraints")
+## Compare the models with and without the equality constraints
+anova(fit0c, fit1c)
+
+summary(fit1c)
+```
+
+### With the mean `Age` as a moderator
+```{r}
+fit2c <- meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_08, LRD_v),
+              ## Center Age for ease of interpretations
+              x=scale(Age, scale=FALSE),
+              ## Fix the covariance of between the random effects at 0
+              ## as there is not enough data
+              RE.constraints=matrix(c("0.1*Tau2_1_1", "0",
+                                      "0", "0.1*Tau2_2_2"),
+                                    ncol=2, nrow=2), 
+              data=Nam03,
+              model.name="Mixed MA")
+summary(fit2c)
+
+## Test whether the effect of mean Age the same for Asthma and LRD
+fit3c <- meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_08, LRD_v),
+              ## Center Age for ease of interpretations
+              x=scale(Age, scale=FALSE),
+              ## Fix the covariance of between the random effects at 0
+              ## as there is not enough data
+              RE.constraints=matrix(c("0.1*Tau2_1_1", "0",
+                                      "0", "0.1*Tau2_2_2"),
+                                    ncol=2, nrow=2), 
+              ## Fix the regression coefficients to be identical by
+              ## using the same label `Slope1`.
+              coef.constraints=matrix(matrix(c("0*Slope1", "0*Slope1"),
+                                             nrow=1)),
+              data=Nam03,
+              model.name="Equality constraints")
+
+## Compare the models with and without the equality constraints
+anova(fit2c, fit3c)
+
+summary(fit3c)
+```
+
+# Three-level meta-analysis with a dataset from Stadler et al. (2015)
+
+## Univariate meta-analysis
+```{r}
+## Show the first few cases
+head(Stadler15)
+
+summary(meta(y=r, v=v, data=Stadler15))
+```
+
+## Three-level meta-analysis
+### Without any moderator
+```{r}
+## Display the number of effect sizes per study
+table(Stadler15$Authors)
+
+fit4 <- meta3(y=r, v=v, cluster=Authors, data=Stadler15)
+summary(fit4)
+```
+
+### With the `IntelligenceMeasure` as a moderator
+```{r}
+## Display the number of effect sizes per outcome measure
+table(Stadler15$IntelligenceMeasure)
+
+fit5 <- meta3(y=r, v=v, cluster=Authors, data=Stadler15,
+              intercept.constraints=0,
+              x=model.matrix(~ -1+IntelligenceMeasure))
+
+## Compare the models with and without the equality constraint
+anova(fit5, fit4)
+
+## Slope_1: General intelligence
+## Slope_2: Reasoning
+summary(fit5)
+```
+
+# Running the analyses in Mplus
+```{r, echo=FALSE}
+mplus <- function(x, msg="my message") {  
+ ## Mplus inp file
+ my.inp <- paste("./", x,".inp", sep="")
+ txt.inp <- readLines(my.inp, warn = FALSE)
+ ## Mplus output file
+ my.out <- paste("./", x,".out", sep="")
+ txt.out <- readLines(my.out, warn = FALSE)
+ 
+ cat("[",msg,"](", my.inp, ")\n", sep="")
+ 
+ cat("```\n\n")
+ cat(txt.inp, sep="\n", append=TRUE)
+ cat("```\n\n\n")
+ 
+ cat("[Mplus output file](", my.out, ")\n", sep="")
+ 
+ cat("```\n\n")
+ cat(txt.out, sep="\n", append=TRUE)
+ cat("```\n\n\n")  
+}
+```
+
+## Export the data to Mplus
+* Multivariate meta-analysis
+```{r, eval=FALSE}
+## Get a copy of the known sampling variances and covariance
+my.v <- Nam03[, c("Asthma_v", "AsthmaLRD_cov_05", "LRD_v")]
+
+## Replace the missing value with 0.
+## Since data with missing effect sizes are automatically filtered,
+## the imputed value of 0 does not affect the analysis.
+my.v[is.na(my.v)] <- 0  
+
+## Combine the effect sizes with the known sampling variances and covariance.
+my.df <- cbind(Nam03[, c("ID", "Age", "Asthma_logOR", "LRD_logOR")], my.v)
+
+## Display the few cases
+head(my.df)
+
+## Write it as a data file
+write.table(my.df, "Nam03.dat", na = ".", row.names = FALSE, col.names = FALSE)
+```
+
+* Three-level meta-analysis
+```{r, eval=FALSE}
+## Get unique numeric labels for the level 3 (study)
+## as Mplus only allows numeric data
+Study_ID <- with(Stadler15, as.numeric(factor(Authors, level=unique(Authors))))
+
+## Create dummy codes for the Intelligence Measure
+GenInt <- ifelse(Stadler15$IntelligenceMeasure=="General intelligence", yes=1, no=0)
+Reason <- ifelse(Stadler15$IntelligenceMeasure=="Reasoning", yes=1, no=0)
+
+my.df <- cbind(ID=Stadler15$ID, Study_ID,
+               Stadler15[, c("r", "v")], GenInt, Reason)
+
+## Display the few cases
+head(my.df, n=8)
+
+## Write it as a data file
+write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FALSE)
+```
+
+## Multivariate meta-analysis
+```{r, echo=FALSE, comment="#"}
+mplus("Nam03a", "Multivariate random-effects meta-analysis")
+mplus("Nam03b", "Multivariate random-effects meta-analysis with equality constraints")
+mplus("Nam03c", "Multivariate mixed-effects meta-analysis")
+```
+
+## Three-level meta-analysis
+```{r, echo=FALSE, comment="#"}
+mplus("Stadler15a", "Three-level random-effects meta-analysis")
+mplus("Stadler15b", "Three-level mixed-effects meta-analysis")
+```
+
+```{r}
+cat("\n\n")
+## Settings of the computing environment
+sessionInfo()
+```

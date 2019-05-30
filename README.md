@@ -13,6 +13,8 @@
 
 [Cheung, M. W.-L. (2018b)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202018b). [Issues in solving the problem of effect size heterogeneity in meta-analytic structural equation modeling: A commentary and simulation study on Yu, Downes, Carter, and O'Boyle (2016)](https://psyarxiv.com/37p2z). *Journal of Applied Psychology*, *103*(7), 787-803. http://dx.doi.org/10.1037/apl0000284
 
+[Cheung, M. W.-L. (2019)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202019). A guide to conducting a meta-analysis with non-independent effect sizes. *Manuscript submitted for publication*.
+
 [Cheung, M. W.-L. & Cheung, S.-F. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Cheung%202016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*, *7*(2), 140–155. http://doi.org/10.1002/jrsm.1166.
 
 [Cheung, M. W.-L. & Hafdahl, A. R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Hafdahl%202016). Special issue on meta-analytic structural equation modeling: Introduction from the Guest Editors. *Research Synthesis Methods*, *7*(2), 112–120. http://doi.org/10.1002/jrsm.1212.
@@ -23,4 +25,4 @@
 
 [Cheung, M. W.-L. & Vijayakumar, R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Vijayakumar%202016). An introduction to when and how to conduct a meta-analysis. *Neuropsychology Review*, *26*(2), 121–128. http://doi.org/10.1007/s11065-016-9319-z.
 
-[Jak, S. & Cheung, W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/tree/master/Jak%20and%20Cheung%202018). Meta-analytic structural equation modeling with moderating effects on SEM parameters . *Manuscript in preparation*.
+[Jak, S. & Cheung, W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/tree/master/Jak%20and%20Cheung%202018). [Meta-analytic structural equation modeling with moderating effects on SEM parameters](https://psyarxiv.com/ce85j/). *Manuscript submitted for publication*.
