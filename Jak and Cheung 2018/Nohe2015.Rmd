@@ -9,7 +9,7 @@ output:
     theme: united
     toc: yes
   pdf_document:
-    toc: no
+    toc: yes
   word_document: default
 editor_options: 
   chunk_output_type: console
@@ -17,17 +17,265 @@ editor_options:
 
 ```{r set-options, echo=FALSE, cache=FALSE}
 options(width = 100)
+knitr::opts_chunk$set(message=FALSE)
 ```
 
-# Data preparation
-```{r, message=FALSE}
+# TSSEM (with complete data)
+
+## A model without any moderator
+```{r}
 library(metaSEM)
 
-## Get the data
+## Proposed model in lavaan syntax
+model1 <- 'W2 ~ w2w*W1 + s2w*S1
+           S2 ~ w2s*W1 + s2s*S1
+           W1 ~~ w1WITHs1*S1
+           W2 ~~ w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ Errw2*W2
+           S2 ~~ Errs2*S2'
+     
+RAM1 <- lavaan2RAM(model1, obs.variables=c("W1", "S1", "W2", "S2"))
+RAM1
+
+## Display the number of data points
+pattern.na(Nohe15A1$data, show.na=FALSE)
+
+## Stage 1 analysis
+random1 <- tssem1(Nohe15A1$data, Nohe15A1$n, method="REM", RE.type="Diag")
+summary(random1)
+
+## Stage 2 analysis
+random2 <- tssem2(random1, Amatrix=RAM1$A, Smatrix=RAM1$S)
+summary(random2)
+
+## Plot the model
+plot(random2, col="green")
+```
+
+## Models with three subgroup analysis
+```{r}
+## Get the necessary functions
+source("http://www.suzannejak.nl/subgroup.functions.R")
+
 data <- Nohe15A1$data
 n <- Nohe15A1$n
 Lag <- Nohe15A1$Lag
 
+# Data for studies with short Lag 
+data_g1 <- data[Lag<7]
+n_g1 <- n[Lag<7]
+
+# Data for studies with medium Lag 
+data_g2 <- data[Lag>=7&Lag<13]
+n_g2 <- n[Lag>=7&Lag<13]
+
+# Data for studies with long Lag 
+data_g3 <- data[Lag>=13]
+n_g3 <- n[Lag>=13]
+```
+
+### Fitting a random-effects Stage 1 model in three subgroups
+```{r, message=FALSE}
+## Stage 1 analysis per subgroup (random-effects analysis)
+stage1_g1.fit <- tssem1(Cov = data_g1, n = n_g1, method = "REM", RE.type = "Diag")
+stage1_g2.fit <- tssem1(Cov = data_g2, n = n_g2, method = "REM", RE.type = "Diag")
+stage1_g3.fit <- tssem1(Cov = data_g3, n = n_g3, method = "REM", RE.type = "Diag")
+
+## Rerun it to remove the error code
+stage1_g3.fit <- rerun(stage1_g3.fit)
+
+## Results
+summary(stage1_g1.fit)
+summary(stage1_g2.fit)
+summary(stage1_g3.fit)
+```
+
+### Fitting the Stage 2 model in three subgroups
+```{r}
+## Stage 2 analysis per subgroup (random-effect analysis)
+stage2_g1.fit <- tssem2(stage1_g1.fit, Amatrix=RAM1$A, Smatrix=RAM1$S)
+stage2_g2.fit <- tssem2(stage1_g2.fit, Amatrix=RAM1$A, Smatrix=RAM1$S)
+stage2_g3.fit <- tssem2(stage1_g3.fit, Amatrix=RAM1$A, Smatrix=RAM1$S)
+
+## Results
+summary(stage2_g1.fit)
+summary(stage2_g2.fit)
+summary(stage2_g3.fit)
+```
+
+### Testing the equality of regression coefficients
+* We create and fit a model with equal direct effects (we use the same matrix A for both groups), but different variances and covariances, so we create an S matrix with different labels for group 2 and group 3.
+```{r}
+## Proposed model g2
+model2 <- 'W2 ~ w2w*W1 + s2w*S1
+           S2 ~ w2s*W1 + s2s*S1
+           W1 ~~ g2w1WITHs1*S1
+           W2 ~~ g2w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ g2Errw2*W2
+           S2 ~~ g2Errs2*S2'
+     
+RAM2 <- lavaan2RAM(model2, obs.variables=c("W1", "S1", "W2", "S2"))
+
+## Proposed model g3
+model3 <- 'W2 ~ w2w*W1 + s2w*S1
+           S2 ~ w2s*W1 + s2s*S1
+           W1 ~~ g3w1WITHs1*S1
+           W2 ~~ g3w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ g3Errw2*W2
+           S2 ~~ g3Errs2*S2'
+     
+RAM3 <- lavaan2RAM(model3, obs.variables=c("W1", "S1", "W2", "S2"))
+
+## Create the models for the two groups, make sure to set the argument run=FALSE
+stage2_g1 <- tssem2(stage1_g1.fit, Amatrix=RAM1$A, Smatrix=RAM1$S, run=FALSE, model.name="g1")
+
+stage2_g2 <- tssem2(stage1_g2.fit, Amatrix=RAM1$A, Smatrix=RAM2$S, run=FALSE, model.name="g2")
+
+stage2_g3 <- tssem2(stage1_g3.fit, Amatrix=RAM1$A, Smatrix=RAM3$S, run=FALSE, model.name="g3")
+
+## Create the multigroup model
+stage2_constrained <- mxModel(model="same_regression_coef", stage2_g1, stage2_g2,stage2_g3,
+                              mxFitFunctionMultigroup(c("g1", "g2", "g3")))
+
+## Fit multigroup model with equality constraints
+Stage2_constrained.fit <- mxRun(stage2_constrained, intervals=TRUE)
+
+## first make a list of the fitted models in the separate groups
+submodels.fit <- list(stage2_g1.fit, stage2_g2.fit, stage2_g3.fit)
+
+subgroup.summary(submodels.fit,Stage2_constrained.fit)
+```
+
+### Testing the equality of one regression coefficient (w2w)
+* We create and fit a model with equal direct effects (we use the same matrix A for both groups), but different variances and covariances, so we create an S matrix with different labels for group 2 and group 3.
+
+```{r}
+## Proposed model g2
+model2 <- 'W2 ~ w2w*W1 + g2s2w*S1
+           S2 ~ g2w2s*W1 + g2s2s*S1
+           W1 ~~ g2w1WITHs1*S1
+           W2 ~~ g2w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ g2Errw2*W2
+           S2 ~~ g2Errs2*S2'
+     
+RAM2 <- lavaan2RAM(model2, obs.variables=c("W1", "S1", "W2", "S2"))
+
+## Proposed model g3
+model3 <- 'W2 ~ w2w*W1 + g3s2w*S1
+           S2 ~ g3w2s*W1 + g3s2s*S1
+           W1 ~~ g3w1WITHs1*S1
+           W2 ~~ g3w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ g3Errw2*W2
+           S2 ~~ g3Errs2*S2'
+     
+RAM3 <- lavaan2RAM(model3, obs.variables=c("W1", "S1", "W2", "S2"))
+
+## Create the models for the two groups, make sure to set the argument run=FALSE
+stage2_g1 <- tssem2(stage1_g1.fit, Amatrix=RAM1$A, Smatrix=RAM1$S, run=FALSE, model.name="g1")
+
+stage2_g2 <- tssem2(stage1_g2.fit, Amatrix=RAM2$A, Smatrix=RAM2$S, run=FALSE, model.name="g2")
+
+stage2_g3 <- tssem2(stage1_g3.fit, Amatrix=RAM3$A, Smatrix=RAM3$S, run=FALSE, model.name="g3")
+
+## Create the multigroup model
+stage2_constrained <- mxModel(model="same_regression_coef", stage2_g1, stage2_g2,stage2_g3,
+                              mxFitFunctionMultigroup(c("g1", "g2", "g3")))
+
+## Fit multigroup model with equality constraints
+Stage2_constrained.fit <- mxRun(stage2_constrained, intervals=TRUE)
+
+## First make a list of the fitted models in the separate groups
+submodels.fit <- list(stage2_g1.fit,stage2_g2.fit,stage2_g3.fit)
+
+subgroup.summary(submodels.fit,Stage2_constrained.fit)
+```
+
+## Models with two subgroup analysis
+```{r}
+# Data for studies with short Lag 
+data_g1 <- data[Lag<12]
+n_g1 <- n[Lag<12]
+
+# Data for studies with long Lag 
+data_g2 <- data[Lag>=12]
+n_g2 <- n[Lag>=12]
+```
+
+### Fitting a random-effects Stage 1 model in two subgroups
+```{r, message=FALSE}
+## Stage 1 analysis per subgroup (random-effects analysis)
+stage1_g1.fit <- tssem1(Cov = data_g1, n = n_g1, method = "REM", RE.type = "Diag")
+stage1_g2.fit <- tssem1(Cov = data_g2, n = n_g2, method = "REM", RE.type = "Diag")
+## Rerun the analysis
+stage1_g2.fit <- rerun(stage1_g2.fit)
+
+summary(stage1_g1.fit)
+summary(stage1_g2.fit)
+```
+
+### Fitting the Stage 2 model in both subgroups
+```{r}
+## Stage 2 analysis per subgroup (random-effect analysis)
+stage2_g1.fit <- tssem2(stage1_g1.fit, Amatrix=RAM1$A, Smatrix=RAM1$S)
+stage2_g2.fit <- tssem2(stage1_g2.fit, Amatrix=RAM1$A, Smatrix=RAM1$S)
+
+summary(stage2_g1.fit)
+summary(stage2_g2.fit)
+```
+
+### Testing the equality of regression coefficients
+* We create and fit a model with equal direct effects (we use the same matrix A for both groups), but different variances and covariances, so we create an S matrix with different labels for group 2.
+
+```{r}
+## Proposed model g2
+model2 <- 'W2 ~ w2w*W1 + s2w*S1
+           S2 ~ w2s*W1 + s2s*S1
+           W1 ~~ g2w1WITHs1*S1
+           W2 ~~ g2w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ g2Errw2*W2
+           S2 ~~ g2Errs2*S2'
+     
+RAM2 <- lavaan2RAM(model2, obs.variables=c("W1", "S1", "W2", "S2"))
+
+# Create the models for the two groups, make sure to set the argument run=FALSE
+stage2_g1 <- tssem2(stage1_g1.fit, Amatrix=RAM1$A, Smatrix=RAM1$S, run=FALSE, model.name="g1")
+
+stage2_g2 <- tssem2(stage1_g2.fit, Amatrix=RAM1$A, Smatrix=RAM2$S, run=FALSE, model.name="g2")
+
+# Create the multigroup model
+stage2_constrained <- mxModel(model="same_regression_coef", stage2_g1, stage2_g2,
+                              mxFitFunctionMultigroup(c("g1", "g2")))
+
+# Fit multigroup model with equality constraints
+Stage2_constrained.fit <- mxRun(stage2_constrained, intervals=TRUE)
+
+# first make a list of the fitted models in the separate groups
+submodels.fit <- list(stage2_g1.fit,stage2_g2.fit)
+
+subgroup.summary(submodels.fit,Stage2_constrained.fit)
+```
+
+# OSMASEM (with complete data)
+
+## Data preparation
+```{r}
+## Get the data
+data <- Nohe15A1$data
+n <- Nohe15A1$n
+Lag <- Nohe15A1$Lag
+  
 ## Calculate the sampling covariance matrix of the correlations
 my.df <- Cor2DataFrame(data, n, acov = "weighted")
 
@@ -37,22 +285,18 @@ my.df$data <- data.frame(my.df$data, Lag=scale(Nohe15A1$Lag),
                          check.names=FALSE)
 head(my.df$data)
 
-## Check the number of studies per correlation coefficient
-pattern.na(Nohe15A1$data, show.na = FALSE)
-```
+## Check the number of studies
+pattern.na(my.df, show.na=FALSE, type="osmasem")
 
-# One-Stage MASEM
-```{r}
-## Model without moderation
-
-model1 <-  'W2 ~ w2w*W1 + s2w*S1
-            S2 ~ w2s*W1 + s2s*S1
-            W1 ~~ w1WITHs1*S1
-            W2 ~~ w2WITHs2*S2
-            W1 ~~ 1*W1
-            S1 ~~ 1*S1
-            W2 ~~ Errw2*W2
-            S2 ~~ Errs2*S2'
+## Proposed model
+model1 <- 'W2 ~ w2w*W1 + s2w*S1
+           S2 ~ w2s*W1 + s2s*S1
+           W1 ~~ w1WITHs1*S1
+           W2 ~~ w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ Errw2*W2
+           S2 ~~ Errs2*S2'
 
 plot(model1, col="yellow")     
 
@@ -61,22 +305,21 @@ RAM1 <- lavaan2RAM(model1, obs.variables=c("W1", "S1", "W2", "S2"))
 RAM1
 ```
 
-## Model without moderator
+## Model without any moderator
 ```{r}
 ## Create the model implied correlation structure with implicit diagonal constraints
 M0 <- create.vechsR(A0=RAM1$A, S0=RAM1$S)
 
 ## Create the heterogeneity variance-covariance matrix
 ## RE.type= either "Diag" or "Symm"
-## Transform= either "expLog" or "sqSD" for better estimation of variances
+## Transform= either "expLog" or "sqSD" for better estimation on variances
 T0 <- create.Tau2(RAM=RAM1, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
 
-## Fit the model using One-Stage MASEM
 mx.fit0 <- osmasem(model.name="No moderator", Mmatrix=M0, Tmatrix=T0, data=my.df)
 summary(mx.fit0)
 
 ## The variance-covariance matrix in mx.fit0 is based on the untransformed matrix
-## Extract the heterogeneity variance-covariance matrix using VarCorr()
+## Extract the heterogeneity variance-covariance matrix
 VarCorr(mx.fit0)
 ```
 
@@ -92,10 +335,9 @@ Ax
 ## When there are more than one moderators
 ## Ax <- list(A1, A2, A3)
 
-## Create the model implied correlation structure with standardized Lag as the moderator
+## Create the model implied correlation structure with the standardized Lag as the moderator
 M1 <- create.vechsR(A0=RAM1$A, S0=RAM1$S, Ax=Ax)
 
-## Fit the model with moderator
 mx.fit1 <- osmasem(model.name="Ax as moderator", Mmatrix=M1, Tmatrix=T0, data=my.df)
 summary(mx.fit1)
 
@@ -117,7 +359,6 @@ A0
 A1 <- mxEval(A1, mx.fit1$mx.fit)
 A1
 
-# For simple slopes:
 ## Compute the estimated A matrix at -1SD (-1) of the standardized Lag
 A0 - A1
 
@@ -128,12 +369,42 @@ A0
 A0 + A1
 ```
 
-# TSSEM
-## Model without moderator
+# TSSEM (with 1/4 variables (3/6 correlations) per study randomly deleted)
+
+## A model without any moderator
 ```{r}
+## Set seed for reproducibility
+set.seed(345678)
+
+## A function to create missing data: 1/4 of the variables were randomly deleted.
+del_rand <- function(x, pattern=c(TRUE, TRUE, TRUE, FALSE)) {
+  filter <- sample(pattern)
+  x[!filter, ] <- NA
+  x[, !filter] <- NA
+  diag(x) <- 1
+  x
+}
+
+data.missing <- lapply(Nohe15A1$data, del_rand)
+
+## Display the number of data points
+pattern.na(data.missing, show.na=FALSE)
+
+## Proposed model in lavaan syntax
+model1 <- 'W2 ~ w2w*W1 + s2w*S1
+           S2 ~ w2s*W1 + s2s*S1
+           W1 ~~ w1WITHs1*S1
+           W2 ~~ w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ Errw2*W2
+           S2 ~~ Errs2*S2'
+     
+RAM1 <- lavaan2RAM(model1, obs.variables=c("W1", "S1", "W2", "S2"))
+RAM1
 
 ## Stage 1 analysis
-random1 <- tssem1(Nohe15A1$data, Nohe15A1$n, method="REM", RE.type="Diag")
+random1 <- tssem1(data.missing, Nohe15A1$n, method="REM", RE.type="Diag")
 summary(random1)
 
 ## Stage 2 analysis
@@ -144,12 +415,12 @@ summary(random2)
 plot(random2, col="green")
 ```
 
-## Subgroup analysis (three subgroups)
+## Models with three subgroup analysis
 ```{r}
 ## Get the necessary functions
-source("http://www.suzannejak.nl/subgroup.functions.R")
+## source("http://www.suzannejak.nl/subgroup.functions.R")
 
-data <- Nohe15A1$data
+data <- data.missing
 n <- Nohe15A1$n
 Lag <- Nohe15A1$Lag
 
@@ -164,57 +435,62 @@ n_g2 <- n[Lag>=7&Lag<13]
 # Data for studies with long Lag 
 data_g3 <- data[Lag>=13]
 n_g3 <- n[Lag>=13]
+```
 
-# Stage 1 analysis per subgroup (random-effects analysis)
-stage1_g1.fit <- tssem1(Cov = data_g1, n = n_g1, method = "REM", RE.type = "Diag")
-stage1_g2.fit <- tssem1(Cov = data_g2, n = n_g2, method = "REM", RE.type = "Diag")
-stage1_g3.fit <- tssem1(Cov = data_g3, n = n_g3, method = "REM", RE.type = "Diag")
+### Fitting a fix-effects Stage 1 model in three subgroups as there is not enough data
+```{r, message=FALSE}
+## Stage 1 analysis per subgroup (random-effects analysis)
+stage1_g1.fit <- tssem1(Cov = data_g1, n = n_g1, method = "REM", RE.type = "Zero")
+stage1_g2.fit <- tssem1(Cov = data_g2, n = n_g2, method = "REM", RE.type = "Zero")
+stage1_g3.fit <- tssem1(Cov = data_g3, n = n_g3, method = "REM", RE.type = "Zero")
 
-# Rerun it to remove the error code for group 3
-stage1_g3.fit <- rerun(stage1_g3.fit)
+## Results
+summary(stage1_g1.fit)
+summary(stage1_g2.fit)
+summary(stage1_g3.fit)
+```
 
-# Stage 2 analysis per subgroup (random-effect analysis)
+### Fitting the Stage 2 model in three subgroups
+```{r}
+## Stage 2 analysis per subgroup (random-effect analysis)
 stage2_g1.fit <- tssem2(stage1_g1.fit, Amatrix=RAM1$A, Smatrix=RAM1$S)
 stage2_g2.fit <- tssem2(stage1_g2.fit, Amatrix=RAM1$A, Smatrix=RAM1$S)
 stage2_g3.fit <- tssem2(stage1_g3.fit, Amatrix=RAM1$A, Smatrix=RAM1$S)
 
-# Results
+## Results
 summary(stage2_g1.fit)
 summary(stage2_g2.fit)
 summary(stage2_g3.fit)
 ```
 
-
-
+### Testing the equality of regression coefficients
+* We create and fit a model with equal direct effects (we use the same matrix A for both groups), but different variances and covariances, so we create an S matrix with different labels for group 2 and group 3.
 ```{r}
-# Testing the equality of regression coefficients across subgroups
-# Create different labels for the variances and covariances
-
 ## Proposed model g2
-model2 <- ' W2 ~ w2w*W1 + s2w*S1
-            S2 ~ w2s*W1 + s2s*S1
-            W1 ~~ g2w1WITHs1*S1
-            W2 ~~ g2w2WITHs2*S2
-            W1 ~~ 1*W1
-            S1 ~~ 1*S1
-            W2 ~~ g2Errw2*W2
-            S2 ~~ g2Errs2*S2'
-
+model2 <- 'W2 ~ w2w*W1 + s2w*S1
+           S2 ~ w2s*W1 + s2s*S1
+           W1 ~~ g2w1WITHs1*S1
+           W2 ~~ g2w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ g2Errw2*W2
+           S2 ~~ g2Errs2*S2'
+     
 RAM2 <- lavaan2RAM(model2, obs.variables=c("W1", "S1", "W2", "S2"))
 
 ## Proposed model g3
-model3 <- ' W2 ~ w2w*W1 + s2w*S1
-            S2 ~ w2s*W1 + s2s*S1
-            W1 ~~ g3w1WITHs1*S1
-            W2 ~~ g3w2WITHs2*S2
-            W1 ~~ 1*W1
-            S1 ~~ 1*S1
-            W2 ~~ g3Errw2*W2
-            S2 ~~ g3Errs2*S2'
-
+model3 <- 'W2 ~ w2w*W1 + s2w*S1
+           S2 ~ w2s*W1 + s2s*S1
+           W1 ~~ g3w1WITHs1*S1
+           W2 ~~ g3w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ g3Errw2*W2
+           S2 ~~ g3Errs2*S2'
+     
 RAM3 <- lavaan2RAM(model3, obs.variables=c("W1", "S1", "W2", "S2"))
 
-## Create the models for the three groups, make sure to set the argument run=FALSE
+## Create the models for the two groups, make sure to set the argument run=FALSE
 stage2_g1 <- tssem2(stage1_g1.fit, Amatrix=RAM1$A, Smatrix=RAM1$S, run=FALSE, model.name="g1")
 
 stage2_g2 <- tssem2(stage1_g2.fit, Amatrix=RAM1$A, Smatrix=RAM2$S, run=FALSE, model.name="g2")
@@ -228,40 +504,41 @@ stage2_constrained <- mxModel(model="same_regression_coef", stage2_g1, stage2_g2
 ## Fit multigroup model with equality constraints
 Stage2_constrained.fit <- mxRun(stage2_constrained, intervals=TRUE)
 
-## Make a list of the fitted models in the separate groups
+## first make a list of the fitted models in the separate groups
 submodels.fit <- list(stage2_g1.fit, stage2_g2.fit, stage2_g3.fit)
 
 subgroup.summary(submodels.fit,Stage2_constrained.fit)
 ```
 
 ### Testing the equality of one regression coefficient (w2w)
+* We create and fit a model with equal direct effects (we use the same matrix A for both groups), but different variances and covariances, so we create an S matrix with different labels for group 2 and group 3.
 
 ```{r}
 ## Proposed model g2
-model2 <-  'W2 ~ w2w*W1 + g2s2w*S1
-            S2 ~ g2w2s*W1 + g2s2s*S1
-            W1 ~~ g2w1WITHs1*S1
-            W2 ~~ g2w2WITHs2*S2
-            W1 ~~ 1*W1
-            S1 ~~ 1*S1
-            W2 ~~ g2Errw2*W2
-            S2 ~~ g2Errs2*S2'
-
+model2 <- 'W2 ~ w2w*W1 + g2s2w*S1
+           S2 ~ g2w2s*W1 + g2s2s*S1
+           W1 ~~ g2w1WITHs1*S1
+           W2 ~~ g2w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ g2Errw2*W2
+           S2 ~~ g2Errs2*S2'
+     
 RAM2 <- lavaan2RAM(model2, obs.variables=c("W1", "S1", "W2", "S2"))
 
 ## Proposed model g3
-model3 <-  'W2 ~ w2w*W1 + g3s2w*S1
-            S2 ~ g3w2s*W1 + g3s2s*S1
-            W1 ~~ g3w1WITHs1*S1
-            W2 ~~ g3w2WITHs2*S2
-            W1 ~~ 1*W1
-            S1 ~~ 1*S1
-            W2 ~~ g3Errw2*W2
-            S2 ~~ g3Errs2*S2'
-
+model3 <- 'W2 ~ w2w*W1 + g3s2w*S1
+           S2 ~ g3w2s*W1 + g3s2s*S1
+           W1 ~~ g3w1WITHs1*S1
+           W2 ~~ g3w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ g3Errw2*W2
+           S2 ~~ g3Errs2*S2'
+     
 RAM3 <- lavaan2RAM(model3, obs.variables=c("W1", "S1", "W2", "S2"))
 
-## Create the models for the three groups, make sure to set the argument run=FALSE
+## Create the models for the two groups, make sure to set the argument run=FALSE
 stage2_g1 <- tssem2(stage1_g1.fit, Amatrix=RAM1$A, Smatrix=RAM1$S, run=FALSE, model.name="g1")
 
 stage2_g2 <- tssem2(stage1_g2.fit, Amatrix=RAM2$A, Smatrix=RAM2$S, run=FALSE, model.name="g2")
@@ -281,45 +558,51 @@ submodels.fit <- list(stage2_g1.fit,stage2_g2.fit,stage2_g3.fit)
 subgroup.summary(submodels.fit,Stage2_constrained.fit)
 ```
 
-## Subgroup analysis (two subgroups)
+## Models with two subgroup analysis
 ```{r}
 # Data for studies with short Lag 
-data_g1 <- data[Lag<median(Lag)]
-n_g1 <- n[Lag<median(Lag)]
+data_g1 <- data[Lag<12]
+n_g1 <- n[Lag<12]
 
 # Data for studies with long Lag 
-data_g2 <- data[Lag>=median(Lag)]
-n_g2 <- n[Lag>=median(Lag)]
-
-## Stage 1 analysis per subgroup (random-effects analysis)
-stage1_g1.fit <- tssem1(Cov = data_g1, n = n_g1, method = "REM", RE.type = "Diag")
-stage1_g2.fit <- tssem1(Cov = data_g2, n = n_g2, method = "REM", RE.type = "Diag")
-
-## Rerun the analysis to remove error from group 2
-stage1_g2.fit <- rerun(stage1_g2.fit)
+data_g2 <- data[Lag>=12]
+n_g2 <- n[Lag>=12]
 ```
 
+### Fitting a fixed-effects Stage 1 model in two subgroups as there is not enough data
+```{r, message=FALSE}
+## Stage 1 analysis per subgroup (random-effects analysis)
+stage1_g1.fit <- tssem1(Cov = data_g1, n = n_g1, method = "REM", RE.type = "Zero")
+stage1_g2.fit <- tssem1(Cov = data_g2, n = n_g2, method = "REM", RE.type = "Zero")
+
+summary(stage1_g1.fit)
+summary(stage1_g2.fit)
+```
+
+### Fitting the Stage 2 model in both subgroups
 ```{r}
-## Stage 2 analysis per subgroup 
+## Stage 2 analysis per subgroup (random-effect analysis)
 stage2_g1.fit <- tssem2(stage1_g1.fit, Amatrix=RAM1$A, Smatrix=RAM1$S)
 stage2_g2.fit <- tssem2(stage1_g2.fit, Amatrix=RAM1$A, Smatrix=RAM1$S)
 
 summary(stage2_g1.fit)
 summary(stage2_g2.fit)
+```
 
-#Testing the equality of regression coefficients
+### Testing the equality of regression coefficients
+* We create and fit a model with equal direct effects (we use the same matrix A for both groups), but different variances and covariances, so we create an S matrix with different labels for group 2.
 
-
+```{r}
 ## Proposed model g2
-model2 <-  'W2 ~ w2w*W1 + s2w*S1
-            S2 ~ w2s*W1 + s2s*S1
-            W1 ~~ g2w1WITHs1*S1
-            W2 ~~ g2w2WITHs2*S2
-            W1 ~~ 1*W1
-            S1 ~~ 1*S1
-            W2 ~~ g2Errw2*W2
-            S2 ~~ g2Errs2*S2'
-
+model2 <- 'W2 ~ w2w*W1 + s2w*S1
+           S2 ~ w2s*W1 + s2s*S1
+           W1 ~~ g2w1WITHs1*S1
+           W2 ~~ g2w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ g2Errw2*W2
+           S2 ~~ g2Errs2*S2'
+     
 RAM2 <- lavaan2RAM(model2, obs.variables=c("W1", "S1", "W2", "S2"))
 
 # Create the models for the two groups, make sure to set the argument run=FALSE
@@ -334,10 +617,111 @@ stage2_constrained <- mxModel(model="same_regression_coef", stage2_g1, stage2_g2
 # Fit multigroup model with equality constraints
 Stage2_constrained.fit <- mxRun(stage2_constrained, intervals=TRUE)
 
-# Make a list of the fitted models in the separate groups
+# first make a list of the fitted models in the separate groups
 submodels.fit <- list(stage2_g1.fit,stage2_g2.fit)
 
 subgroup.summary(submodels.fit,Stage2_constrained.fit)
+```
+
+# OSMASEM (with 1/4 variables (3/6 correlations) per study randomly deleted)
+
+## Data preparation
+```{r}
+## Get the data
+n <- Nohe15A1$n
+Lag <- Nohe15A1$Lag
+  
+## Calculate the sampling covariance matrix of the correlations
+my.df <- Cor2DataFrame(data.missing, n, acov = "weighted")
+
+## Add standardized Lag as a moderator.
+## Standardization of the moderator improves the convergence.
+my.df$data <- data.frame(my.df$data, Lag=scale(Nohe15A1$Lag),
+                         check.names=FALSE)
+head(my.df$data)
+
+## Check the number of studies
+pattern.na(my.df, show.na=FALSE, type="osmasem")
+
+## Proposed model
+model1 <- 'W2 ~ w2w*W1 + s2w*S1
+           S2 ~ w2s*W1 + s2s*S1
+           W1 ~~ w1WITHs1*S1
+           W2 ~~ w2WITHs2*S2
+           W1 ~~ 1*W1
+           S1 ~~ 1*S1
+           W2 ~~ Errw2*W2
+           S2 ~~ Errs2*S2'
+
+plot(model1, col="yellow")     
+
+## Convert the lavaan syntax into the RAM specification
+RAM1 <- lavaan2RAM(model1, obs.variables=c("W1", "S1", "W2", "S2"))
+RAM1
+```
+
+## Model without any moderator
+```{r}
+## Create the model implied correlation structure with implicit diagonal constraints
+M0 <- create.vechsR(A0=RAM1$A, S0=RAM1$S)
+
+## Create the heterogeneity variance-covariance matrix
+## RE.type= either "Diag" or "Symm"
+## Transform= either "expLog" or "sqSD" for better estimation on variances
+T0 <- create.Tau2(RAM=RAM1, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
+
+mx.fit0 <- osmasem(model.name="No moderator", Mmatrix=M0, Tmatrix=T0, data=my.df)
+summary(mx.fit0)
+
+## The variance-covariance matrix in mx.fit0 is based on the untransformed matrix
+## Extract the heterogeneity variance-covariance matrix
+VarCorr(mx.fit0)
+```
+
+## Model with `Lag` as a moderator on the A matrix
+```{r, message=FALSE}
+Ax <- matrix(c(0,0,0,0,
+               0,0,0,0,
+               "0*data.Lag","0*data.Lag",0,0,
+               "0*data.Lag","0*data.Lag",0,0),
+             nrow=4, ncol=4, byrow=TRUE)
+Ax              
+
+## When there are more than one moderators
+## Ax <- list(A1, A2, A3)
+
+## Create the model implied correlation structure with the standardized Lag as the moderator
+M1 <- create.vechsR(A0=RAM1$A, S0=RAM1$S, Ax=Ax)
+
+mx.fit1 <- osmasem(model.name="Ax as moderator", Mmatrix=M1, Tmatrix=T0, data=my.df)
+summary(mx.fit1)
+
+## Extract the residual heterogeneity variance-covariance matrix
+VarCorr(mx.fit1)
+
+## Calculate the R2
+## Tau2.0: Heterogeneity variances without the predictors
+## Tau2.1: Heterogeneity variances with the predictors
+## R2: (Tau2.0-Tau2.1)/Tau2.0
+osmasemR2(mx.fit1, mx.fit0)
+
+## Compare the models with and without the moderator
+anova(mx.fit1, mx.fit0)
+
+## Get the estimated A0 and A1
+A0 <- mxEval(A0, mx.fit1$mx.fit)
+A0
+A1 <- mxEval(A1, mx.fit1$mx.fit)
+A1
+
+## Compute the estimated A matrix at -1SD (-1) of the standardized Lag
+A0 - A1
+
+## Compute the estimated A matrix at 0 (mean) of the standardized Lag
+A0
+
+## Compute the estimated A matrix at +1SD (+1) of the standardized Lag
+A0 + A1
 ```
 
 ```{r}
