@@ -1,4 +1,4 @@
-
+## Written by Suzanne Jak http://www.suzannejak.nl/
 
 library(OpenMx)
 library(metaSEM)
