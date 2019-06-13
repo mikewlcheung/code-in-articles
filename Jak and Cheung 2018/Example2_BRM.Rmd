@@ -1,0 +1,155 @@
+---
+title: '(Appendix B) Example 2: Testing equality of direct effects in a path model (random-effects analysis)'
+author: 'Suzanne Jak and Mike W.-L. Cheung'
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document: default
+---
+
+## Install the metaSEM package
+* R can be downloaded at http://www.r-project.org/.
+* We only need to install the metaSEM-package once.
+```{r, eval=FALSE}
+install.packages("metaSEM")
+```
+
+## Read in the data and load metaSEM package
+```{r, message=FALSE}
+library(metaSEM)
+
+## Try to use multiple cores in the analyses
+mxOption(key='Number of Threads', value=parallel::detectCores()-2)
+
+## Load the functions to facilitate analysis (link is anonymised for review)
+source("subgroup.functions.R")
+
+head(Roorda11$data)
+head(Roorda11$n)
+head(Roorda11$SES)
+```
+
+## Stage 1 random-effects model on all data
+```{r}
+## Stage 1 analysis overall (random)
+stage1random <- tssem1(Cov = Roorda11$data, n = Roorda11$n, method = "REM", RE.type = "Diag")
+summary(stage1random)
+```
+
+## Stage 2 random-effects model on all data
+* Create a matrix with direct effects (A) and a matrix with variances and covariances (S)
+
+```{r}
+varnames <- c("pos","neg","enga","achiev")
+
+A <- create.mxMatrix(c( 0,0,0,0,
+                        0,0,0,0,
+                        "0.1*b31","0.1*b32",0,0,
+                        0,0,"0.1*b43",0),
+                      type = "Full", nrow = 4, ncol = 4, byrow = TRUE,
+                      name = "A", as.mxMatrix = FALSE)
+dimnames(A) <- list(varnames, varnames)
+A
+
+S <- create.mxMatrix(c(1,
+                       ".5*p21",1,
+                       0,0,"0.6*p33",
+                       0,0,0,"0.6*p44"), 
+                     type="Symm", byrow = TRUE,
+                     name="S", as.mxMatrix = FALSE)
+dimnames(S) <- list(varnames, varnames)
+S
+```
+
+* Fitting the Stage 2 model on the pooled correlation matrix from the random effects Stage 1 analysis
+
+```{r}
+# Run the Stage 2 model
+Stage2 <- tssem2(stage1random, Amatrix=A, Smatrix=S, diag.constraints=TRUE, intervals="LB", 
+                 mx.algebras = list(Indirect_pos=mxAlgebra(b31*b43, name = "Indirect_pos"),
+                                    Indirect_neg=mxAlgebra(b32*b43, name = "Indirect_neg")))
+
+# Rerun it to remove the error code
+Stage2 <- rerun(Stage2)
+
+summary(Stage2)
+```
+
+# Subgroup analysis
+* We split the studies based on the % SES
+
+```{r}
+# Data for studies with majority low SES 
+data_low <- Roorda11$data[Roorda11$SES>50]
+n_low <- Roorda11$n[Roorda11$SES>50]
+
+# Data for studies with majority high SES
+data_high <- Roorda11$data[Roorda11$SES<=50]
+n_high <- Roorda11$n[Roorda11$SES<=50]
+```
+
+## Fitting a random-effects Stage 1 model in both subgroups
+
+```{r, message=FALSE}
+# Stage 1 analysis per subgroup (random-effects analysis)
+stage1_low.fit <- tssem1(Cov = data_low, n = n_low, method = "REM", RE.type = "Diag")
+stage1_high.fit <- tssem1(Cov = data_high, n = n_high, method = "REM", RE.type = "Diag")
+
+## Rerun it to remove the error code
+stage1_high.fit <- rerun(stage1_high.fit)
+
+summary(stage1_low.fit)
+summary(stage1_high.fit)
+```
+
+## Fitting the Stage 2 model in both subgroups
+
+```{r, message=FALSE}
+# Stage 2 analysis per subgroup (random-effect analysis)
+
+stage2_low.fit <- tssem2(stage1_low.fit, Amatrix=A, Smatrix=S)
+
+stage2_high.fit <- tssem2(stage1_high.fit, Amatrix=A, Smatrix=S)
+summary(stage2_low.fit)
+summary(stage2_high.fit)
+```
+
+
+## Testing the equality of regression coefficients
+* We create and fit a model with equal direct effects (we use the same matrix A for both groups),but different variances and covariances, so we create an S matrix with different labels for the 'high' group
+
+```{r}
+S_high <- create.mxMatrix(c(1,
+                            ".1*p21_high",1,
+                             0,0,"0.6*p33_high",
+                             0,0,0,"0.6*p44_high"), 
+                      type="Symm", byrow = TRUE,
+                      name="S", as.mxMatrix = FALSE)
+S_high
+
+# Create the models for the two groups, make sure to set the argument run=FALSE
+stage2_low <- tssem2(stage1_low.fit, Amatrix=A, Smatrix=S, run=FALSE, model.name="low")
+
+stage2_high <- tssem2(stage1_high.fit, Amatrix=A, Smatrix=S_high, run=FALSE, model.name="high")
+
+# Create the multigroup model
+stage2_constrained <- mxModel(model="same_regression_coef", stage2_low, stage2_high,
+                              mxFitFunctionMultigroup(c("low", "high")))
+
+# Fit multigroup model with equality constraints
+Stage2_constrained.fit <- mxRun(stage2_constrained)
+
+# first make a list of the fitted models in the separate groups
+submodels.fit <- list(stage2_low.fit,stage2_high.fit)
+
+subgroup.summary(submodels.fit,Stage2_constrained.fit)
+
+sessionInfo()
+```
+

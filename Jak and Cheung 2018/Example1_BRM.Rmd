@@ -1,0 +1,269 @@
+---
+title: '(Appendix A) Example 1: Testing equality of factor loadings in CFA (fixed-effects analysis)'
+author: 'Suzanne Jak and Mike W.-L. Cheung'
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document: default
+---
+
+# Installing the metaSEM package
+* R can be downloaded at http://www.r-project.org/.
+* We only need to install the metaSEM-package once.
+```{r, eval=FALSE}
+install.packages("metaSEM")
+```
+
+# Read in the data and load metaSEM package
+```{r, message=FALSE}
+library(metaSEM)
+
+## Try to use multiple cores in the analyses
+mxOption(key='Number of Threads', value=parallel::detectCores()-2)
+
+## Load the functions to facilitate analysis
+source("subgroup.functions.R")
+
+# The data "Norton13" are available after loading the metaSEM package
+# We display correlation matrices for first (nr 1) and the last (nr 28) study
+# With the round()-function we limit the number of decimals to 2
+round(Norton13$data[[1]], 2)
+round(Norton13$data[[28]], 2)
+
+# Display sample sizes
+Norton13$n
+
+# Display population type
+Norton13$population
+```
+
+
+# Stage 1 analysis overall 
+```{r, cache=FALSE}
+
+# Running Stage 1 model and getting the summary takes +- 4 minutes
+# depending on the speed of the computer.
+# The argument method = "FEM" indicates that we apply the fixed effects model
+# For a random effects model one would use method = "REM"
+
+Stage1.fit <- tssem1(Norton13$data, Norton13$n, method = "FEM")
+
+# if the model did not converge (if OpenMx status is not 0 or 1), you may use the rerun() function to continue trying until convergence is reached
+
+Stage1.fit <- rerun(Stage1.fit)
+summary(Stage1.fit)
+
+```
+
+# Stage 2 analysis overall
+* Specify the A-matrix with factor loadings, the S-matrix with variances and covariances, and the F-matrix in selecting observed variables. See Cheung (2015) or McArdle & McDonald (1984) for an explanation of the A, S and F matrices in the RAM formulation.
+
+```{r}
+varnames <- paste("x", 1:14, sep="")
+factornames <- c("Dist","Anx","Dep")
+
+# Vector to indicate whether variable is observed (1) or latent (0)
+F <- create.Fmatrix(c(1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0), name="F", as.mxMatrix=FALSE)
+
+dimnames(F) <- list(varnames,c(varnames,factornames))
+
+## Display F
+F
+
+# matrix with factor loadings, later included in matrix A
+lambda <-matrix(
+		c("0.1*L1_1","0.1*L1_2","0",
+		  "0.1*L2_1","0","0.1*L2_3",
+		  "0.1*L3_1","0.1*L3_2","0",
+		  "0.1*L4_1","0","0.1*L4_3",
+		  "0.1*L5_1","0.1*L5_2","0",
+		  "0.1*L6_1","0","0.1*L6_3",
+		  "0.1*L7_1","0.1*L7_2","0",
+		  "0.1*L8_1","0","0.1*L8_3",
+		  "0.1*L9_1","0.1*L9_2","0",
+		  "0.1*L10_1","0","0.1*L10_3",
+		  "0.1*L11_1","0.1*L11_2","0",
+		  "0.1*L12_1","0","0.1*L12_3",
+		  "0.1*L13_1","0.1*L13_2","0",
+		  "0.1*L14_1","0","0.1*L14_3"), 
+	    	nrow=14, ncol=3, byrow = TRUE)
+
+A <- rbind(cbind(matrix(0,ncol=14,nrow=14),lambda),
+           matrix(0, nrow=3, ncol=17))
+
+dimnames(A) <- list(c(varnames,factornames),c(varnames,factornames))
+
+## Display A
+A
+
+## Convert to OpenMx-matrices
+A <- as.mxMatrix(A)
+
+# Matrix with residual variances
+psi <- matrix(0, nrow = 14, ncol = 14)
+diag(psi) <- paste("0.1*","e",1:14,sep="")
+
+# Matrix with factor variances and covariances
+phi <- matrix(c(1,0,0,
+                0,1,0,
+                0,0,1),
+              nrow = 3, ncol = 3)
+
+# Psi and phi are combined in matrix S
+S <- bdiagMat(list(psi, phi))
+
+dimnames(S) <- list(c(varnames,factornames),c(varnames,factornames))
+
+## Display S
+S
+
+## Convert to OpenMx-matrices
+S <- as.mxMatrix(S)
+```
+
+* Fitting the Stage 2 model on the pooled correlation matrix from the fixed effects Stage 1 analysis
+
+```{r, cache=FALSE}
+# Run the Stage 2 model
+Stage2.fit <- tssem2(Stage1.fit, Amatrix=A, Smatrix=S, Fmatrix=F)
+summary(Stage2.fit)
+```
+
+# Subgroup analysis
+* We group the sample characteristics into patients versus non-patients. The variable is stored in `Norton13$group`.
+
+```{r, cache=FALSE}
+# Display the populations grouped into patients vs. non-patients
+Norton13$group
+
+# Stage 1 per subgroup
+Stage1_subgroup.fit <- tssem1(Norton13$data, Norton13$n, method = "FEM", 
+                              cluster = Norton13$group)
+
+summary(Stage1_subgroup.fit)
+```
+
+## Run the Stage 2 model without equality constraints across groups
+```{r, cache=FALSE}
+# By providing the R-object with the Stage 1 analysis (Stage1_subgroup.fit) to the tssem2()-function, 
+# the factor model is fit separately to the data of each subgroup
+# Running  this model takes some minutes
+Stage2_free.fit <- tssem2(Stage1_subgroup.fit, Amatrix=A, Smatrix=S, Fmatrix=F)
+
+## summary of individual models
+summary(Stage2_free.fit)
+```
+
+```{r, cache=FALSE}
+
+## summary of combined model
+subgroup.summary(Stage2_free.fit)
+```
+
+
+## Run the Stage 2 model with equality constraints across groups (per factor)
+*  Set factor loadings Distress equal across groups
+*  Give the factor loadings of Anxiety (odd items) and Depression (even items) different labels
+*  Give all residual variances different labels
+
+```{r, echo = TRUE, eval = TRUE}
+# Create a vector with the item numbers for each factor
+Items_Anx <- c(1,3,5,7,9,11,13)
+Items_Dep <- c(2,4,6,8,10,12,14)
+
+# we create a new matrix, A_pat1, in which the factor loadings from the Anxiety facor (in column 16 of matrix A), and of the Depression factor (in column 17 of matrix A) are different
+A_pat1 <- A
+A_pat1$labels[Items_Anx,16] <- paste(A$labels[Items_Anx,16],"_pat",sep="")
+A_pat1$labels[Items_Dep,17] <- paste(A$labels[Items_Dep,17],"_pat",sep="")
+
+# Give the residual variances different labels for the patient group
+S_pat <- S
+diag(S_pat$labels)[1:14] <- paste(diag(S$labels)[1:14],"_pat",sep="") 
+```
+
+* Create the models (set run=FALSE) and multigroup model with equal factor loadings of Distress factor
+```{r, cache=FALSE, message=FALSE}
+# we use the new A and S matrix in the patient group
+stage2_pat <- tssem2(Stage1_subgroup.fit[[1]], Amatrix=A_pat1, Smatrix=S_pat, Fmatrix=F, 
+                    run=FALSE, model.name="patients")
+
+stage2_nonpat <- tssem2(Stage1_subgroup.fit[[2]], Amatrix=A, Smatrix=S, Fmatrix=F, 
+                        run=FALSE, model.name="nonpatients")
+
+# Combine the two separate models into a multigroup model
+stage2_constrained_distr <- mxModel(model="same_factor_loadings_Distr", 
+                                    stage2_nonpat, stage2_pat,
+                                    mxFitFunctionMultigroup(c("patients", "nonpatients")))
+
+Stage2_constrained_distr.fit <- mxRun(stage2_constrained_distr)
+```
+
+```{r, cache=FALSE}
+# get summary using subgroup.summary() function
+subgroup.summary(Stage2_free.fit, Stage2_constrained_distr.fit)
+```
+
+
+* Create the models (set run=FALSE) and multigroup model with equal factor loadings of Anxiety factor
+
+```{r, cache=FALSE, message=FALSE}
+A_pat2 <- A_pat1
+A_pat2$labels[1:14,15] <- paste(A$labels[1:14,15],"_pat",sep="")
+A_pat2$labels[Items_Anx,16] <- A$labels[Items_Anx,16]
+
+# Create the models, make sure to set the argument run=FALSE
+
+stage2_pat <- tssem2(Stage1_subgroup.fit[[1]], Amatrix=A_pat2, Smatrix=S_pat, Fmatrix=F, 
+                     run=FALSE, model.name="patients")
+
+stage2_nonpat <- tssem2(Stage1_subgroup.fit[[2]], Amatrix=A, Smatrix=S, Fmatrix=F, 
+                        run=FALSE, model.name="nonpatients")
+
+stage2_constrained_anx <- mxModel(model="same_factor_loadings_Anx",
+                                  stage2_nonpat, stage2_pat,
+                                  mxFitFunctionMultigroup(c("patients", "nonpatients")))
+
+Stage2_constrained_anx.fit <- mxRun(stage2_constrained_anx)
+```
+
+
+```{r, cache = FALSE}
+subgroup.summary(Stage2_free.fit, Stage2_constrained_anx.fit)
+```
+
+* Create the models (set run=FALSE) and multigroup model with equal factor loadings of Depression factor
+
+```{r, cache=FALSE, message=FALSE}
+#  factor loadings Depression equal across groups
+A_pat3 <- A_pat2
+A_pat3$labels[Items_Anx,16] <- A_pat1$labels[Items_Anx,16]
+A_pat3$labels[Items_Dep,17] <- A$labels[Items_Dep,17]
+
+# Create the models, make sure to set the argument run=FALSE
+
+stage2_pat <- tssem2(Stage1_subgroup.fit[[1]], Amatrix=A_pat3, Smatrix=S_pat, Fmatrix=F, 
+                     run=FALSE, model.name="patients")
+
+stage2_nonpat <- tssem2(Stage1_subgroup.fit[[2]], Amatrix=A, Smatrix=S, Fmatrix=F, 
+                        run=FALSE, model.name="nonpatients")
+
+stage2_constrained_dep <- mxModel(model="same_factor_loadings_Dep", 
+                                  stage2_nonpat, stage2_pat,
+                                  mxFitFunctionMultigroup(c("patients", "nonpatients")))
+
+Stage2_constrained_dep.fit <- mxRun(stage2_constrained_dep)
+```
+
+
+```{r, cache = FALSE}
+subgroup.summary(Stage2_free.fit, Stage2_constrained_dep.fit)
+
+sessionInfo()
+```
+
