@@ -1,0 +1,209 @@
+---
+title: "A Simulation Study in MASEM"
+author: "Mike Cheung and Suzanne Jak"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+# Simulation
+* *Note*. At least `metaSEM` version 1.2.2.1 is required in the simulation. If it is not available, you may need to install it from Github by using `devtools::install_github("mikewlcheung/metasem")`.
+```{r, eval=FALSE}
+## Libraries used in the simulation
+for (i in c("metaSEM", "metafor", "ggplot2", "dplyr")) {
+  if (!(i %in% rownames(installed.packages()))) install.packages(i)
+}
+
+library(metaSEM)
+mxOption(key='Number of Threads', value=parallel::detectCores()-2)
+
+## Get helper functions for the simulation
+source("functions.R")
+
+## Seed for reproducibility
+set.seed(71286713)
+
+## Sample size per study
+n <- 100
+
+## No. of replications
+## Running the simulation or testing it?
+run_simulation <- FALSE
+
+if (run_simulation) {
+  Rep <- 1000
+} else {
+  Rep <- 2
+}
+
+## No. of studies
+k <- c(10, 30, 50)
+
+## Percentage of studies with missing data
+missing_studies <- c(.4, .6)
+
+## Percentage of variables with missing data
+missing_variables <- c(.4, .6)  
+
+## Type of missing data
+missing_type <- c("MCAR", "NMAR")
+
+design <- expand.grid(k=k, missing_studies=missing_studies, missing_variables=missing_variables,
+                      missing_type=missing_type, stringsAsFactors=FALSE)
+
+## CFA model to generate data
+Lambda <- matrix(c(.7, 0,
+                   .6, 0,
+                   .5, .5,
+                   0, .7,
+                   0, .6), ncol=2, nrow=5, byrow=TRUE)
+Phi <- matrix(c(1, .6,
+                .6, 1), ncol=2, nrow=2)
+Sigma <- Lambda %*% Phi %*% t(Lambda)
+Psi <- 1-diag(Sigma)
+
+Lambda
+Phi
+Psi
+
+diag(Sigma) <- 1
+dimnames(Sigma) <- list(paste0("x", 1:5), paste0("x", 1:5))
+Sigma
+
+## Heterogeneity of correlation: SD_rho=0.1
+Sigma_V <- diag(rep((0.1^2), 10))
+Sigma_V
+
+## Model for fitting
+model <- "f1 =~ start(.7)*x1 + start(.6)*x2 + start(.5)*x3
+          f2 =~ start(.5)*x3 + start(.7)*x4 + start(.6)*x5
+          f1 ~~ start(.6)*f2
+          x1 ~~ start(.51)*x1
+          x2 ~~ start(.64)*x2
+          x3 ~~ start(.20)*x3
+          x4 ~~ start(.51)*x4
+          x5 ~~ start(.64)*x5"
+RAM <- lavaan2RAM(model, A.notation="on", S.notation="with")
+RAM
+
+## Population values of the parameters
+parameters <- c("x1onf1", "x2onf1", "x3onf1", "x3onf2", "x4onf2", "x5onf2", "f1withf2")
+pop <- c(Lambda[1:3, 1], Lambda[3:5,2], Phi[2,1])
+names(pop) <- parameters
+pop
+
+## Store the simulation results
+fit <- list()
+for (i in seq_len(nrow(design))) {
+  ## Total no. of conditions
+  total <- nrow(design)
+  
+  fit[[i]] <- replicate(Rep,
+                        run_it(k=design[i, "k"], 
+                               n=n, 
+                               missing_studies=design[i, "missing_studies"], 
+                               missing_variables=design[i, "missing_variables"], 
+                               missing_type=design[i, "missing_type"], 
+                               Sigma=Sigma, 
+                               Sigma_V=Sigma_V), 
+                        simplify = FALSE)
+  cat("Completed: ", i, " out of ", total, ".\n", sep="")
+}
+  
+## Save everything
+save.image(file="results.RData")
+```
+
+# Results
+```{r, fig.height=8, fig.width=14}
+library(ggplot2)
+library(dplyr)
+
+load("results.RData")
+
+## Get helper functions for the simulation and plotting
+source("functions.R")
+
+## Get the simulation setings
+## fit: a list of 16 conditions
+settings <- sapply(fit, function(cond) {
+  ## Run by replications
+  out <- cond[[1]]$settings[c("k", "n", "missing_studies", 
+                              "missing_variables", "missing_type")]
+  out
+})
+
+## Get the results
+## fit: a list of 16 conditions
+## cond: a list of 1000 replications
+results <- (sapply(fit, function(cond) {
+  ## Get the results per condition over 1000 replications
+  out <- unlist(lapply(c("unir", "gls", "tssem", "osmasem"), 
+                       extractFit, x=cond, pop=pop))
+  out
+}))
+  
+## Final results for tables and plotting
+final.results <- data.frame(t(settings), t(results)) 
+
+## Sort by conditions
+final.results <- final.results[, c(2,5,1,3,4, 6:77)]
+final.results <- final.results %>% arrange(missing_type, k, missing_studies, missing_variables)
+
+## Write the results as aa CSV file
+## write.csv(final.results, file="final_results.csv", row.names = FALSE)
+
+## Table 5 in the paper
+final.results %>% select(2:5, contains("mean")) %>% 
+  knitr::kable(digits=2, caption="Table 5: Means of the test statistics (a chi-square test with 3 degrees of freedom for the proposed model)")
+
+## Table 6 in the paper
+final.results %>% select(2:5, contains("Type1")) %>% 
+  knitr::kable(digits=2, caption="Table 6: Rejection percentages (alpha=.05) for testing the proposed model with df=3")
+
+## Get the relative percentage bias of parameter estimates and their standard errors
+est <- get_individual_stat(final.results, type="est")
+se <- get_individual_stat(final.results, type="se")
+
+## Replace the condition with parameter labels in plotting individual parameters
+est$condition <- sapply(strsplit(est$condition, split="\\."), function(x) x[[2]])
+se$condition <- sapply(strsplit(se$condition, split="\\."), function(x) x[[2]])
+
+## Get the individual estimates for MCAR and plot it
+p8 <- est %>%  
+      ggplot(aes(x=condition, y=y, group=Method, colour=Method, 
+                 shape=Method, linetype=Method)) + 
+      geom_point() + geom_line() + 
+      facet_grid(missing_type+k ~ missing_studies_variables) +
+      scale_x_discrete(name="Parameter") +
+      scale_y_continuous(name="Relative percentage bias of parameter estimates") +
+      ggtitle("Relative percentage bias of parameter estimates") +
+      geom_hline(yintercept = c(-5, 5), linetype = "dashed")
+
+## Figure 8 in the paper
+p8
+## ggsave("Fig8.tiff", p8, width=14, height=8, compression = "lzw")
+
+p9 <- se %>%  
+      ggplot(aes(x=condition, y=y, group=Method, colour=Method, 
+                 shape=Method, linetype=Method)) + 
+      geom_point() + geom_line() + 
+      facet_grid(missing_type+k ~ missing_studies_variables) +
+      scale_x_discrete(name="Parameter") +
+      scale_y_continuous(name="Relative percentage bias of standard errors") +
+      ggtitle("Relative percentage bias of standard errors") +
+      geom_hline(yintercept = c(-10, 10), linetype = "dashed")
+
+## Figure 9 in the paper
+p9
+## ggsave("Fig9.tiff", p9, width=14, height=8, compression = "lzw")
+
+sessionInfo()
+```
+
