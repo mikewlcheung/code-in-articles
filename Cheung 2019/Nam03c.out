@@ -1,0 +1,245 @@
+Mplus VERSION 8.2 (Linux)
+MUTHEN & MUTHEN
+02/06/2019   6:31 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE:	Multivariate mixed-effects meta-analysis with age as a moderator
+
+  ! Read the dataset
+  DATA:	FILE IS Nam03.dat;
+
+  ! Variable names in the data
+  ! Asthma LRD: effect sizes
+  ! Asthma_v Cov_05 LRD_v: known sampling variances and covariance
+  VARIABLE: NAMES ID Age Asthma LRD Asthma_v Cov_05 LRD_v;
+
+          ! Missing values are represented by .
+          MISSING ARE .;
+
+          ! Asthma and LRD are used in the analysis.
+          ! Age is a moderator.
+          USEVARIABLES ARE Asthma LRD Age;
+
+          ! These are the known sampling variances and covariance.
+          CONSTRAINT ARE Asthma_v Cov_05 LRD_v;
+
+          DEFINE:
+          ! Center Age before the analysis
+          CENTER Age (GRANDMEAN);
+
+  MODEL:
+          ! Define two latent variables
+          Lat_Ast BY Asthma;
+          Lat_LRD BY LRD;
+
+          ! Fix the covariance of between the random effects at 0
+          ! as there is not enough data.
+          Lat_Ast WITH Lat_LRD@0;
+
+          ! Estimate their means
+          [Lat_Ast*];
+          [Lat_LRD*];
+
+          ! Means of the observed variables are fixed at 0.
+          [Asthma@0];
+          [LRD@0];
+
+          ! Label the constraints for the known sampling variances
+          ! and covariances
+          Asthma (L1);
+          LRD (L2);
+          Asthma WITH LRD (L3);
+
+          ! Regress the latent effect sizes on Age
+          Lat_Ast Lat_LRD ON Age;
+
+          ! Estimate the mean of Age
+          [Age*];
+
+          ! Estimate the variance of Age
+          Age*;
+
+          ! Impose the constraints
+          MODEL CONSTRAINT:
+          L1 = Asthma_v;
+          L2 = LRD_v;
+          L3 = Cov_05;
+
+
+
+INPUT READING TERMINATED NORMALLY
+
+
+
+Multivariate mixed-effects meta-analysis with age as a moderator
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                          59
+
+Number of dependent variables                                    2
+Number of independent variables                                  1
+Number of continuous latent variables                            2
+
+Observed dependent variables
+
+  Continuous
+   ASTHMA      LRD
+
+Observed independent variables
+   AGE
+
+Continuous latent variables
+   LAT_AST     LAT_LRD
+
+Variables with special functions
+
+  Centering (GRANDMEAN)
+   AGE
+
+
+Estimator                                                       ML
+Information matrix                                        OBSERVED
+Maximum number of iterations                                  1000
+Convergence criterion                                    0.500D-04
+Maximum number of steepest descent iterations                   20
+Maximum number of iterations for H1                           2000
+Convergence criterion for H1                             0.100D-03
+
+Input data file(s)
+  Nam03.dat
+
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of missing data patterns             3
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              ASTHMA        LRD           AGE
+              ________      ________      ________
+ ASTHMA         0.542
+ LRD            0.136         0.593
+ AGE            0.542         0.593         1.000
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     ASTHMA                0.268      -0.038      -0.562    3.12%      -0.041      0.191      0.318
+              32.000       0.122       0.110       1.030    3.12%       0.351      0.470
+     LRD                   0.466       1.209      -0.329    2.86%       0.039      0.199      0.285
+              35.000       0.267       0.929       1.933    2.86%       0.419      0.850
+     AGE                   0.000      -0.106      -6.403    3.39%      -4.903      0.097      1.097
+              59.000      15.580      -0.720       9.397    1.69%       1.697      2.597
+     ASTHMA_V              0.034       3.079       0.000   45.76%       0.000      0.000      0.004
+              59.000       0.004      11.930       0.360    1.69%       0.017      0.053
+     COV_05                0.001       6.762       0.000   86.44%       0.000      0.000      0.000
+              59.000       0.000      46.498       0.045    1.69%       0.000      0.000
+     LRD_V                 0.054       5.551       0.000   40.68%       0.000      0.000      0.005
+              59.000       0.022      34.387       1.061    1.69%       0.012      0.053
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                        8
+
+Loglikelihood
+
+          H0 Value                        -184.142
+
+Information Criteria
+
+          Akaike (AIC)                     384.284
+          Bayesian (BIC)                   400.904
+          Sample-Size Adjusted BIC         375.747
+            (n* = (n + 2) / 24)
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+ LAT_AST  BY
+    ASTHMA             1.000      0.000    999.000    999.000
+
+ LAT_LRD  BY
+    LRD                1.000      0.000    999.000    999.000
+
+ LAT_AST  ON
+    AGE               -0.038      0.016     -2.444      0.015
+
+ LAT_LRD  ON
+    AGE               -0.024      0.009     -2.531      0.011
+
+ LAT_AST  WITH
+    LAT_LRD            0.000      0.000    999.000    999.000
+
+ ASTHMA   WITH
+    LRD              999.000      0.000    999.000    999.000
+
+ Means
+    AGE                0.000      0.514      0.000      1.000
+
+ Intercepts
+    ASTHMA             0.000      0.000    999.000    999.000
+    LRD                0.000      0.000    999.000    999.000
+    LAT_AST            0.268      0.049      5.509      0.000
+    LAT_LRD            0.273      0.047      5.753      0.000
+
+ Variances
+    AGE               15.580      2.868      5.431      0.000
+
+ Residual Variances
+    ASTHMA           999.000      0.000    999.000    999.000
+    LRD              999.000      0.000    999.000    999.000
+    LAT_AST            0.028      0.014      1.967      0.049
+    LAT_LRD            0.030      0.016      1.903      0.057
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.850E-04
+       (ratio of smallest to largest eigenvalue)
+
+
+     Beginning Time:  18:31:19
+        Ending Time:  18:31:20
+       Elapsed Time:  00:00:01
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2018 Muthen & Muthen

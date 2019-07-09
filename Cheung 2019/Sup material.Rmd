@@ -15,7 +15,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-* Latest version of the R and Mplus code is available at https://github.com/mikewlcheung/code-in-articles.
+* A latest version of the R and Mplus code is available at https://github.com/mikewlcheung/code-in-articles.
 
 # Multivariate meta-analysis with a dataset from Nam, Mengersen, and Garthwaite (2003)
 

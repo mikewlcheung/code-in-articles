@@ -1,0 +1,61 @@
+TITLE:	Multivariate mixed-effects meta-analysis with age as a moderator
+
+! Read the dataset
+DATA:	FILE IS Nam03.dat;
+
+! Variable names in the data
+! Asthma LRD: effect sizes
+! Asthma_v Cov_05 LRD_v: known sampling variances and covariance
+VARIABLE: NAMES ID Age Asthma LRD Asthma_v Cov_05 LRD_v;
+
+        ! Missing values are represented by .
+        MISSING ARE .;
+
+        ! Asthma and LRD are used in the analysis.
+        ! Age is a moderator.
+        USEVARIABLES ARE Asthma LRD Age;
+
+        ! These are the known sampling variances and covariance.
+        CONSTRAINT ARE Asthma_v Cov_05 LRD_v;
+
+        DEFINE:
+        ! Center Age before the analysis
+        CENTER Age (GRANDMEAN);
+
+MODEL:
+        ! Define two latent variables
+        Lat_Ast BY Asthma;
+        Lat_LRD BY LRD;
+
+        ! Fix the covariance of between the random effects at 0
+        ! as there is not enough data.
+        Lat_Ast WITH Lat_LRD@0;
+
+        ! Estimate their means
+        [Lat_Ast*];
+        [Lat_LRD*];
+
+        ! Means of the observed variables are fixed at 0.
+        [Asthma@0];
+        [LRD@0];
+
+        ! Label the constraints for the known sampling variances
+        ! and covariances
+        Asthma (L1);
+        LRD (L2);
+        Asthma WITH LRD (L3);
+
+        ! Regress the latent effect sizes on Age
+        Lat_Ast Lat_LRD ON Age;
+
+        ! Estimate the mean of Age
+        [Age*];
+
+        ! Estimate the variance of Age
+        Age*;
+
+        ! Impose the constraints
+        MODEL CONSTRAINT:
+        L1 = Asthma_v;
+        L2 = LRD_v;
+        L3 = Cov_05;

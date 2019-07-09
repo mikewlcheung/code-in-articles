@@ -1,0 +1,43 @@
+TITLE:	Multivariate random-effects meta-analysis
+
+! Read the dataset
+DATA:	FILE IS Nam03.dat;
+
+! Variable names in the data
+! Asthma LRD: effect sizes
+! Asthma_v Cov_05 LRD_v: known sampling variances and covariance
+VARIABLE: NAMES ID Age Asthma LRD Asthma_v Cov_05 LRD_v;
+
+        ! Missing values are represented by .
+        MISSING ARE .;
+
+        ! Asthma and LRD are used in the analysis.
+        USEVARIABLES ARE Asthma LRD;
+
+        ! These are the known sampling variances and covariance.
+        CONSTRAINT ARE Asthma_v Cov_05 LRD_v;
+
+MODEL:
+        ! Define two latent variables
+        Lat_Ast BY Asthma;
+        Lat_LRD BY LRD;
+
+        ! Estimate their means
+        [Lat_Ast*];
+        [Lat_LRD*];
+
+        ! Means of the observed variables are fixed at 0.
+        [Asthma@0];
+        [LRD@0];
+
+        ! Label the constraints for the known sampling variances
+        ! and covariances
+        Asthma (L1);
+        LRD (L2);
+        Asthma WITH LRD (L3);
+
+        ! Impose the constraints
+        MODEL CONSTRAINT:
+        L1 = Asthma_v;
+        L2 = LRD_v;
+        L3 = Cov_05;

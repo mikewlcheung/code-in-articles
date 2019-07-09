@@ -1,0 +1,208 @@
+Mplus VERSION 8.2 (Linux)
+MUTHEN & MUTHEN
+02/06/2019   6:31 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE:	Multivariate random-effects meta-analysis
+
+  ! Read the dataset
+  DATA:	FILE IS Nam03.dat;
+
+  ! Variable names in the data
+  ! Asthma LRD: effect sizes
+  ! Asthma_v Cov_05 LRD_v: known sampling variances and covariance
+  VARIABLE: NAMES ID Age Asthma LRD Asthma_v Cov_05 LRD_v;
+
+          ! Missing values are represented by .
+          MISSING ARE .;
+
+          ! Asthma and LRD are used in the analysis.
+          USEVARIABLES ARE Asthma LRD;
+
+          ! These are the known sampling variances and covariance.
+          CONSTRAINT ARE Asthma_v Cov_05 LRD_v;
+
+  MODEL:
+          ! Define two latent variables
+          Lat_Ast BY Asthma;
+          Lat_LRD BY LRD;
+
+          ! Estimate their means
+          [Lat_Ast*];
+          [Lat_LRD*];
+
+          ! Means of the observed variables are fixed at 0.
+          [Asthma@0];
+          [LRD@0];
+
+          ! Label the constraints for the known sampling variances
+          ! and covariances
+          Asthma (L1);
+          LRD (L2);
+          Asthma WITH LRD (L3);
+
+          ! Impose the constraints
+          MODEL CONSTRAINT:
+          L1 = Asthma_v;
+          L2 = LRD_v;
+          L3 = Cov_05;
+
+
+
+INPUT READING TERMINATED NORMALLY
+
+
+
+Multivariate random-effects meta-analysis
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                          59
+
+Number of dependent variables                                    2
+Number of independent variables                                  0
+Number of continuous latent variables                            2
+
+Observed dependent variables
+
+  Continuous
+   ASTHMA      LRD
+
+Continuous latent variables
+   LAT_AST     LAT_LRD
+
+
+Estimator                                                       ML
+Information matrix                                        OBSERVED
+Maximum number of iterations                                  1000
+Convergence criterion                                    0.500D-04
+Maximum number of steepest descent iterations                   20
+Maximum number of iterations for H1                           2000
+Convergence criterion for H1                             0.100D-03
+
+Input data file(s)
+  Nam03.dat
+
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of missing data patterns             3
+
+
+COVARIANCE COVERAGE OF DATA
+
+Minimum covariance coverage value   0.100
+
+
+     PROPORTION OF DATA PRESENT
+
+
+           Covariance Coverage
+              ASTHMA        LRD
+              ________      ________
+ ASTHMA         0.542
+ LRD            0.136         0.593
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     ASTHMA                0.268      -0.038      -0.562    3.12%      -0.041      0.191      0.318
+              32.000       0.122       0.110       1.030    3.12%       0.351      0.470
+     LRD                   0.466       1.209      -0.329    2.86%       0.039      0.199      0.285
+              35.000       0.267       0.929       1.933    2.86%       0.419      0.850
+     ASTHMA_V              0.034       3.079       0.000   45.76%       0.000      0.000      0.004
+              59.000       0.004      11.930       0.360    1.69%       0.017      0.053
+     COV_05                0.001       6.762       0.000   86.44%       0.000      0.000      0.000
+              59.000       0.000      46.498       0.045    1.69%       0.000      0.000
+     LRD_V                 0.054       5.551       0.000   40.68%       0.000      0.000      0.005
+              59.000       0.022      34.387       1.061    1.69%       0.012      0.053
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                        5
+
+Loglikelihood
+
+          H0 Value                         -21.276
+
+Information Criteria
+
+          Akaike (AIC)                      52.552
+          Bayesian (BIC)                    62.940
+          Sample-Size Adjusted BIC          47.216
+            (n* = (n + 2) / 24)
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+ LAT_AST  BY
+    ASTHMA             1.000      0.000    999.000    999.000
+
+ LAT_LRD  BY
+    LRD                1.000      0.000    999.000    999.000
+
+ LAT_LRD  WITH
+    LAT_AST            0.056      0.021      2.704      0.007
+
+ ASTHMA   WITH
+    LRD              999.000      0.000    999.000    999.000
+
+ Means
+    LAT_AST            0.268      0.054      4.925      0.000
+    LAT_LRD            0.308      0.054      5.690      0.000
+
+ Intercepts
+    ASTHMA             0.000      0.000    999.000    999.000
+    LRD                0.000      0.000    999.000    999.000
+
+ Variances
+    LAT_AST            0.068      0.030      2.310      0.021
+    LAT_LRD            0.048      0.023      2.094      0.036
+
+ Residual Variances
+    ASTHMA           999.000      0.000    999.000    999.000
+    LRD              999.000      0.000    999.000    999.000
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.571E-05
+       (ratio of smallest to largest eigenvalue)
+
+
+     Beginning Time:  18:31:14
+        Ending Time:  18:31:15
+       Elapsed Time:  00:00:01
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2018 Muthen & Muthen

@@ -1,0 +1,53 @@
+TITLE:	Three-level mixed-effects meta-analysis
+
+! Read the dataset
+DATA:	FILE IS Stadler15.dat;
+
+! Variable names in the dataset
+! ID: Level 2 label
+! Study: Level 3 label
+! r: effect size (correlation)
+! v: known sampling variance of r
+! GenInt: Dummy code for Intelligence Measure (General Intelligence)
+! Reason: Dummy code for Intelligence Measure (Reasoning)
+VARIABLE: NAMES ID Study r v GenInt Reason;
+
+        ! w2 is the square root of v
+        USEVARIABLES ARE r GenInt Reason w2;
+        ! Define level 2 and level 3
+        CLUSTER = Study ID;
+        WITHIN = r w2;
+        ! Define level 3 variables
+        BETWEEN = (ID) GenInt Reason;
+
+        ! Transform the effect sizes.
+        DEFINE: w2 = SQRT(v**(-1));
+        r = w2*r;
+
+! Use three-level modeling
+! Activate random slope function
+ANALYSIS: TYPE=THREELEVEL RANDOM;
+        ESTIMATOR = ML;
+
+MODEL:	%WITHIN%
+        ! Mean and variance of the transformed variable are fixed
+        [r@0.0];
+        r@1.0;
+
+        ! Define random slope
+        f | r ON w2;
+
+        ! Level 2 variance
+        %BETWEEN ID%
+        f*;
+
+        ! No intercept for the categorical modeator
+        [f@0.0];
+        ! Add the moderators
+		f ON GenInt Reason;
+
+        ! Level 3 variance
+        %BETWEEN Study%
+        f*;
+        ! No intercept for the categorical modeator
+        [f@0.0];

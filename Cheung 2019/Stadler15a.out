@@ -1,0 +1,203 @@
+Mplus VERSION 8.2 (Linux)
+MUTHEN & MUTHEN
+05/27/2019  10:58 AM
+
+INPUT INSTRUCTIONS
+
+  TITLE:	Three-level random-effects meta-analysis
+
+  ! Read the dataset
+  DATA:	FILE IS Stadler15.dat;
+
+  ! Variable names in the dataset
+  ! ID: Level 2 label
+  ! Study: Level 3 label
+  ! r: effect size (correlation)
+  ! v: known sampling variance of r
+  ! GenInt: Dummy code for Intelligence Measure (General Intelligence)
+  ! Reason: Dummy code for Intelligence Measure (Reasoning)
+  VARIABLE: NAMES ID Study r v GenInt Reason;
+
+          ! w2 is the square root of v
+          USEVARIABLES ARE r w2;
+          ! Define level 2 and level 3
+          CLUSTER = Study ID;
+          ! Define within level (level 2) variables without between (level 3)
+          WITHIN = r w2;
+
+          ! Transform the effect sizes
+          DEFINE: w2 = SQRT(v**(-1));
+          r = w2*r;
+
+  ! Use three-level modeling
+  ! Activate random slope function
+  ANALYSIS: TYPE=THREELEVEL RANDOM;
+          ESTIMATOR = ML;
+
+  MODEL:	%WITHIN%
+          ! Mean and variance of the transformed variable are fixed after the transformation
+          [r@0.0];
+          r@1.0;
+
+          ! Define random slope
+          f | r ON w2;
+
+          ! Level 2 variance
+          %BETWEEN ID%
+          f*;
+
+          ! Level 3 variance
+          %BETWEEN Study%
+          f*;
+
+
+
+*** WARNING in MODEL command
+  Variable on the left-hand side of an ON statement in a | statement is a
+  WITHIN variable.  The intercept for this variable is not random.
+  Variable:  R
+   1 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+Three-level random-effects meta-analysis
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                          60
+
+Number of dependent variables                                    1
+Number of independent variables                                  1
+Number of continuous latent variables                            1
+
+Observed dependent variables
+
+  Continuous
+   R
+
+Observed independent variables
+   W2
+
+Continuous latent variables
+   F
+
+Variables with special functions
+
+  Cluster variables     STUDY     ID
+
+  Within variables
+   R           W2
+
+
+Estimator                                                       ML
+Information matrix                                        OBSERVED
+Maximum number of iterations                                   100
+Convergence criterion                                    0.100D-05
+Maximum number of EM iterations                                500
+Convergence criteria for the EM algorithm
+  Loglikelihood change                                   0.100D-02
+  Relative loglikelihood change                          0.100D-05
+  Derivative                                             0.100D-03
+Minimum variance                                         0.100D-03
+Maximum number of steepest descent iterations                   20
+Maximum number of iterations for H1                           2000
+Convergence criterion for H1                             0.100D-02
+Optimization algorithm                                         EMA
+
+Input data file(s)
+  Stadler15.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of ID clusters                      60
+     Number of STUDY clusters                   44
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     R                     9.555       2.689      -1.234    1.67%       1.425      2.760      3.769
+              60.000     212.394       7.580      72.912    1.67%       5.428     13.103
+     W2                   17.860       2.504       3.991    1.67%       6.187      8.616      9.714
+              60.000     353.168       6.858     100.071    1.67%      14.408     23.429
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                        3
+
+Loglikelihood
+
+          H0 Value                        -148.458
+
+Information Criteria
+
+          Akaike (AIC)                     302.915
+          Bayesian (BIC)                   309.198
+          Sample-Size Adjusted BIC         299.763
+            (n* = (n + 2) / 24)
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+Within Level
+
+ Intercepts
+    R                  0.000      0.000    999.000    999.000
+
+ Residual Variances
+    R                  1.000      0.000    999.000    999.000
+
+Between ID Level
+
+ Variances
+    F                  0.019      0.011      1.735      0.083
+
+Between STUDY Level
+
+ Means
+    F                  0.435      0.032     13.426      0.000
+
+ Variances
+    F                  0.021      0.012      1.831      0.067
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.425E-01
+       (ratio of smallest to largest eigenvalue)
+
+
+     Beginning Time:  10:58:17
+        Ending Time:  10:58:17
+       Elapsed Time:  00:00:00
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2018 Muthen & Muthen

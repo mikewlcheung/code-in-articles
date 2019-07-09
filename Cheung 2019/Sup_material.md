@@ -1,7 +1,7 @@
 ---
 title: 'Supplementary Materials for "A Guide to Conducting a Meta-Analysis with Non-Independent Effect Sizes"'
 author: Mike W.-L. Cheung
-date: 'May 30, 2019'
+date: 'July 09, 2019'
 output:
   html_document:
     keep_md: yes
@@ -15,7 +15,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-* Latest version of the R and Mplus code is available at https://github.com/mikewlcheung/code-in-articles.
+* A latest version of the R and Mplus code is available at https://github.com/mikewlcheung/code-in-articles.
 
 # Multivariate meta-analysis with a dataset from Nam, Mengersen, and Garthwaite (2003)
 
@@ -81,7 +81,7 @@ summary(meta(y=Asthma_logOR, v=Asthma_v, data=Nam03))
 ## Call:
 ## meta(y = Asthma_logOR, v = Asthma_v, data = Nam03)
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##             Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
 ## Intercept1 0.2323694 0.0505369 0.1333190 0.3314199  4.5980 4.265e-06 ***
@@ -116,7 +116,7 @@ summary(meta(y=LRD_logOR, v=LRD_v, data=Nam03))
 ## Call:
 ## meta(y = LRD_logOR, v = LRD_v, data = Nam03)
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##               Estimate   Std.Error      lbound      ubound z value
 ## Intercept1  0.29576274  0.05688763  0.18426504  0.40726045  5.1991
@@ -161,7 +161,7 @@ summary(fit0a)
 ## meta(y = cbind(Asthma_logOR, LRD_logOR), v = cbind(Asthma_v, 
 ##     AsthmaLRD_cov_05, LRD_v), data = Nam03, model.name = "Multi MA")
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##             Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
 ## Intercept1 0.2681317 0.0544460 0.1614195 0.3748438  4.9247 8.448e-07 ***
@@ -259,7 +259,7 @@ summary(fit1a)
 ##     "0*Tau2_2_1", "0*Tau2_2_1", "0.1*Tau2_1_1"), ncol = 2, nrow = 2), 
 ##     model.name = "Equality constraints")
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##            Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
 ## Intercept 0.2927135 0.0429388 0.2085549 0.3768721  6.8170 9.297e-12 ***
@@ -311,7 +311,7 @@ summary(fit2a)
 ##     data = Nam03, RE.constraints = matrix(c("0.1*Tau2_1_1", "0", 
 ##         "0", "0.1*Tau2_2_2"), ncol = 2, nrow = 2), model.name = "Mixed MA")
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##               Estimate   Std.Error      lbound      ubound z value
 ## Intercept1  0.26807390  0.04865798  0.17270602  0.36344178  5.5094
@@ -393,7 +393,7 @@ summary(fit3a)
 ##         "0*Slope1"), nrow = 1)), RE.constraints = matrix(c("0.1*Tau2_1_1", 
 ##         "0", "0", "0.1*Tau2_2_2"), ncol = 2, nrow = 2), model.name = "Equality constraints")
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##               Estimate   Std.Error      lbound      ubound z value
 ## Intercept1  0.25595987  0.04598891  0.16582326  0.34609648  5.5657
@@ -449,7 +449,7 @@ summary(fit0b)
 ## meta(y = cbind(Asthma_logOR, LRD_logOR), v = cbind(Asthma_v, 
 ##     AsthmaLRD_cov_0, LRD_v), data = Nam03, model.name = "Multi MA")
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##             Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
 ## Intercept1 0.2659166 0.0544499 0.1591968 0.3726363  4.8837 1.041e-06 ***
@@ -561,7 +561,7 @@ summary(fit1b)
 ##     "0*Tau2_2_1", "0*Tau2_2_1", "0.1*Tau2_1_1"), ncol = 2, nrow = 2), 
 ##     model.name = "Equality constraints")
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##           Estimate Std.Error   lbound   ubound z value  Pr(>|z|)    
 ## Intercept 0.292847  0.042852 0.208859 0.376835  6.8339 8.262e-12 ***
@@ -613,7 +613,7 @@ summary(fit2b)
 ##     RE.constraints = matrix(c("0.1*Tau2_1_1", "0", "0", "0.1*Tau2_2_2"), 
 ##         ncol = 2, nrow = 2), model.name = "Mixed MA")
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##               Estimate   Std.Error      lbound      ubound z value
 ## Intercept1  0.26839859  0.04968285  0.17102199  0.36577520  5.4022
@@ -695,7 +695,7 @@ summary(fit3b)
 ##         nrow = 1)), RE.constraints = matrix(c("0.1*Tau2_1_1", 
 ##         "0", "0", "0.1*Tau2_2_2"), ncol = 2, nrow = 2), model.name = "Equality constraints")
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##               Estimate   Std.Error      lbound      ubound z value
 ## Intercept1  2.5673e-01  4.7057e-02  1.6450e-01  3.4896e-01  5.4558
@@ -751,7 +751,7 @@ summary(fit0c)
 ## meta(y = cbind(Asthma_logOR, LRD_logOR), v = cbind(Asthma_v, 
 ##     AsthmaLRD_cov_08, LRD_v), data = Nam03, model.name = "Multi MA")
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##            Estimate Std.Error   lbound   ubound z value  Pr(>|z|)    
 ## Intercept1 0.271590  0.054237 0.165288 0.377892  5.0075 5.515e-07 ***
@@ -863,7 +863,7 @@ summary(fit1c)
 ##     "0*Tau2_2_1", "0*Tau2_2_1", "0.1*Tau2_1_1"), ncol = 2, nrow = 2), 
 ##     model.name = "Equality constraints")
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##            Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
 ## Intercept 0.2927176 0.0429686 0.2085008 0.3769344  6.8124 9.601e-12 ***
@@ -915,7 +915,7 @@ summary(fit2c)
 ##     data = Nam03, RE.constraints = matrix(c("0.1*Tau2_1_1", "0", 
 ##         "0", "0.1*Tau2_2_2"), ncol = 2, nrow = 2), model.name = "Mixed MA")
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##               Estimate   Std.Error      lbound      ubound z value
 ## Intercept1  2.6742e-01  4.7779e-02  1.7378e-01  3.6107e-01  5.5970
@@ -997,7 +997,7 @@ summary(fit3c)
 ##         "0*Slope1"), nrow = 1)), RE.constraints = matrix(c("0.1*Tau2_1_1", 
 ##         "0", "0", "0.1*Tau2_2_2"), ncol = 2, nrow = 2), model.name = "Equality constraints")
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##               Estimate   Std.Error      lbound      ubound z value
 ## Intercept1  0.25511009  0.04511419  0.16668790  0.34353228  5.6548
@@ -1068,7 +1068,7 @@ summary(meta(y=r, v=v, data=Stadler15))
 ## Call:
 ## meta(y = r, v = v, data = Stadler15)
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##             Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
 ## Intercept1 0.4209997 0.0304717 0.3612762 0.4807232 13.8161 < 2.2e-16 ***
@@ -1159,7 +1159,7 @@ summary(fit4)
 ## Call:
 ## meta3(y = r, v = v, cluster = Authors, data = Stadler15)
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##             Estimate  Std.Error     lbound     ubound z value Pr(>|z|)    
 ## Intercept  0.4348248  0.0323879  0.3713457  0.4983039 13.4255  < 2e-16 ***
@@ -1229,7 +1229,7 @@ summary(fit5)
 ## meta3(y = r, v = v, cluster = Authors, x = model.matrix(~-1 + 
 ##     IntelligenceMeasure), data = Stadler15, intercept.constraints = 0)
 ## 
-## 95% confidence intervals: z statistic approximation
+## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
 ##            Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)
 ## Slope_1  0.35088633  0.05009279  0.25270627  0.44906639  7.0047 2.475e-12
@@ -2733,7 +2733,7 @@ sessionInfo()
 ```
 
 ```
-## R version 3.6.0 (2019-04-26)
+## R version 3.6.1 (2019-07-05)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Linux Mint 19.1
 ## 
@@ -2742,22 +2742,24 @@ sessionInfo()
 ## LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
 ## 
 ## locale:
-##  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
-##  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   
-##  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          
-## [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   
+##  [1] LC_CTYPE=en_SG.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_SG.UTF-8        LC_COLLATE=en_SG.UTF-8    
+##  [5] LC_MONETARY=en_SG.UTF-8    LC_MESSAGES=en_SG.UTF-8   
+##  [7] LC_PAPER=en_SG.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_SG.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] metafor_2.1-0 Matrix_1.2-17 metaSEM_1.2.2 OpenMx_2.13.2
+## [1] metafor_2.1-0   Matrix_1.2-17   metaSEM_1.2.2.1 OpenMx_2.13.2  
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.1      knitr_1.22      magrittr_1.5    MASS_7.3-51.4  
+##  [1] Rcpp_1.0.1      knitr_1.23      magrittr_1.5    MASS_7.3-51.4  
 ##  [5] mnormt_1.5-5    pbivnorm_0.6.0  ellipse_0.4.1   lattice_0.20-38
-##  [9] stringr_1.4.0   tools_3.6.0     parallel_3.6.0  grid_3.6.0     
-## [13] nlme_3.1-140    xfun_0.6        htmltools_0.3.6 yaml_2.2.0     
-## [17] digest_0.6.18   lavaan_0.6-3    evaluate_0.13   rmarkdown_1.12 
-## [21] stringi_1.4.3   compiler_3.6.0  stats4_3.6.0    mvtnorm_1.0-10
+##  [9] stringr_1.4.0   tools_3.6.1     parallel_3.6.1  grid_3.6.1     
+## [13] nlme_3.1-140    xfun_0.8        htmltools_0.3.6 yaml_2.2.0     
+## [17] digest_0.6.20   lavaan_0.6-4    evaluate_0.14   rmarkdown_1.13 
+## [21] stringi_1.4.3   compiler_3.6.1  stats4_3.6.1    mvtnorm_1.0-11
 ```
