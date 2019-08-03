@@ -13,7 +13,7 @@
 
 [Cheung, M. W.-L. (2018b)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202018b). [Issues in solving the problem of effect size heterogeneity in meta-analytic structural equation modeling: A commentary and simulation study on Yu, Downes, Carter, and O'Boyle (2016)](https://psyarxiv.com/37p2z). *Journal of Applied Psychology*, *103*(7), 787-803. http://dx.doi.org/10.1037/apl0000284
 
-[Cheung, M. W.-L. (2019)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202019). A guide to conducting a meta-analysis with non-independent effect sizes. *Manuscript submitted for publication*.
+[Cheung, M. W.-L. (in press)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202019). A guide to conducting a meta-analysis with non-independent effect sizes. *Neuropsychology Review*.
 
 [Cheung, M. W.-L. & Cheung, S.-F. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Cheung%202016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*, *7*(2), 140–155. http://doi.org/10.1002/jrsm.1166.
 
