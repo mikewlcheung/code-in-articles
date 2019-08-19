@@ -27,4 +27,4 @@
 
 [Jak, S., & Cheung, M. W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/tree/master/Jak%20and%20Cheung%202018). Testing moderator hypotheses in meta-analytic structural equation modeling using subgroup analysis. *Behavior Research Methods*, *50*(4), 1359–1373. https://doi.org/10.3758/s13428-018-1046-3
 
-[Jak, S. & Cheung, M. W.-L. (2019)](https://github.com/mikewlcheung/code-in-articles/tree/master/Jak%20and%20Cheung%202019). [Meta-analytic structural equation modeling with moderating effects on SEM parameters](https://psyarxiv.com/ce85j/). *Manuscript submitted for publication*.
+[Jak, S. & Cheung, M. W.-L. (in press)](https://github.com/mikewlcheung/code-in-articles/tree/master/Jak%20and%20Cheung%202019). [Meta-analytic structural equation modeling with moderating effects on SEM parameters](https://psyarxiv.com/ce85j/). *Psychological Methods*.
