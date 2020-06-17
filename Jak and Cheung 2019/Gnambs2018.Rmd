@@ -117,13 +117,15 @@ summary(stage2_g2.fit)
 ## One general factor model without any moderator
 ```{r}
 ## Create matrices with implicit diagonal constraints
-M0a <- create.vechsR(A0=RAM1$A, S0=RAM1$S, F0=RAM1$F)
+## M0a <- create.vechsR(A0=RAM1$A, S0=RAM1$S, F0=RAM1$F)
 
 ## Create heterogeneity variances
-T0a <- create.Tau2(RAM=RAM1, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
+## T0a <- create.Tau2(RAM=RAM1, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
 
-fit0a <- osmasem(model.name="No moderator", Mmatrix=M0a, Tmatrix=T0a, data=my.df)
-summary(fit0a, Saturated=TRUE)
+## fit0a <- osmasem(model.name="No moderator", Mmatrix=M0a, Tmatrix=T0a, data=my.df)
+
+fit0a <- osmasem(model.name="No moderator", RAM=RAM1, data=my.df)
+summary(fit0a, fitIndices=TRUE)
 
 ## SRMR
 osmasemSRMR(fit0a)
@@ -140,9 +142,11 @@ Ax1a[grep("\\*", Ax1a)] <- "0*data.Individualism"
 Ax1a
 
 ## Create matrices with implicit diagonal constraints
-M1a <- create.vechsR(A0=RAM1$A, S0=RAM1$S, F0=RAM1$F, Ax=Ax1a)
+## M1a <- create.vechsR(A0=RAM1$A, S0=RAM1$S, F0=RAM1$F, Ax=Ax1a)
 
-fit1a <- osmasem(model.name="Moderator with individualism", Mmatrix=M1a, Tmatrix=T0a, data=my.df)
+## fit1a <- osmasem(model.name="Moderator with individualism", Mmatrix=M1a, Tmatrix=T0a, data=my.df)
+
+fit1a <- osmasem(model.name="Moderator with individualism", RAM=RAM1, Ax=Ax1a, data=my.df)
 summary(fit1a)
 
 ## Get the R2
@@ -170,13 +174,15 @@ A0 + A1
 ## Bifactor model without any moderator
 ```{r}
 ## Create matrices with implicit diagonal constraints
-M0b <- create.vechsR(A0=RAM2$A, S0=RAM2$S, F0=RAM2$F)
+## M0b <- create.vechsR(A0=RAM2$A, S0=RAM2$S, F0=RAM2$F)
 
 ## Create heterogeneity variances
-T0b <- create.Tau2(RAM=RAM2, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
+## T0b <- create.Tau2(RAM=RAM2, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
 
-fit0b <- osmasem(model.name="No moderator", Mmatrix=M0b, Tmatrix=T0b, data=my.df)
-summary(fit0b, Saturated=TRUE)
+## fit0b <- osmasem(model.name="No moderator", Mmatrix=M0b, Tmatrix=T0b, data=my.df)
+
+fit0b <- osmasem(model.name="No moderator", RAM=RAM2, data=my.df)
+summary(fit0b, fitIndices=TRUE)
 
 ## SRMR
 osmasemSRMR(fit0b)
@@ -192,9 +198,11 @@ Ax1b[grep("\\*", Ax1b)] <- "0*data.Individualism"
 Ax1b
 
 ## Create matrices with implicit diagonal constraints
-M1b <- create.vechsR(A0=RAM2$A, S0=RAM2$S, F0=RAM2$F, Ax=Ax1b)
+## M1b <- create.vechsR(A0=RAM2$A, S0=RAM2$S, F0=RAM2$F, Ax=Ax1b)
 
-fit1b <- osmasem(model.name="Moderator with individualism", Mmatrix=M1b, Tmatrix=T0b, data=my.df)
+## fit1b <- osmasem(model.name="Moderator with individualism", Mmatrix=M1b, Tmatrix=T0b, data=my.df)
+
+fit1b <- osmasem(model.name="Moderator with individualism", RAM=RAM2, Ax=Ax1b, data=my.df)
 summary(fit1b)
 
 ## Get the R2

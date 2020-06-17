@@ -57,7 +57,8 @@ plot(random2, col="green")
 ## Models with three subgroup analysis
 ```{r}
 ## Get the necessary functions
-source("http://www.suzannejak.nl/subgroup.functions.R")
+## source("http://www.suzannejak.nl/subgroup.functions.R")
+source("./subgroup.functions.R")
 
 data <- Nohe15A1$data
 n <- Nohe15A1$n
@@ -149,7 +150,7 @@ Stage2_constrained.fit <- mxRun(stage2_constrained, intervals=TRUE)
 ## first make a list of the fitted models in the separate groups
 submodels.fit <- list(stage2_g1.fit, stage2_g2.fit, stage2_g3.fit)
 
-subgroup.summary(submodels.fit,Stage2_constrained.fit)
+subgroup.summary(submodels.fit, Stage2_constrained.fit)
 ```
 
 ### Testing the equality of one regression coefficient (w2w)
@@ -308,14 +309,16 @@ RAM1
 ## Model without any moderator
 ```{r}
 ## Create the model implied correlation structure with implicit diagonal constraints
-M0 <- create.vechsR(A0=RAM1$A, S0=RAM1$S)
+## M0 <- create.vechsR(A0=RAM1$A, S0=RAM1$S)
 
 ## Create the heterogeneity variance-covariance matrix
 ## RE.type= either "Diag" or "Symm"
 ## Transform= either "expLog" or "sqSD" for better estimation on variances
-T0 <- create.Tau2(RAM=RAM1, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
+## T0 <- create.Tau2(RAM=RAM1, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
 
-mx.fit0 <- osmasem(model.name="No moderator", Mmatrix=M0, Tmatrix=T0, data=my.df)
+## mx.fit0 <- osmasem(model.name="No moderator", Mmatrix=M0, Tmatrix=T0, data=my.df)
+
+mx.fit0 <- osmasem(model.name="No moderator", RAM=RAM1, data=my.df)
 summary(mx.fit0)
 
 ## The variance-covariance matrix in mx.fit0 is based on the untransformed matrix
@@ -336,9 +339,11 @@ Ax
 ## Ax <- list(A1, A2, A3)
 
 ## Create the model implied correlation structure with the standardized Lag as the moderator
-M1 <- create.vechsR(A0=RAM1$A, S0=RAM1$S, Ax=Ax)
+## M1 <- create.vechsR(A0=RAM1$A, S0=RAM1$S, Ax=Ax)
 
-mx.fit1 <- osmasem(model.name="Ax as moderator", Mmatrix=M1, Tmatrix=T0, data=my.df)
+## mx.fit1 <- osmasem(model.name="Ax as moderator", Mmatrix=M1, Tmatrix=T0, data=my.df)
+
+mx.fit1 <- osmasem(model.name="Ax as moderator", RAM=RAM1, Ax=Ax, data=my.df)
 summary(mx.fit1)
 
 ## Extract the residual heterogeneity variance-covariance matrix
@@ -663,14 +668,16 @@ RAM1
 ## Model without any moderator
 ```{r}
 ## Create the model implied correlation structure with implicit diagonal constraints
-M0 <- create.vechsR(A0=RAM1$A, S0=RAM1$S)
+## M0 <- create.vechsR(A0=RAM1$A, S0=RAM1$S)
 
 ## Create the heterogeneity variance-covariance matrix
 ## RE.type= either "Diag" or "Symm"
 ## Transform= either "expLog" or "sqSD" for better estimation on variances
-T0 <- create.Tau2(RAM=RAM1, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
+## T0 <- create.Tau2(RAM=RAM1, RE.type="Diag", Transform="expLog", RE.startvalues=0.05)
 
-mx.fit0 <- osmasem(model.name="No moderator", Mmatrix=M0, Tmatrix=T0, data=my.df)
+## mx.fit0 <- osmasem(model.name="No moderator", Mmatrix=M0, Tmatrix=T0, data=my.df)
+
+mx.fit0 <- osmasem(model.name="No moderator", RAM=RAM1, data=my.df)
 summary(mx.fit0)
 
 ## The variance-covariance matrix in mx.fit0 is based on the untransformed matrix
@@ -691,9 +698,11 @@ Ax
 ## Ax <- list(A1, A2, A3)
 
 ## Create the model implied correlation structure with the standardized Lag as the moderator
-M1 <- create.vechsR(A0=RAM1$A, S0=RAM1$S, Ax=Ax)
+## M1 <- create.vechsR(A0=RAM1$A, S0=RAM1$S, Ax=Ax)
 
-mx.fit1 <- osmasem(model.name="Ax as moderator", Mmatrix=M1, Tmatrix=T0, data=my.df)
+## mx.fit1 <- osmasem(model.name="Ax as moderator", Mmatrix=M1, Tmatrix=T0, data=my.df)
+
+mx.fit1 <- osmasem(model.name="Ax as moderator", RAM=RAM1, Ax=Ax, data=my.df)
 summary(mx.fit1)
 
 ## Extract the residual heterogeneity variance-covariance matrix

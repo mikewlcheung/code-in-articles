@@ -70,8 +70,7 @@ subgroup.summary <- function(submodels.fit,constrained.fit=NULL,print.est=FALSE)
     submodeldf[i] <- summary(submodels.fit[[i]])$stat["DF of target model",]
     subindepchi[i] <- summary(submodels.fit[[i]])$stat["Chi-square of independence model",] 
     subindepdf[i] <- summary(submodels.fit[[i]])$stat["DF of independence model",]
-    subindepdf[i] <- summary(submodels.fit[[i]])$stat["DF of independence model",]
-    sub_free_SRMR[[i]] <- sqrt(mean(submodels.fit[[i]]$mx.fit$algebras$vecS$result^2))
+    sub_free_SRMR[i] <- sqrt(mean(submodels.fit[[i]]$mx.fit$algebras$vecS$result^2))
     
   }
   
