@@ -152,6 +152,9 @@ results <- (sapply(fit, function(cond) {
 ## Final results for tables and plotting
 final.results <- data.frame(t(settings), t(results)) 
 
+## Change "NMAR" to "MNAR" for consistency
+levels(final.results$missing_type)[levels(final.results$missing_type)=="NMAR"] <- "MNAR"
+
 ## Sort by conditions
 final.results <- final.results[, c(2,5,1,3,4, 6:77)]
 final.results <- final.results %>% arrange(missing_type, k, missing_studies, missing_variables)

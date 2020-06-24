@@ -11,9 +11,11 @@
 
 [Cheung, M. W.-L. (2018a)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202018a). [Computing multivariate effect sizes and their sampling covariance matrices with structural equation modeling: Theory, examples, and computer simulations](https://doi.org/10.3389/fpsyg.2018.01387). *Frontiers in Psychology*, *9*(1387).
 
-[Cheung, M. W.-L. (2018b)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202018b). [Issues in solving the problem of effect size heterogeneity in meta-analytic structural equation modeling: A commentary and simulation study on Yu, Downes, Carter, and O'Boyle (2016)](https://psyarxiv.com/37p2z). *Journal of Applied Psychology*, *103*(7), 787-803. http://dx.doi.org/10.1037/apl0000284
+[Cheung, M. W.-L. (2018b)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202018b). [Issues in solving the problem of effect size heterogeneity in meta-analytic structural equation modeling: A commentary and simulation study on Yu, Downes, Carter, and O'Boyle (2016)](https://psyarxiv.com/37p2z/). *Journal of Applied Psychology*, *103*(7), 787-803. http://dx.doi.org/10.1037/apl0000284
 
-[Cheung, M. W.-L. (in press)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202019). A guide to conducting a meta-analysis with non-independent effect sizes. *Neuropsychology Review*.
+[Cheung, M. W.-L. (2019)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202019). A guide to conducting a meta-analysis with non-independent effect sizes. *Neuropsychology Review*, *29*(4), 387-396. https://doi.org/10.1007/s11065-019-09415-6
+
+[Cheung, M. W.-L. (2020)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202020). [Meta-analytic structural equation modeling](https://psyarxiv.com/epsqt/). *Oxford Research Encyclopedia of Business and Management* (under review).
 
 [Cheung, M. W.-L. & Cheung, S.-F. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Cheung%202016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*, *7*(2), 140–155. http://doi.org/10.1002/jrsm.1166.
 
@@ -27,4 +29,4 @@
 
 [Jak, S., & Cheung, M. W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/tree/master/Jak%20and%20Cheung%202018). Testing moderator hypotheses in meta-analytic structural equation modeling using subgroup analysis. *Behavior Research Methods*, *50*(4), 1359–1373. https://doi.org/10.3758/s13428-018-1046-3
 
-[Jak, S. & Cheung, M. W.-L. (in press)](https://github.com/mikewlcheung/code-in-articles/tree/master/Jak%20and%20Cheung%202019). [Meta-analytic structural equation modeling with moderating effects on SEM parameters](https://psyarxiv.com/ce85j/). *Psychological Methods*.
+[Jak, S. & Cheung, M. W.-L. (2019)](https://github.com/mikewlcheung/code-in-articles/tree/master/Jak%20and%20Cheung%202019). [Meta-analytic structural equation modeling with moderating effects on SEM parameters](https://psyarxiv.com/ce85j/). *Psychological Methods*. https://doi.org/10.1037/met0000245 
