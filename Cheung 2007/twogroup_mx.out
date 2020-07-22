@@ -1,0 +1,497 @@
+  
+  ** Mx startup successful **
+  
+  **MX-PC 1.61i** Job started on 09/01/06 at 15:10:07
+ 
+ 
+ The following MX script lines were read for group    1
+ 
+ #NGROUPS 3
+  Note: #NGroup set number of groups to 3
+  
+ MX: CONSTRUCTING CIS ON THE DIFFERENCE OF THE MEDIATING EFFECTS BETWEEN TWO INDEPENDENT GROUPS
+ DATA NINPUT=4
+ RECTANGULAR FILE= TWOGROUP.DAT
+  Rectangular continuous data read initiated
+  MAXRSZ= 1000
+  
+  NOTE: Rectangular file contained   200 records with data
+        that contained a total of    800 observations
+  
+ LABELS X M Y GROUP ! GROUP IS THE GROUPING VARIABLE
+ SELECT IF GROUP = 1; ! GROUP=1: SELECT DATA FOR GROUP 1
+  
+  NOTE: Select if yields  100 data vectors for analysis
+  NOTE: Vectors contain a total of   400 observations
+  
+ SELECT X M Y;  ! USE THESE 3 VARIABLES IN THE ANALYSIS ONLY
+ ! The model being analyzed: X -> M -> Y
+ BEGIN MATRICES;
+  
+  NOTE: Selection yields  100 data vectors for analysis
+  NOTE: Vectors contain a total of   300 observations
+  
+ S SYMM 3 3
+ A FULL 3 3
+ M FULL 1 3  ! MEANS
+ F IDEN 3 3  ! SELECTION MATRIX
+ I IDEN 3 3  ! IDENTITY MATRIX
+ T FULL 1 4  ! USED TO SELECT ELEMENTS FOR CONSTRAINT
+ U FULL 1 4  ! USED TO SELECT ELEMENTS FOR CONSTRAINT
+ END MATRICES;
+ MATRIX S
+ 1
+ 0 1
+ 0 0 1
+ SPECIFY S
+ 1
+ 0 2
+ 0 0 3
+ LABEL ROW S
+ X M Y
+ LABEL COL S
+ X M Y
+ MATRIX A
+ 0 0 0
+ 0.5 0 0
+ 0.0 0.5 0
+ SPECIFY A
+ 0 0 0
+ 4 0 0
+ 5 6 0
+ LABEL ROW A
+ X M Y
+ LABEL COL A
+ X M Y
+ MATRIX M
+ 0
+ 0
+ 0
+ SPECIFY M
+ 7
+ 8
+ 9
+ ! Elements for calculating indirect effect
+ MATRIX T 2 1 2 1  ! X -> M, A(2,1)
+ MATRIX U 3 2 3 2  ! M -> Y, A(3,2)
+ BEGIN ALGEBRA;
+  J = \PART(A, T); ! SELECT THE REQUIRED ELEMENT
+  K = \PART(A, U); ! SELECT THE REQUIRED ELEMENT
+ END ALGEBRA;
+ MEANS M;
+ COVARIANCE  F & ((I - A)~ & S);
+ END GROUP;
+ 
+ 
+ The following MX script lines were read for group    2
+ 
+ G2: GROUP=2   ! MODEL FOR GROUP 2
+ DATA NINPUT=4
+ RECTANGULAR FILE= TWOGROUP.DAT
+  Rectangular continuous data read initiated
+  MAXRSZ= 1000
+  
+  NOTE: Rectangular file contained   200 records with data
+        that contained a total of    800 observations
+  
+ LABELS X M Y GROUP
+ SELECT IF GROUP = 2; ! GROUP=2: SELECT DATA FOR GROUP 2
+  
+  NOTE: Select if yields  100 data vectors for analysis
+  NOTE: Vectors contain a total of   400 observations
+  
+ SELECT X M Y;  ! USE THESE 3 VARIABLES IN THE ANALYSIS ONLY
+ BEGIN MATRICES;
+  
+  NOTE: Selection yields  100 data vectors for analysis
+  NOTE: Vectors contain a total of   300 observations
+  
+ S SYMM 3 3
+ A FULL 3 3
+ M FULL 1 3  ! MEANS
+ F IDEN 3 3  ! SELECTION MATRIX
+ I IDEN 3 3
+ T FULL 1 4
+ U FULL 1 4
+ END MATRICES;
+ MATRIX S
+ 1
+ 0 1
+ 0 0 1
+ SPECIFY S
+ 11
+ 0 12
+ 0 0 13
+ LABEL ROW S
+ X M Y
+ LABEL COL S
+ X M Y
+ MATRIX A
+ 0 0 0
+ 0.5 0 0
+ 0 0.5 0
+ SPECIFY A
+ 0 0 0
+ 14 0 0
+ 15 16 0
+ LABEL ROW A
+ X M Y
+ LABEL COL A
+ X M Y
+ MATRIX M
+ 0
+ 0
+ 0
+ SPECIFY M
+ 17
+ 18
+ 19
+ ! Elements for calculating indirect effect
+ MATRIX T 2 1 2 1  ! X -> M, A(2,1)
+ MATRIX U 3 2 3 2  ! M -> Y, A(3,2)
+ BEGIN ALGEBRA;
+  J = \PART(A, T); ! SELECT THE REQUIRED ELEMENT
+  K = \PART(A, U); ! SELECT THE REQUIRED ELEMENT
+ END ALGEBRA;
+ MEANS M;
+ COVARIANCE  F & ((I - A)~ & S);
+ END GROUP;
+ 
+ 
+ The following MX script lines were read for group    3
+ 
+ G3: CALCULATION FOR THE DIFFERENCE ON THE INDIRECT EFFECTS BETWEEN TWO GROUPS
+ CALCULATION
+ BEGIN MATRICES;
+ N FULL 1 1 = J1  ! GET J FROM GROUP 1 AND PUT IT INTO N
+  *** WARNING! ***
+  The type of this matrix is not the same as the type of the 
+   matrix you want it to equal
+  I'm ignoring your mistake and keeping previous type
+ P FULL 1 1 = K1  ! GET K FROM GROUP 1 AND PUT IT INTO P
+  *** WARNING! ***
+  The type of this matrix is not the same as the type of the 
+   matrix you want it to equal
+  I'm ignoring your mistake and keeping previous type
+ R FULL 1 1 = J2  ! GET J FROM GROUP 2 AND PUT IT INTO R
+  *** WARNING! ***
+  The type of this matrix is not the same as the type of the 
+   matrix you want it to equal
+  I'm ignoring your mistake and keeping previous type
+ T FULL 1 1 = K2  ! GET K FROM GROUP 2 AND PUT IT INTO T
+  *** WARNING! ***
+  The type of this matrix is not the same as the type of the 
+   matrix you want it to equal
+  I'm ignoring your mistake and keeping previous type
+ END MATRICES;
+ BEGIN ALGEBRA;
+  Z = N*P - R*T;  ! Z: DIFFERENCE ON THE INDIRECT EFFECTS IN TWO
+     ! INDEPENDENT GROUPS
+                         
+ END ALGEBRA;
+  INTERVAL Z 1 1;  ! CI ON THE DIFFERENCE ON Z
+ END GROUP;
+  
+  
+  Summary of VL file data for group  1
+  
+                    X          M          Y
+     Code      1.0000     2.0000     3.0000
+   Number    100.0000   100.0000   100.0000
+     Mean     -0.4639    -0.8834     0.1138
+ Variance     14.0863    14.9214     9.4688
+  Minimum    -10.9301   -12.6521    -6.1639
+  Maximum      7.2099     6.7864     7.8794
+  
+  
+  Summary of VL file data for group  2
+  
+                    X          M          Y
+     Code      1.0000     2.0000     3.0000
+   Number    100.0000   100.0000   100.0000
+     Mean      0.1551     0.0450    -0.0803
+ Variance      8.5854    11.2492    10.5316
+  Minimum     -7.4233    -7.4609    -8.0735
+  Maximum      7.0609     8.4140     7.9534
+  
+  
+  PARAMETER SPECIFICATIONS
+  
+  GROUP NUMBER: 1
+  
+Mx: Constructing CIs on the difference of the mediating effects between two independent groups                                  
+  
+  MATRIX A
+ This is a FULL matrix of order    3 by    3
+          X       M       Y
+ X       0       0       0
+ M       4       0       0
+ Y       5       6       0
+  
+  MATRIX F
+ This is an IDENTITY matrix of order    3 by    3
+  
+  MATRIX I
+ This is an IDENTITY matrix of order    3 by    3
+  
+  MATRIX J
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  MATRIX K
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  MATRIX M
+ This is a FULL matrix of order    1 by    3
+    1 2 3
+ 1  7 8 9
+  
+  MATRIX S
+ This is a SYMMETRIC matrix of order    3 by    3
+          X       M       Y
+ X       1
+ M       0       2
+ Y       0       0       3
+  
+  MATRIX T
+ This is a FULL matrix of order    1 by    4
+  It has no free parameters specified
+  
+  MATRIX U
+ This is a FULL matrix of order    1 by    4
+  It has no free parameters specified
+  
+  GROUP NUMBER: 2
+  
+G2: Group=2                                                                                                                     
+  
+  MATRIX A
+ This is a FULL matrix of order    3 by    3
+          X       M       Y
+ X       0       0       0
+ M      14       0       0
+ Y      15      16       0
+  
+  MATRIX F
+ This is an IDENTITY matrix of order    3 by    3
+  
+  MATRIX I
+ This is an IDENTITY matrix of order    3 by    3
+  
+  MATRIX J
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  MATRIX K
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  MATRIX M
+ This is a FULL matrix of order    1 by    3
+     1  2  3
+ 1  17 18 19
+  
+  MATRIX S
+ This is a SYMMETRIC matrix of order    3 by    3
+          X       M       Y
+ X      11
+ M       0      12
+ Y       0       0      13
+  
+  MATRIX T
+ This is a FULL matrix of order    1 by    4
+  It has no free parameters specified
+  
+  MATRIX U
+ This is a FULL matrix of order    1 by    4
+  It has no free parameters specified
+  
+  GROUP NUMBER: 3
+  
+G3: Calculation for the difference on the indirect effects between two groups                                                   
+  
+  MATRIX N
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  MATRIX P
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  MATRIX R
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  MATRIX T
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  MATRIX Z
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  Mx starting optimization; number of parameters =  18
+  
+  
+  MX PARAMETER ESTIMATES
+  
+  GROUP NUMBER: 1
+  
+Mx: Constructing CIs on the difference of the mediating effects between two independent groups                                  
+  
+  MATRIX A
+ This is a FULL matrix of order    3 by    3
+          X       M       Y
+ X   0.0000  0.0000  0.0000
+ M   0.5152  0.0000  0.0000
+ Y   0.3789 -0.0934  0.0000
+  
+  MATRIX F
+ This is an IDENTITY matrix of order    3 by    3
+  
+  MATRIX I
+ This is an IDENTITY matrix of order    3 by    3
+  
+  MATRIX J
+ This is a computed FULL matrix of order    1 by    1
+  [=\PART(A,T)]
+          1
+ 1   0.5152
+  
+  MATRIX K
+ This is a computed FULL matrix of order    1 by    1
+  [=\PART(A,U)]
+          1
+ 1  -0.0934
+  
+  MATRIX M
+ This is a FULL matrix of order    1 by    3
+          1       2       3
+ 1  -0.4639 -0.8834  0.1138
+  
+  MATRIX S
+ This is a SYMMETRIC matrix of order    3 by    3
+             X          M          Y
+ X     14.0863
+ M      0.0000    11.1825
+ Y      0.0000     0.0000     7.8302
+  
+  MATRIX T
+ This is a FULL matrix of order    1 by    4
+             1          2          3          4
+ 1      2.0000     1.0000     2.0000     1.0000
+  
+  MATRIX U
+ This is a FULL matrix of order    1 by    4
+             1          2          3          4
+ 1      3.0000     2.0000     3.0000     2.0000
+  
+  GROUP NUMBER: 2
+  
+G2: Group=2                                                                                                                     
+  
+  MATRIX A
+ This is a FULL matrix of order    3 by    3
+          X       M       Y
+ X   0.0000  0.0000  0.0000
+ M   0.4579  0.0000  0.0000
+ Y   0.1904 -0.0423  0.0000
+  
+  MATRIX F
+ This is an IDENTITY matrix of order    3 by    3
+  
+  MATRIX I
+ This is an IDENTITY matrix of order    3 by    3
+  
+  MATRIX J
+ This is a computed FULL matrix of order    1 by    1
+  [=\PART(A,T)]
+          1
+ 1   0.4579
+  
+  MATRIX K
+ This is a computed FULL matrix of order    1 by    1
+  [=\PART(A,U)]
+          1
+ 1  -0.0423
+  
+  MATRIX M
+ This is a FULL matrix of order    1 by    3
+          1       2       3
+ 1   0.1551  0.0450 -0.0803
+  
+  MATRIX S
+ This is a SYMMETRIC matrix of order    3 by    3
+             X          M          Y
+ X      8.5854
+ M      0.0000     9.4493
+ Y      0.0000     0.0000    10.2631
+  
+  MATRIX T
+ This is a FULL matrix of order    1 by    4
+             1          2          3          4
+ 1      2.0000     1.0000     2.0000     1.0000
+  
+  MATRIX U
+ This is a FULL matrix of order    1 by    4
+             1          2          3          4
+ 1      3.0000     2.0000     3.0000     2.0000
+  
+  GROUP NUMBER: 3
+  
+G3: Calculation for the difference on the indirect effects between two groups                                                   
+  
+  MATRIX N
+ This is a computed FULL matrix of order    1 by    1
+          1
+ 1   0.5152
+  
+  MATRIX P
+ This is a computed FULL matrix of order    1 by    1
+          1
+ 1  -0.0934
+  
+  MATRIX R
+ This is a computed FULL matrix of order    1 by    1
+          1
+ 1   0.4579
+  
+  MATRIX T
+ This is a computed FULL matrix of order    1 by    1
+          1
+ 1  -0.0423
+  
+  MATRIX Z
+ This is a computed FULL matrix of order    1 by    1
+  [=N*P-R*T]
+          1
+ 1  -0.0288
+  
+ Your model has   18 estimated parameters and    600 Observed statistics
+  
+ -2 times log-likelihood of data >>>  3086.936
+ Degrees of freedom >>>>>>>>>>>>>>>>       582
+ Akaike's Information Criterion >>>>  1922.936
+ Bayesian Information Criterion >>>>     1.658
+ Sample size Adjusted BIC       >>>>   923.576
+ Deviance Information Criterion >>>>   536.480
+  
+  
+ 1  Confidence intervals requested in group  3
+  
+  Matrix Element Int.      Estimate         Lower         Upper  Lfail Ufail
+  
+  
+  Z   3   1   1  95.0        -0.0288       -0.1620        0.1041 0 0   0 0
+  
+ This problem used  0.4% of my workspace
+  
+ Task                     Time elapsed (DD:HH:MM:SS)
+ Reading script & data      0: 0: 0: 0.10
+ Execution                  0: 0: 0: 2.40
+ TOTAL                      0: 0: 0: 2.50
+  
+ Total number of warnings issued: 4
+ ______________________________________________________________________________
+ ______________________________________________________________________________

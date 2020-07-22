@@ -1,0 +1,270 @@
+Mplus VERSION 6.1
+MUTHEN & MUTHEN
+05/10/2011   2:13 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE:        Constructing CIs on the difference of the mediating effects between two inde
+  DATA:                FILE IS twogroup.dat;
+  VARIABLE:        NAMES X M Y G;                        !G is the grouping variable
+                  USEVARIABLES ARE ALL;
+                  GROUPING IS G (1=g1 2=g2);        !Define group 1 and group 2
+
+  ANALYSIS: BOOTSTRAP = 2000;
+
+  MODEL:                        ! Model for "all" groups
+          Y ON M* (p1);        ! Path M -> Y
+          Y ON X*;        ! Include direct effect in the model
+          Y*;                ! Error variance of Y
+
+          M ON X* (p2);        ! Path X -> M
+          M*;                ! Error variance of M
+
+          [X*];                ! Mean of X
+          X*;                ! Variance of X
+
+  MODEL G2:                ! Model for Group 2
+          Y ON M* (p3);        ! Path M -> Y
+          Y ON X*;        ! Include direct effect in the model
+          Y*;                ! Error variance of Y
+
+          M ON X* (p4);        ! Path X -> M
+          M*;                ! Error variance of M
+
+          [X*];                ! Mean of X
+          X*;                ! Variance of X
+
+  MODEL CONSTRAINT:
+          NEW(ind_effect);
+          ind_effect = p1*p2-p3*p4;
+
+  OUTPUT: CINTERVAL(bcbootstrap);        ! Symmetric Wald CI: CINTERVAL(symmetric);
+                                  ! Percentile bootstrap CI: CINTERVAL(bootstrap);
+                                  ! BC bootstrap CI: CINTERVAL(bcbootstrap);
+
+
+
+INPUT READING TERMINATED NORMALLY
+
+
+
+Constructing CIs on the difference of the mediating effects between two indep
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 2
+Number of observations
+   Group G1                                                    100
+   Group G2                                                    100
+
+Number of dependent variables                                    2
+Number of independent variables                                  1
+Number of continuous latent variables                            0
+
+Observed dependent variables
+
+  Continuous
+   M           Y
+
+Observed independent variables
+   X
+
+Variables with special functions
+
+  Grouping variable     G
+
+Estimator                                                       ML
+Information matrix                                        OBSERVED
+Maximum number of iterations                                  1000
+Convergence criterion                                    0.500D-04
+Maximum number of steepest descent iterations                   20
+Number of bootstrap draws
+    Requested                                                 2000
+    Completed                                                 2000
+
+Input data file(s)
+  twogroup.dat
+
+Input data format  FREE
+
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                       18
+
+Loglikelihood
+
+          H0 Value                       -1543.468
+          H1 Value                       -1543.468
+
+Information Criteria
+
+          Akaike (AIC)                    3122.936
+          Bayesian (BIC)                  3182.306
+          Sample-Size Adjusted BIC        3125.280
+            (n* = (n + 2) / 24)
+
+Chi-Square Test of Model Fit
+
+          Value                              0.000
+          Degrees of Freedom                     0
+          P-Value                           0.0000
+
+Chi-Square Contributions From Each Group
+
+          G1                                 0.000
+          G2                                 0.000
+
+RMSEA (Root Mean Square Error Of Approximation)
+
+          Estimate                           0.000
+          90 Percent C.I.                    0.000  0.000
+          Probability RMSEA <= .05           0.000
+
+CFI/TLI
+
+          CFI                                1.000
+          TLI                                1.000
+
+Chi-Square Test of Model Fit for the Baseline Model
+
+          Value                             67.864
+          Degrees of Freedom                     6
+          P-Value                           0.0000
+
+SRMR (Standardized Root Mean Square Residual)
+
+          Value                              0.000
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+Group G1
+
+ Y        ON
+    M                 -0.093      0.078     -1.194      0.233
+    X                  0.379      0.085      4.477      0.000
+
+ M        ON
+    X                  0.515      0.083      6.191      0.000
+
+ Means
+    X                 -0.464      0.382     -1.215      0.224
+
+ Intercepts
+    M                 -0.644      0.338     -1.906      0.057
+    Y                  0.207      0.288      0.719      0.472
+
+ Variances
+    X                 14.085      1.738      8.105      0.000
+
+ Residual Variances
+    M                 11.184      2.003      5.583      0.000
+    Y                  7.830      1.069      7.328      0.000
+
+Group G2
+
+ Y        ON
+    M                 -0.042      0.118     -0.357      0.721
+    X                  0.190      0.111      1.719      0.086
+
+ M        ON
+    X                  0.458      0.105      4.370      0.000
+
+ Means
+    X                  0.155      0.298      0.521      0.602
+
+ Intercepts
+    M                 -0.026      0.302     -0.086      0.931
+    Y                 -0.108      0.323     -0.334      0.739
+
+ Variances
+    X                  8.586      1.100      7.803      0.000
+
+ Residual Variances
+    M                  9.450      1.132      8.347      0.000
+    Y                 10.265      1.290      7.958      0.000
+
+ New/Additional Parameters
+    IND_EFFE          -0.029      0.071     -0.404      0.686
+
+
+CONFIDENCE INTERVALS OF MODEL RESULTS
+
+                  Lower .5%  Lower 2.5%    Lower 5%    Estimate    Upper 5%  Upper 2.5%   Upper .5%
+
+Group G1
+
+ Y        ON
+    M               -0.287      -0.238      -0.210      -0.093       0.044       0.077       0.129
+    X                0.159       0.210       0.240       0.379       0.517       0.543       0.600
+
+ M        ON
+    X                0.281       0.341       0.377       0.515       0.647       0.671       0.712
+
+ Means
+    X               -1.505      -1.227      -1.139      -0.464       0.134       0.243       0.464
+
+ Intercepts
+    M               -1.543      -1.341      -1.218      -0.644      -0.114       0.005       0.227
+    Y               -0.606      -0.381      -0.294       0.207       0.633       0.718       0.923
+
+ Variances
+    X               10.111      10.903      11.367      14.085      17.155      17.732      18.609
+
+ Residual Variances
+    M                7.331       8.105       8.595      11.184      15.596      16.327      17.840
+    Y                5.402       6.013       6.310       7.830       9.835      10.161      10.938
+
+Group G2
+
+ Y        ON
+    M               -0.375      -0.285      -0.254      -0.042       0.141       0.179       0.254
+    X               -0.100      -0.020       0.013       0.190       0.382       0.423       0.484
+
+ M        ON
+    X                0.192       0.264       0.297       0.458       0.639       0.672       0.747
+
+ Means
+    X               -0.669      -0.490      -0.361       0.155       0.608       0.710       0.869
+
+ Intercepts
+    M               -0.836      -0.613      -0.541      -0.026       0.469       0.548       0.712
+    Y               -0.945      -0.729      -0.625      -0.108       0.411       0.504       0.789
+
+ Variances
+    X                5.822       6.520       6.910       8.586      10.566      10.957      11.547
+
+ Residual Variances
+    M                6.914       7.588       7.888       9.450      11.724      12.077      12.444
+    Y                7.550       8.237       8.594      10.265      13.119      13.594      13.975
+
+ New/Additional Parameters
+    IND_EFFE        -0.205      -0.161      -0.139      -0.029       0.101       0.126       0.171
+
+
+     Beginning Time:  14:13:43
+        Ending Time:  14:13:48
+       Elapsed Time:  00:00:05
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2010 Muthen & Muthen

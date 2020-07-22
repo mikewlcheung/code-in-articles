@@ -1,0 +1,77 @@
+#NGROUPS 1			! One group analysis
+Mx: Constructing CIs on the mediating effect with two intermediate mediators
+DATA NInput=4
+RECTANGULAR FILE= intermediate.dat
+LABELS X M1 M2 Y
+
+! The model being analyzed:	X -> M1 -> M2 -> Y
+!				X -------------> Y
+!				     M1 -------> Y
+ Begin Matrices;
+  S Symm 4 4
+  A Full 4 4
+  M Full 1 4		! Means
+  F Iden 4 4		! Selection matrix
+  I Iden 4 4
+  T Full 1 4		! Used to select elements for constraint
+  U Full 1 4		! Used to select elements for constraint
+  V Full 1 4		! Used to select elements for constraint
+ End Matrices;
+
+ Matrix S
+  1
+  0 1 
+  0 0 1
+  0 0 0 1
+ Specify S		! Specify fixed and free parameters for variances and
+  1 			! error variances
+  0 2 
+  0 0 3
+  0 0 0 4
+ Label Row S
+  X M1 M2 Y
+ Label Col S
+  X M1 M2 Y
+
+ Matrix A
+  0 0 0 0
+  0.5 0 0 0 
+  0 0.5 0 0
+  0 0 0.5 0
+ Specify A		! Specify fixed and free parameters for path
+  0 0 0 0		! coefficients
+  5 0 0 0
+  6 7 0 0
+  8 9 10 0
+ Label Row A
+  X M1 M2 Y
+  Label Col A
+  X M1 M2 Y
+ 
+ Matrix M
+ 0
+ 0
+ 0
+ 0 
+ Specify M
+ 11
+ 12 
+ 13
+ 14
+! Elements for calculating indirect effect
+Matrix T 2 1 2 1		! X -> M1, A(2,1)
+Matrix U 3 2 3 2		! M1 -> M2, A(3,2)
+Matrix V 4 3 4 3		! M2 -> Y, A(4,3)
+
+Begin Algebra;
+	J = \part(A, T);	! y1 -> y2, A(2,1)
+	K = \part(A, U);	! y2 -> y3, A(3,2)
+	L = \part(A, V);	! y3 -> y4, A(4,3)
+	Z = J*K*L;		! Z: Indirect effect with two intervening moderators
+End Algebra;
+
+ Means M;
+ Covariance  F & ((I - A)~ & S);
+ Interval Z 1 1			! Confidence interval on the indirect effect
+END
+

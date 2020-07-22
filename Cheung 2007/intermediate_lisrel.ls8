@@ -1,0 +1,15 @@
+TI Estimating SE on the indirect effect with two intermediate mediators
+DA NI=4 AP=1
+RA FI=intermediate.dat
+
+LA
+X M1 M2 Y
+
+SE
+M1 M2 Y X /
+
+MO NY=3 NX=1 BE=SD PS=DI 
+
+! Indirect effect with two intermediate mediators
+CO PAR(1)=GA(1,1)*BE(2,1)*BE(3,2)
+OU ND=3

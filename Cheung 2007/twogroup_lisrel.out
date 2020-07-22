@@ -1,0 +1,416 @@
+
+                                DATE:  9/ 1/2006
+                                  TIME: 15:08
+
+
+                                L I S R E L  8.72
+
+                                       BY
+
+                         Karl G. J”reskog & Dag S”rbom
+
+
+
+                    This program is published exclusively by
+                    Scientific Software International, Inc.
+                       7383 N. Lincoln Avenue, Suite 100
+                        Lincolnwood, IL 60712, U.S.A. 
+            Phone: (800)247-6113, (847)675-0720, Fax: (847)675-2140
+        Copyright by Scientific Software International, Inc., 1981-2005 
+          Use of this program is subject to the terms specified in the
+                        Universal Copyright Convention.
+                          Website: www.ssicentral.com
+
+ The following lines were read from file twogroup_lisrel.ls8:
+
+ TI Estimating SE on the difference of the mediating effects between two independent groups
+ ! Note: Sample size is required as the two groups are stacked together.
+ DA NG=2 NI=3 NO=100 AP=1 ! Create one additional parameter
+ RA FI=twogroup.dat  ! to store the mediating effect
+  
+ LA
+ X M Y G    ! G: grouping variable, not used here
+  
+ SE
+ M Y X /    ! Arrange into Y-variables and X-variables
+  
+ MO NY=2 NX=1 BE=SD PS=DI ! Fit a mediating model
+ OU
+
+ TI Estimating SE on the difference of the mediating effects between two indepen
+
+                           Number of Input Variables  3
+                           Number of Y - Variables    2
+                           Number of X - Variables    1
+                           Number of ETA - Variables  2
+                           Number of KSI - Variables  1
+                           Number of Observations   100
+                           Number of Groups           2
+  
+ Group 2
+ DA NI=3 NO=100
+ RA FI=twogroup.dat
+  
+ LA
+ X M Y G
+  
+ SE
+ M Y X /    ! Arrange into Y-variables and X-variables
+  
+ MO NY=2 NX=1 BE=SD PS=DI ! Fit a mediating model
+  
+ ! Difference of two independent mediating effects
+ CO PAR(1)=GA(1,1,1)*BE(1,2,1) - GA(2,1,1)*BE(2,2,1) ! Mediating effect
+ OU ND=3
+
+ Group 2                                                                        
+
+                           Number of Input Variables  3
+                           Number of Y - Variables    2
+                           Number of X - Variables    1
+                           Number of ETA - Variables  2
+                           Number of KSI - Variables  1
+                           Number of Observations   100
+                           Number of Groups           2
+
+ TI Estimating SE on the difference of the mediating effects between two indepen
+
+         Covariance Matrix       
+
+                   M          Y          X   
+            --------   --------   --------
+        M     15.072
+        Y      1.369      9.564
+        X      7.330      4.706     14.229
+
+         Means   
+
+                   M          Y          X   
+            --------   --------   --------
+              -0.883      0.114     -0.464
+
+ Group 2                                                                        
+
+         Covariance Matrix       
+
+                   M          Y          X   
+            --------   --------   --------
+        M     11.363
+        Y      0.276     10.638
+        X      3.971      1.483      8.672
+
+         Means   
+
+                   M          Y          X   
+            --------   --------   --------
+               0.045     -0.080      0.155
+
+
+ TI Estimating SE on the difference of the mediating effects between two indepen
+
+ Parameter Specifications
+
+         BETA        
+
+                   M          Y
+            --------   --------
+        M          0          0
+        Y          1          0
+
+         GAMMA       
+
+                   X
+            --------
+        M          2
+        Y          3
+
+         PHI         
+
+                   X
+            --------
+                   4
+
+         PSI         
+
+                   M          Y
+            --------   --------
+                   5          6
+
+         ALPHA       
+
+                   M          Y
+            --------   --------
+                   7          8
+
+
+ Group 2                                                                        
+
+ Parameter Specifications
+
+         BETA        
+
+                   M          Y
+            --------   --------
+        M          0          0
+        Y         10          0
+
+         GAMMA       
+
+                   X
+            --------
+        M         11
+        Y         12
+
+         PHI         
+
+                   X
+            --------
+                  13
+
+         PSI         
+
+                   M          Y
+            --------   --------
+                  14         15
+
+         ALPHA       
+
+                   M          Y
+            --------   --------
+                  16         17
+ 
+
+
+ TI Estimating SE on the difference of the mediating effects between two indepen
+
+ Number of Iterations =  0
+
+ LISREL Estimates (Maximum Likelihood)                           
+
+         BETA        
+
+                   M          Y   
+            --------   --------
+        M       - -        - - 
+ 
+        Y     -0.093       - - 
+             (0.084)
+              -1.108
+ 
+
+         GAMMA       
+
+                   X   
+            --------
+        M      0.515
+             (0.090)
+               5.739
+ 
+        Y      0.379
+             (0.087)
+               4.366
+ 
+
+         Covariance Matrix of Y and X            
+
+                   M          Y          X   
+            --------   --------   --------
+        M     15.072
+        Y      1.369      9.564
+        X      7.330      4.706     14.229
+
+         Mean Vector of Eta-Variables
+
+                   M          Y   
+            --------   --------
+              -0.883      0.114
+
+         PHI         
+
+                   X   
+            --------
+              14.229
+             (2.027)
+               7.018
+ 
+
+         PSI         
+         Note: This matrix is diagonal.
+
+                   M          Y   
+            --------   --------
+              11.296      7.909
+             (1.610)    (1.127)
+               7.018      7.018
+ 
+
+         Squared Multiple Correlations for Structural Equations  
+
+                   M          Y   
+            --------   --------
+               0.251      0.173
+
+         Squared Multiple Correlations for Reduced Form          
+
+                   M          Y   
+            --------   --------
+               0.251      0.163
+
+         Reduced Form                
+
+                   X   
+            --------
+        M      0.515
+             (0.090)
+               5.739
+ 
+        Y      0.331
+             (0.076)
+               4.376
+ 
+
+         ALPHA       
+
+                   M          Y   
+            --------   --------
+              -0.644      0.207
+             (0.341)    (0.291)
+              -1.889      0.712
+ 
+
+         ADDITIONAL PARAMETERS   
+
+               AP(1)   
+            --------
+              -0.029
+             (0.065)
+              -0.439
+ 
+
+
+                         Group Goodness of Fit Statistics
+
+                         Contribution to Chi-Square = 0.0
+ 
+                      Root Mean Square Residual (RMR) = 0.00
+                             Standardized RMR = 0.00
+                       Goodness of Fit Index (GFI) = 1.000
+
+
+ Group 2                                                                        
+
+ Number of Iterations =  0
+
+ LISREL Estimates (Maximum Likelihood)                           
+
+         BETA        
+
+                   M          Y   
+            --------   --------
+        M       - -        - - 
+ 
+        Y     -0.042       - - 
+             (0.105)
+              -0.402
+ 
+
+         GAMMA       
+
+                   X   
+            --------
+        M      0.458
+             (0.106)
+               4.332
+ 
+        Y      0.190
+             (0.120)
+               1.584
+ 
+
+         Covariance Matrix of Y and X            
+
+                   M          Y          X   
+            --------   --------   --------
+        M     11.363
+        Y      0.276     10.638
+        X      3.971      1.483      8.672
+
+         Mean Vector of Eta-Variables
+
+                   M          Y   
+            --------   --------
+               0.045     -0.080
+
+         PHI         
+
+                   X   
+            --------
+               8.672
+             (1.236)
+               7.018
+ 
+
+         PSI         
+         Note: This matrix is diagonal.
+
+                   M          Y   
+            --------   --------
+               9.544     10.367
+             (1.360)    (1.477)
+               7.018      7.018
+ 
+
+         Squared Multiple Correlations for Structural Equations  
+
+                   M          Y   
+            --------   --------
+               0.160      0.025
+
+         Squared Multiple Correlations for Reduced Form          
+
+                   M          Y   
+            --------   --------
+               0.160      0.024
+
+         Reduced Form                
+
+                   X   
+            --------
+        M      0.458
+             (0.090)
+               5.101
+ 
+        Y      0.171
+             (0.075)
+               2.269
+ 
+
+         ALPHA       
+
+                   M          Y   
+            --------   --------
+              -0.026     -0.108
+             (0.312)    (0.325)
+              -0.083     -0.332
+ 
+
+         ADDITIONAL PARAMETERS   
+
+               AP(1)   
+            --------
+              -0.029
+             (0.065)
+              -0.439
+ 
+
+
+                        Global Goodness of Fit Statistics
+
+                              Degrees of Freedom = 0
+                Minimum Fit Function Chi-Square = 0.0 (P = 1.000)
+        Normal Theory Weighted Least Squares Chi-Square = 0.00 (P = 1.000)
+
+                  The Model is Saturated, the Fit is Perfect !
+
+
+                           Time used:    0.031 Seconds

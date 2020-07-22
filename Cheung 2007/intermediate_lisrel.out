@@ -1,0 +1,238 @@
+
+                                DATE:  9/ 1/2006
+                                  TIME: 15:08
+
+
+                                L I S R E L  8.72
+
+                                       BY
+
+                         Karl G. J”reskog & Dag S”rbom
+
+
+
+                    This program is published exclusively by
+                    Scientific Software International, Inc.
+                       7383 N. Lincoln Avenue, Suite 100
+                        Lincolnwood, IL 60712, U.S.A. 
+            Phone: (800)247-6113, (847)675-0720, Fax: (847)675-2140
+        Copyright by Scientific Software International, Inc., 1981-2005 
+          Use of this program is subject to the terms specified in the
+                        Universal Copyright Convention.
+                          Website: www.ssicentral.com
+
+ The following lines were read from file intermediate_lisrel.ls8:
+
+ TI Estimating SE on the indirect effect with two intermediate mediators
+ DA NI=4 AP=1
+ RA FI=intermediate.dat
+  
+ LA
+ X M1 M2 Y
+  
+ SE
+ M1 M2 Y X /
+  
+ MO NY=3 NX=1 BE=SD PS=DI
+  
+ ! Indirect effect with two intermediate mediators
+ CO PAR(1)=GA(1,1)*BE(2,1)*BE(3,2)
+ OU ND=3
+
+ TI Estimating SE on the indirect effect with two intermediate mediators        
+
+                           Number of Input Variables  4
+                           Number of Y - Variables    3
+                           Number of X - Variables    1
+                           Number of ETA - Variables  3
+                           Number of KSI - Variables  1
+                           Number of Observations   100
+
+ TI Estimating SE on the indirect effect with two intermediate mediators        
+
+         Covariance Matrix       
+
+                  M1         M2          Y          X   
+            --------   --------   --------   --------
+       M1     16.527
+       M2     10.877     16.322
+        Y      2.589      4.967     13.431
+        X      7.662      4.484      1.539     10.899
+
+         Means   
+
+                  M1         M2          Y          X   
+            --------   --------   --------   --------
+              -0.256     -0.542     -0.657      0.057
+
+
+ TI Estimating SE on the indirect effect with two intermediate mediators        
+
+ Parameter Specifications
+
+         BETA        
+
+                  M1         M2          Y
+            --------   --------   --------
+       M1          0          0          0
+       M2          1          0          0
+        Y          2          3          0
+
+         GAMMA       
+
+                   X
+            --------
+       M1          4
+       M2          5
+        Y          6
+
+         PHI         
+
+                   X
+            --------
+                   7
+
+         PSI         
+
+                  M1         M2          Y
+            --------   --------   --------
+                   8          9         10
+
+         ALPHA       
+
+                  M1         M2          Y
+            --------   --------   --------
+                  11         12         13
+ 
+
+
+ TI Estimating SE on the indirect effect with two intermediate mediators        
+
+ Number of Iterations =  0
+
+ LISREL Estimates (Maximum Likelihood)                           
+
+         BETA        
+
+                  M1         M2          Y   
+            --------   --------   --------
+       M1       - -        - -        - - 
+ 
+       M2      0.693       - -        - - 
+             (0.091)
+               7.587
+ 
+        Y     -0.115      0.361       - - 
+             (0.131)    (0.115)
+              -0.875      3.135
+ 
+
+         GAMMA       
+
+                   X   
+            --------
+       M1      0.703
+             (0.102)
+               6.883
+ 
+       M2     -0.076
+             (0.113)
+              -0.675
+ 
+        Y      0.074
+             (0.128)
+               0.572
+ 
+
+         Covariance Matrix of Y and X            
+
+                  M1         M2          Y          X   
+            --------   --------   --------   --------
+       M1     16.527
+       M2     10.877     16.322
+        Y      2.589      4.967     13.431
+        X      7.662      4.484      1.539     10.899
+
+         Mean Vector of Eta-Variables
+
+                  M1         M2          Y   
+            --------   --------   --------
+              -0.256     -0.542     -0.657
+
+         PHI         
+
+                   X   
+            --------
+              10.899
+             (1.557)
+               7.000
+ 
+
+         PSI         
+         Note: This matrix is diagonal.
+
+                  M1         M2          Y   
+            --------   --------   --------
+              11.141      9.120     11.824
+             (1.592)    (1.303)    (1.689)
+               7.000      7.000      7.000
+ 
+
+         Squared Multiple Correlations for Structural Equations  
+
+                  M1         M2          Y   
+            --------   --------   --------
+               0.326      0.441      0.120
+
+         Squared Multiple Correlations for Reduced Form          
+
+                  M1         M2          Y   
+            --------   --------   --------
+               0.326      0.113      0.016
+
+         Reduced Form                
+
+                   X   
+            --------
+       M1      0.703
+             (0.102)
+               6.883
+ 
+       M2      0.411
+             (0.116)
+               3.534
+ 
+        Y      0.141
+             (0.111)
+               1.270
+ 
+
+         ALPHA       
+
+                  M1         M2          Y   
+            --------   --------   --------
+              -0.296     -0.360     -0.496
+             (0.337)    (0.306)    (0.351)
+              -0.878     -1.175     -1.411
+ 
+
+         ADDITIONAL PARAMETERS   
+
+               AP(1)   
+            --------
+               0.176
+             (0.066)
+               2.670
+ 
+
+
+                           Goodness of Fit Statistics
+
+                              Degrees of Freedom = 0
+                Minimum Fit Function Chi-Square = 0.00 (P = 1.000)
+        Normal Theory Weighted Least Squares Chi-Square = 0.00 (P = 1.000)
+
+                  The Model is Saturated, the Fit is Perfect !
+
+
+                           Time used:    0.016 Seconds

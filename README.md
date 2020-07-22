@@ -3,6 +3,9 @@
 [Errata in published articles](./errata/errata.pdf)
 
 
+[Cheung, M. W.-L. (2007)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202007). Comparison of approaches to constructing confidence intervals for mediating effects using structural equation models. *Structural Equation Modeling: A Multidisciplinary Journal*, *14*(2), 227-246.
+http://dx.doi.org/10.1080/10705510709336745.
+
 [Cheung, M. W.-L. (2008)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202008). A model for integrating fixed-, random-, and mixed-effects meta-analyses into structural equation modeling. *Psychological Methods*, *13*(3), 182-202. http://dx.doi.org/10.1037/a0013163.
 
 [Cheung, M. W.-L. (2010)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202010). Fixed-effects meta-analyses as multiple-group structural equation models. *Structural Equation Modeling: A Multidisciplinary Journal*, *17*(3), 481-509. http://dx.doi.org/10.1080/10705511.2010.489367.

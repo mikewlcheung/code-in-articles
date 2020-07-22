@@ -1,0 +1,262 @@
+  
+  ** Mx startup successful **
+  
+  **MX-PC 1.61i** Job started on 09/01/06 at 15:10:04
+ 
+ 
+ The following MX script lines were read for group    1
+ 
+ #NGROUPS 1
+  Note: #NGroup set number of groups to 1
+  
+ MX: CONSTRUCTING CIS ON THE MEDIATING EFFECT WITH TWO INTERMEDIATE MEDIATORS
+ DATA NINPUT=4
+ RECTANGULAR FILE= INTERMEDIATE.DAT
+  Rectangular continuous data read initiated
+  MAXRSZ= 1000
+  
+  NOTE: Rectangular file contained   100 records with data
+        that contained a total of    400 observations
+  
+ LABELS X M1 M2 Y
+ ! The model being analyzed:	X -> M1 -> M2 -> Y
+ !				X -------------> Y
+ !				     M1 -------> Y
+ BEGIN MATRICES;
+ S SYMM 4 4
+ A FULL 4 4
+ M FULL 1 4  ! MEANS
+ F IDEN 4 4  ! SELECTION MATRIX
+ I IDEN 4 4
+ T FULL 1 4  ! USED TO SELECT ELEMENTS FOR CONSTRAINT
+ U FULL 1 4  ! USED TO SELECT ELEMENTS FOR CONSTRAINT
+ V FULL 1 4  ! USED TO SELECT ELEMENTS FOR CONSTRAINT
+ END MATRICES;
+ MATRIX S
+ 1
+ 0 1
+ 0 0 1
+ 0 0 0 1
+ SPECIFY S  ! SPECIFY FIXED AND FREE PARAMETERS FOR VARIANCES AND
+ 1    ! ERROR VARIANCES
+ 0 2
+ 0 0 3
+ 0 0 0 4
+ LABEL ROW S
+ X M1 M2 Y
+ LABEL COL S
+ X M1 M2 Y
+ MATRIX A
+ 0 0 0 0
+ 0.5 0 0 0
+ 0 0.5 0 0
+ 0 0 0.5 0
+ SPECIFY A  ! SPECIFY FIXED AND FREE PARAMETERS FOR PATH
+ 0 0 0 0  ! COEFFICIENTS
+ 5 0 0 0
+ 6 7 0 0
+ 8 9 10 0
+ LABEL ROW A
+ X M1 M2 Y
+ LABEL COL A
+ X M1 M2 Y
+ MATRIX M
+ 0
+ 0
+ 0
+ 0
+ SPECIFY M
+ 11
+ 12
+ 13
+ 14
+ ! Elements for calculating indirect effect
+ MATRIX T 2 1 2 1  ! X -> M1, A(2,1)
+ MATRIX U 3 2 3 2  ! M1 -> M2, A(3,2)
+ MATRIX V 4 3 4 3  ! M2 -> Y, A(4,3)
+ BEGIN ALGEBRA;
+  J = \PART(A, T); ! Y1 -> Y2, A(2,1)
+  K = \PART(A, U); ! Y2 -> Y3, A(3,2)
+  L = \PART(A, V); ! Y3 -> Y4, A(4,3)
+  Z = J*K*L;  ! Z: INDIRECT EFFECT WITH TWO INTERVENING MODERATORS
+ END ALGEBRA;
+ MEANS M;
+ COVARIANCE  F & ((I - A)~ & S);
+ INTERVAL Z 1 1   ! CONFIDENCE INTERVAL ON THE INDIRECT EFFECT
+ END
+  
+  
+  Summary of VL file data for group  1
+  
+                    X         M1         M2          Y
+     Code      1.0000     2.0000     3.0000     4.0000
+   Number    100.0000   100.0000   100.0000   100.0000
+     Mean      0.0568    -0.2562    -0.5418    -0.6574
+ Variance     10.7902    16.3619    16.1583    13.2966
+  Minimum     -9.7762   -10.2838   -10.4355   -14.3561
+  Maximum      7.0444     7.3982     9.3785     6.8264
+  
+  
+  PARAMETER SPECIFICATIONS
+  
+  GROUP NUMBER: 1
+  
+Mx: Constructing CIs on the mediating effect with two intermediate mediators                                                    
+  
+  MATRIX A
+ This is a FULL matrix of order    4 by    4
+           X      M1      M2       Y
+  X       0       0       0       0
+ M1       5       0       0       0
+ M2       6       7       0       0
+  Y       8       9      10       0
+  
+  MATRIX F
+ This is an IDENTITY matrix of order    4 by    4
+  
+  MATRIX I
+ This is an IDENTITY matrix of order    4 by    4
+  
+  MATRIX J
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  MATRIX K
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  MATRIX L
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  MATRIX M
+ This is a FULL matrix of order    1 by    4
+     1  2  3  4
+ 1  11 12 13 14
+  
+  MATRIX S
+ This is a SYMMETRIC matrix of order    4 by    4
+           X      M1      M2       Y
+  X       1
+ M1       0       2
+ M2       0       0       3
+  Y       0       0       0       4
+  
+  MATRIX T
+ This is a FULL matrix of order    1 by    4
+  It has no free parameters specified
+  
+  MATRIX U
+ This is a FULL matrix of order    1 by    4
+  It has no free parameters specified
+  
+  MATRIX V
+ This is a FULL matrix of order    1 by    4
+  It has no free parameters specified
+  
+  MATRIX Z
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  Mx starting optimization; number of parameters =  14
+  
+  
+  MX PARAMETER ESTIMATES
+  
+  GROUP NUMBER: 1
+  
+Mx: Constructing CIs on the mediating effect with two intermediate mediators                                                    
+  
+  MATRIX A
+ This is a FULL matrix of order    4 by    4
+           X      M1      M2       Y
+  X   0.0000  0.0000  0.0000  0.0000
+ M1   0.7030  0.0000  0.0000  0.0000
+ M2  -0.0760  0.6934  0.0000  0.0000
+  Y   0.0735 -0.1147  0.3606  0.0000
+  
+  MATRIX F
+ This is an IDENTITY matrix of order    4 by    4
+  
+  MATRIX I
+ This is an IDENTITY matrix of order    4 by    4
+  
+  MATRIX J
+ This is a computed FULL matrix of order    1 by    1
+  [=\PART(A,T)]
+          1
+ 1   0.7030
+  
+  MATRIX K
+ This is a computed FULL matrix of order    1 by    1
+  [=\PART(A,U)]
+          1
+ 1   0.6934
+  
+  MATRIX L
+ This is a computed FULL matrix of order    1 by    1
+  [=\PART(A,V)]
+          1
+ 1   0.3606
+  
+  MATRIX M
+ This is a FULL matrix of order    1 by    4
+          1       2       3       4
+ 1   0.0568 -0.2562 -0.5418 -0.6574
+  
+  MATRIX S
+ This is a SYMMETRIC matrix of order    4 by    4
+              X         M1         M2          Y
+  X     10.7900
+ M1      0.0000    11.0301
+ M2      0.0000     0.0000     9.0290
+  Y      0.0000     0.0000     0.0000    11.7058
+  
+  MATRIX T
+ This is a FULL matrix of order    1 by    4
+             1          2          3          4
+ 1      2.0000     1.0000     2.0000     1.0000
+  
+  MATRIX U
+ This is a FULL matrix of order    1 by    4
+             1          2          3          4
+ 1      3.0000     2.0000     3.0000     2.0000
+  
+  MATRIX V
+ This is a FULL matrix of order    1 by    4
+             1          2          3          4
+ 1      4.0000     3.0000     4.0000     3.0000
+  
+  MATRIX Z
+ This is a computed FULL matrix of order    1 by    1
+  [=J*K*L]
+          1
+ 1   0.1758
+  
+ Your model has   14 estimated parameters and    400 Observed statistics
+  
+ -2 times log-likelihood of data >>>  2079.127
+ Degrees of freedom >>>>>>>>>>>>>>>>       386
+ Akaike's Information Criterion >>>>  1307.127
+ Bayesian Information Criterion >>>>   150.766
+ Sample size Adjusted BIC       >>>>   760.308
+ Deviance Information Criterion >>>>   505.476
+  
+  
+ 1  Confidence intervals requested in group  1
+  
+  Matrix Element Int.      Estimate         Lower         Upper  Lfail Ufail
+  
+  
+  Z   1   1   1  95.0         0.1758        0.0629        0.3274 0 0   0 0
+  
+ This problem used  0.2% of my workspace
+  
+ Task                     Time elapsed (DD:HH:MM:SS)
+ Reading script & data      0: 0: 0: 0.05
+ Execution                  0: 0: 0: 0.75
+ TOTAL                      0: 0: 0: 0.80
+  
+ Total number of warnings issued: 0
+ ______________________________________________________________________________
+ ______________________________________________________________________________

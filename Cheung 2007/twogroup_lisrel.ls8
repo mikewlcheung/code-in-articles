@@ -1,0 +1,29 @@
+TI Estimating SE on the difference of the mediating effects between two independent groups
+! Note: Sample size is required as the two groups are stacked together.
+DA NG=2 NI=3 NO=100 AP=1	! Create one additional parameter
+RA FI=twogroup.dat		! to store the mediating effect
+
+LA
+X M Y G				! G: grouping variable, not used here
+
+SE
+M Y X /				! Arrange into Y-variables and X-variables
+
+MO NY=2 NX=1 BE=SD PS=DI	! Fit a mediating model
+OU
+
+Group 2
+DA NI=3 NO=100		
+RA FI=twogroup.dat		
+
+LA
+X M Y G
+
+SE
+M Y X /				! Arrange into Y-variables and X-variables
+
+MO NY=2 NX=1 BE=SD PS=DI	! Fit a mediating model
+
+! Difference of two independent mediating effects
+CO PAR(1)=GA(1,1,1)*BE(1,2,1) - GA(2,1,1)*BE(2,2,1)	! Mediating effect
+OU ND=3

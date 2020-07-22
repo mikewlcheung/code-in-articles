@@ -1,0 +1,37 @@
+TITLE:	Constructing CIs on the difference of the mediating effects between two independent groups
+DATA:		FILE IS twogroup.dat;
+VARIABLE:	NAMES X M Y G;			!G is the grouping variable
+		USEVARIABLES ARE ALL;
+		GROUPING IS G (1=g1 2=g2);	!Define group 1 and group 2
+
+ANALYSIS: BOOTSTRAP = 2000;
+
+MODEL:			! Model for "all" groups
+	Y ON M* (p1);	! Path M -> Y
+	Y ON X*;	! Include direct effect in the model
+	Y*;		! Error variance of Y
+
+	M ON X* (p2);	! Path X -> M
+	M*;		! Error variance of M
+
+	[X*];		! Mean of X
+	X*;		! Variance of X
+
+MODEL G2:		! Model for Group 2
+	Y ON M* (p3);	! Path M -> Y
+	Y ON X*;	! Include direct effect in the model
+	Y*;		! Error variance of Y
+
+	M ON X* (p4);	! Path X -> M
+	M*;		! Error variance of M
+
+	[X*];		! Mean of X
+	X*;		! Variance of X
+
+MODEL CONSTRAINT:
+	NEW(ind_effect);
+	ind_effect = p1*p2-p3*p4;
+
+OUTPUT: CINTERVAL(bcbootstrap);	! Symmetric Wald CI: CINTERVAL(symmetric);
+				! Percentile bootstrap CI: CINTERVAL(bootstrap);
+				! BC bootstrap CI: CINTERVAL(bcbootstrap);

@@ -1,0 +1,15 @@
+TI Estimating SE on simple mediating effect 
+DA NI=3 AP=1			! Create one additional parameter
+RA FI=simple.dat		! to store the mediating effect
+
+LA
+X M Y
+
+SE
+M Y X /				! Arrange into Y-variables and X-variables
+
+MO NY=2 NX=1 BE=SD PS=DI	! Fit a mediating model
+
+! Indirect effect
+CO PAR(1)=GA(1,1)*BE(2,1)	! Mediating effect
+OU ND=3

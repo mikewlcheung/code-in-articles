@@ -1,0 +1,222 @@
+
+                                DATE: 10/25/2006
+                                  TIME: 14:02
+
+
+                                L I S R E L  8.72
+
+                                       BY
+
+                         Karl G. J”reskog & Dag S”rbom
+
+
+
+                    This program is published exclusively by
+                    Scientific Software International, Inc.
+                       7383 N. Lincoln Avenue, Suite 100
+                        Lincolnwood, IL 60712, U.S.A. 
+            Phone: (800)247-6113, (847)675-0720, Fax: (847)675-2140
+        Copyright by Scientific Software International, Inc., 1981-2005 
+          Use of this program is subject to the terms specified in the
+                        Universal Copyright Convention.
+                          Website: www.ssicentral.com
+
+ The following lines were read from file D:\Mike\study\mediator\CI\codes\Copy of simple_lisrel.LS8:
+
+ TI Estimating SE on simple mediating effect
+ DA NI=3 NO=0 AP=1 MI=-9  ! Create one additional parameter
+ RA FI=simple.dat  ! to store the mediating effect
+  
+ LA
+ X M Y
+  
+ SE
+ M Y X /    ! Arrange into Y-variables and X-variables
+  
+ MO NY=2 NX=1 BE=SD PS=DI ! Fit a mediating model
+  
+ ! Indirect effect
+ CO PAR(1)=GA(1,1)*BE(2,1) ! Mediating effect
+ OU ND=3 ME=ML
+
+ TI Estimating SE on simple mediating effect                                    
+
+                           Number of Input Variables  3
+                           Number of Y - Variables    2
+                           Number of X - Variables    1
+                           Number of ETA - Variables  2
+                           Number of KSI - Variables  1
+                           Number of Observations   100
+
+ TI Estimating SE on simple mediating effect                                    
+
+         Covariance Matrix       
+
+                   M          Y          X   
+            --------   --------   --------
+        M     14.338
+        Y      5.480     11.990
+        X      5.885      1.957     11.383
+
+         Means   
+
+                   M          Y          X   
+            --------   --------   --------
+              -0.859     -0.095     -0.415
+
+
+ TI Estimating SE on simple mediating effect                                    
+
+ Parameter Specifications
+
+         BETA        
+
+                   M          Y
+            --------   --------
+        M          0          0
+        Y          1          0
+
+         GAMMA       
+
+                   X
+            --------
+        M          2
+        Y          3
+
+         PHI         
+
+                   X
+            --------
+                   4
+
+         PSI         
+
+                   M          Y
+            --------   --------
+                   5          6
+
+         ALPHA       
+
+                   M          Y
+            --------   --------
+                   7          8
+ 
+
+
+ TI Estimating SE on simple mediating effect                                    
+
+ Number of Iterations =  0
+
+ LISREL Estimates (Maximum Likelihood)                           
+
+         BETA        
+
+                   M          Y   
+            --------   --------
+        M       - -        - - 
+ 
+        Y      0.396       - - 
+             (0.095)
+               4.186
+ 
+
+         GAMMA       
+
+                   X   
+            --------
+        M      0.517
+             (0.101)
+               5.138
+ 
+        Y     -0.033
+             (0.106)
+              -0.307
+ 
+
+         Covariance Matrix of Y and X            
+
+                   M          Y          X   
+            --------   --------   --------
+        M     14.338
+        Y      5.480     11.990
+        X      5.885      1.957     11.383
+
+         Mean Vector of Eta-Variables
+
+                   M          Y   
+            --------   --------
+              -0.859     -0.095
+
+         PHI         
+
+                   X   
+            --------
+              11.383
+             (1.626)
+               7.000
+ 
+
+         PSI         
+         Note: This matrix is diagonal.
+
+                   M          Y   
+            --------   --------
+              11.296      9.887
+             (1.614)    (1.412)
+               7.000      7.000
+ 
+
+         Squared Multiple Correlations for Structural Equations  
+
+                   M          Y   
+            --------   --------
+               0.212      0.175
+
+         Squared Multiple Correlations for Reduced Form          
+
+                   M          Y   
+            --------   --------
+               0.212      0.028
+
+         Reduced Form                
+
+                   X   
+            --------
+        M      0.517
+             (0.101)
+               5.138
+ 
+        Y      0.172
+             (0.102)
+               1.682
+ 
+
+         ALPHA       
+
+                   M          Y   
+            --------   --------
+              -0.644      0.231
+             (0.342)    (0.326)
+              -1.884      0.711
+ 
+
+         ADDITIONAL PARAMETERS   
+
+               AP(1)   
+            --------
+               0.204
+             (0.063)
+               3.245
+ 
+
+
+                           Goodness of Fit Statistics
+
+                              Degrees of Freedom = 0
+                Minimum Fit Function Chi-Square = 0.00 (P = 1.000)
+        Normal Theory Weighted Least Squares Chi-Square = 0.00 (P = 1.000)
+
+                  The Model is Saturated, the Fit is Perfect !
+
+
+                           Time used:    0.031 Seconds

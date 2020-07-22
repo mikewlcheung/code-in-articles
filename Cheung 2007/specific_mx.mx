@@ -1,0 +1,83 @@
+#NGROUPS 1			! One group analysis
+Mx: Constructing CIs on the difference of the mediating effects with two specific mediators
+DATA NInput=4
+RECTANGULAR FILE= specific.dat
+LABELS X M1 M2 Y
+
+! The model being analyzed: 	X -> M1 -> Y
+! 				X -------> Y
+! 				X -> M2 -> Y
+ Begin Matrices;
+  S Symm 4 4
+  A Full 4 4
+  M Full 1 4		! Means
+  F Iden 4 4		! Selection matrix
+  I Iden 4 4		! Identity matrix
+  T Full 1 4		! Used to select elements for constraint
+  U Full 1 4		! Used to select elements for constraint
+  V Full 1 4		! Used to select elements for constraint
+  W Full 1 4		! Used to select elements for constraint
+ End Matrices;
+
+ Matrix S
+  1
+  0 1
+  0 0 1
+  0 0 0 1
+ Specify S
+  1 
+  0 2 
+  0 0 3
+  0 0 0 4
+ Label Row S
+  X M1 M2 Y
+ Label Col S
+  X M1 M2 Y
+
+ Matrix A
+  0 0 0 0
+  0.5 0 0 0 
+  0.5 0 0 0
+  0 0.5 0.5 0
+ Specify A
+  0 0 0 0
+  5 0 0 0
+  6 0 0 0
+  7 8 9 0
+ Label Row A
+  X M1 M2 Y
+ Label Col A
+  X M1 M2 Y
+
+ Matrix M
+ 0
+ 0
+ 0
+ 0 
+ Specify M
+ 10
+ 11 
+ 12
+ 13
+! Elements for calculating indirect effect
+Matrix T 2 1 2 1		! X -> M1, A(2,1)
+Matrix U 4 2 4 2		! M1 -> Y, A(4,2)
+
+Matrix V 3 1 3 1		! X -> M2, A(3,1)
+Matrix W 4 3 4 3		! M2 -> Y, A(4,3)
+
+Begin Algebra;
+	J = \part(A, T);	! Select the required element
+	K = \part(A, U);	! Select the required element
+	L = \part(A, V);	! Select the required element
+	N = \part(A, W);	! Select the required element
+	D = J*K+L*N;	! D: Sum of the two specific mediating effects
+	Z = J*K-L*N;	! Z: Diff between two specific mediating effects
+End Algebra;
+
+ Means M;
+ Covariance  F & ((I - A)~ & S);
+ Interval D 1 1		! CI on the sum of two specific indirect effects 
+ Interval Z 1 1		! CI on the diff. of two specific indirect effects
+END
+

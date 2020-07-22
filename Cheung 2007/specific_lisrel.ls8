@@ -1,0 +1,21 @@
+TI Estimating SE on the indirect effect with two specific mediators
+DA NI=4 AP=2			! Create two additional parameters
+RA FI=specific.dat
+
+LA
+X M1 M2 Y
+
+SE
+M1 M2 Y X /
+
+MO NY=3 NX=1 BE=FI PS=DI 
+
+FR BE(3,1)
+FR BE(3,2)
+
+! Total specific effect
+CO PAR(1)=GA(1,1)*BE(3,1) + GA(2,1)*BE(3,2)
+
+! Difference between two specific effects
+CO PAR(2)=GA(1,1)*BE(3,1) - GA(2,1)*BE(3,2)
+OU ND=3

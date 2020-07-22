@@ -1,0 +1,34 @@
+TITLE:	Constructing CIs on the mediating effects with two specific mediators
+
+DATA:		FILE IS specific.dat;
+VARIABLE:	NAMES X M1 M2 Y;	! M1: first specific mediator
+					! M2: second specific mediator
+		USEVARIABLES ARE ALL;
+
+ANALYSIS: BOOTSTRAP = 2000;
+
+MODEL:				! Model being analyzed:	X -> M1 -> Y
+				!			X -------> Y
+				!			X -> M2 -> Y 			
+	Y ON M1* (p2);	! M1 -> Y
+	Y ON M2* (p4);	! M2 -> Y
+	Y ON X*;		! Include direct effect in the analysis
+	Y*;
+
+	M2 ON X* (p3);	! X -> M2
+	M2*;			! Error variance of M2
+
+	M1 ON X* (p1);	! X -> M1
+	M1*;			! Error variance of M1
+
+	[X*];
+	X*;
+
+MODEL CONSTRAINT:
+	NEW(ind_effect);
+	ind_effect = p1*p2-p3*p4;
+
+OUTPUT: CINTERVAL(bcbootstrap);	! Symmetric Wald CI: CINTERVAL(symmetric);
+				! Percentile bootstrap CI: CINTERVAL(bootstrap);
+				! BC bootstrap CI: CINTERVAL(bcbootstrap);
+

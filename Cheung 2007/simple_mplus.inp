@@ -1,0 +1,31 @@
+TITLE:		Constructing CIs on simple mediating effect
+DATA:		FILE IS simple.dat;	! Raw data are required for bootstrap
+VARIABLE:	NAMES X M Y;		! X: Independent variable, M: Mediator
+					! Y: Dependent variable
+		USEVARIABLES ARE ALL;
+
+ANALYSIS: BOOTSTRAP = 2000;	
+				! If "bootstrap" is listed, percentile or BC 
+				! bootstrap CIs will be produced; otherwise, 
+				! Wald CI will be generated.
+				! "2000" is the no. of bootstrap replications.
+
+MODEL:				! Model being analyzed: X -> M -> Y
+	Y ON M* (p1);		! Path M -> Y; p1: first constraint
+	Y ON X*;		! Include direct effect in the model
+	Y*;			! Error variance of Y
+
+	M ON X* (p2);		! Path X -> M; p2: second constraint
+	M*;			! Error variance of M
+
+	[X*];			! Mean of X
+	X*;			! Variance of X
+
+MODEL CONSTRAINT:
+	NEW(ind_effect);
+	ind_effect = p1*p2;
+
+OUTPUT: CINTERVAL(bcbootstrap);	! Symmetric Wald CI: CINTERVAL(symmetric);
+				! Percentile bootstrap CI: CINTERVAL(bootstrap);
+				! BC bootstrap CI: CINTERVAL(bcbootstrap);
+

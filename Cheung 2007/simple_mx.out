@@ -1,0 +1,228 @@
+  
+  ** Mx startup successful **
+  
+  **MX-PC 1.61i** Job started on 09/01/06 at 15:10:04
+ 
+ 
+ The following MX script lines were read for group    1
+ 
+ #NGROUPS 1
+  Note: #NGroup set number of groups to 1
+  
+ MX: CONSTRUCTING CIS ON SIMPLE MEDIATING EFFECT
+ DATA NINPUT=3   ! NO. OF VARIABLES
+ RECTANGULAR FILE = SIMPLE.DAT ! RAW DATA ARE USED
+  Rectangular continuous data read initiated
+  MAXRSZ= 1000
+  
+  NOTE: Rectangular file contained   100 records with data
+        that contained a total of    300 observations
+  
+ LABELS X M Y
+ ! The model being analyzed: X -> M -> Y
+ BEGIN MATRICES;
+ S SYMM 3 3
+ A FULL 3 3
+ M FULL 1 3  ! MEANS
+ F IDEN 3 3  ! SELECTION MATRIX
+ I IDEN 3 3  ! IDENTITY MATRIX
+ T FULL 1 4  ! USED TO SELECT ELEMENTS FOR CONSTRAINT
+ U FULL 1 4  ! USED TO SELECT ELEMENTS FOR CONSTRAINT
+ END MATRICES;
+ MATRIX S  ! STARTING VALUES
+ 1
+ 0 1
+ 0 0 1
+ SPECIFY S  ! SPECIFY FIXED AND FREE PARAMETERS FOR VARIANCES AND
+ 1    ! ERROR VARIANCES
+ 0 2    ! 0: FIXED PARAMETERS; OTHERS: FREE PARAMETERS
+ 0 0 3
+ LABEL ROW S
+ X M Y
+ LABEL COL S
+ X M Y
+ MATRIX A  ! STARTING VALUES
+ 0 0 0
+ 0.5 0 0
+ 0 0.5 0
+ SPECIFY A  ! SPECIFY FIXED AND FREE PARAMETERS FOR PATH
+ 0 0 0   ! COEFFICIENTS
+ 5 0 0
+ 6 7 0
+ LABEL ROW A
+ X M Y
+ LABEL COL A
+ X M Y
+ MATRIX M  ! STARTING VALUES
+ 0
+ 0
+ 0
+ SPECIFY M  ! SPECIFY FREE PARAMETERS FOR THE MEANS
+ 10
+ 11
+ 12
+ ! Elements for calculating indirect effect
+ MATRIX T 2 1 2 1  ! X -> M, A(2,1)
+ MATRIX U 3 2 3 2  ! M -> Y, A(3,2)
+ BEGIN ALGEBRA;
+  J = \PART(A, T); ! SELECT THE REQUIRED ELEMENT
+  K = \PART(A, U); ! SELECT THE REQUIRED ELEMENT
+  Z = J*K;  ! Z: INDIRECT EFFECT WITH ONE VARIABLE
+ END ALGEBRA;
+ MEANS M;
+ COVARIANCE  F & ((I - A)~ & S);
+ INTERVAL Z 1 1   ! CONFIDENCE INTERVAL ON THE INDIRECT EFFECT
+ END
+  
+  
+  Summary of VL file data for group  1
+  
+                    X          M          Y
+     Code      1.0000     2.0000     3.0000
+   Number    100.0000   100.0000   100.0000
+     Mean     -0.4150    -0.8590    -0.0948
+ Variance     11.2691    14.1945    11.8706
+  Minimum     -9.7762   -12.7551    -8.0353
+  Maximum      6.4488     6.5297     7.9267
+  
+  
+  PARAMETER SPECIFICATIONS
+  
+  GROUP NUMBER: 1
+  
+Mx: Constructing CIs on simple mediating effect                                                                                 
+  
+  MATRIX A
+ This is a FULL matrix of order    3 by    3
+          X       M       Y
+ X       0       0       0
+ M       5       0       0
+ Y       6       7       0
+  
+  MATRIX F
+ This is an IDENTITY matrix of order    3 by    3
+  
+  MATRIX I
+ This is an IDENTITY matrix of order    3 by    3
+  
+  MATRIX J
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  MATRIX K
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  MATRIX M
+ This is a FULL matrix of order    1 by    3
+     1  2  3
+ 1  10 11 12
+  
+  MATRIX S
+ This is a SYMMETRIC matrix of order    3 by    3
+          X       M       Y
+ X       1
+ M       0       2
+ Y       0       0       3
+  
+  MATRIX T
+ This is a FULL matrix of order    1 by    4
+  It has no free parameters specified
+  
+  MATRIX U
+ This is a FULL matrix of order    1 by    4
+  It has no free parameters specified
+  
+  MATRIX Z
+ This is a computed FULL matrix of order    1 by    1
+  It has no free parameters specified
+  
+  Mx starting optimization; number of parameters =  9
+  
+  
+  MX PARAMETER ESTIMATES
+  
+  GROUP NUMBER: 1
+  
+Mx: Constructing CIs on simple mediating effect                                                                                 
+  
+  MATRIX A
+ This is a FULL matrix of order    3 by    3
+          X       M       Y
+ X   0.0000  0.0000  0.0000
+ M   0.5170  0.0000  0.0000
+ Y  -0.0326  0.3956  0.0000
+  
+  MATRIX F
+ This is an IDENTITY matrix of order    3 by    3
+  
+  MATRIX I
+ This is an IDENTITY matrix of order    3 by    3
+  
+  MATRIX J
+ This is a computed FULL matrix of order    1 by    1
+  [=\PART(A,T)]
+          1
+ 1   0.5170
+  
+  MATRIX K
+ This is a computed FULL matrix of order    1 by    1
+  [=\PART(A,U)]
+          1
+ 1   0.3956
+  
+  MATRIX M
+ This is a FULL matrix of order    1 by    3
+          1       2       3
+ 1  -0.4150 -0.8590 -0.0948
+  
+  MATRIX S
+ This is a SYMMETRIC matrix of order    3 by    3
+             X          M          Y
+ X     11.2691
+ M      0.0000    11.1826
+ Y      0.0000     0.0000     9.7877
+  
+  MATRIX T
+ This is a FULL matrix of order    1 by    4
+             1          2          3          4
+ 1      2.0000     1.0000     2.0000     1.0000
+  
+  MATRIX U
+ This is a FULL matrix of order    1 by    4
+             1          2          3          4
+ 1      3.0000     2.0000     3.0000     2.0000
+  
+  MATRIX Z
+ This is a computed FULL matrix of order    1 by    1
+  [=J*K]
+          1
+ 1   0.2045
+  
+ Your model has    9 estimated parameters and    300 Observed statistics
+  
+ -2 times log-likelihood of data >>>  1563.118
+ Degrees of freedom >>>>>>>>>>>>>>>>       291
+ Akaike's Information Criterion >>>>   981.118
+ Bayesian Information Criterion >>>>   111.506
+ Sample size Adjusted BIC       >>>>   571.032
+ Deviance Information Criterion >>>>   378.918
+  
+  
+ 1  Confidence intervals requested in group  1
+  
+  Matrix Element Int.      Estimate         Lower         Upper  Lfail Ufail
+  
+  
+  Z   1   1   1  95.0         0.2045        0.0987        0.3454 0 0   0 0
+  
+ This problem used  0.1% of my workspace
+  
+ Task                     Time elapsed (DD:HH:MM:SS)
+ Reading script & data      0: 0: 0: 0.03
+ Execution                  0: 0: 0: 0.33
+ TOTAL                      0: 0: 0: 0.36
+  
+ Total number of warnings issued: 0
+ ______________________________________________________________________________
+ ______________________________________________________________________________

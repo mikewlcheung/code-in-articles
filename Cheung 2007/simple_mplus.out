@@ -1,0 +1,204 @@
+Mplus VERSION 6.1
+MUTHEN & MUTHEN
+05/10/2011   2:13 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE:                Constructing CIs on simple mediating effect
+  DATA:                FILE IS simple.dat;        ! Raw data are required for bootstrap
+  VARIABLE:        NAMES X M Y;                ! X: Independent variable, M: Mediator
+                                          ! Y: Dependent variable
+                  USEVARIABLES ARE ALL;
+
+  ANALYSIS: BOOTSTRAP = 2000;
+                                  ! If "bootstrap" is listed, percentile or BC
+                                  ! bootstrap CIs will be produced; otherwise,
+                                  ! Wald CI will be generated.
+                                  ! "2000" is the no. of bootstrap replications.
+
+  MODEL:                                ! Model being analyzed: X -> M -> Y
+          Y ON M* (p1);                ! Path M -> Y; p1: first constraint
+          Y ON X*;                ! Include direct effect in the model
+          Y*;                        ! Error variance of Y
+
+          M ON X* (p2);                ! Path X -> M; p2: second constraint
+          M*;                        ! Error variance of M
+
+          [X*];                        ! Mean of X
+          X*;                        ! Variance of X
+
+  MODEL CONSTRAINT:
+          NEW(ind_effect);
+          ind_effect = p1*p2;
+
+  OUTPUT: CINTERVAL(bcbootstrap);        ! Symmetric Wald CI: CINTERVAL(symmetric);
+                                  ! Percentile bootstrap CI: CINTERVAL(bootstrap);
+                                  ! BC bootstrap CI: CINTERVAL(bcbootstrap);
+
+
+
+
+INPUT READING TERMINATED NORMALLY
+
+
+
+Constructing CIs on simple mediating effect
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                         100
+
+Number of dependent variables                                    2
+Number of independent variables                                  1
+Number of continuous latent variables                            0
+
+Observed dependent variables
+
+  Continuous
+   M           Y
+
+Observed independent variables
+   X
+
+
+Estimator                                                       ML
+Information matrix                                        OBSERVED
+Maximum number of iterations                                  1000
+Convergence criterion                                    0.500D-04
+Maximum number of steepest descent iterations                   20
+Number of bootstrap draws
+    Requested                                                 2000
+    Completed                                                 2000
+
+Input data file(s)
+  simple.dat
+
+Input data format  FREE
+
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                        9
+
+Loglikelihood
+
+          H0 Value                        -781.559
+          H1 Value                        -781.559
+
+Information Criteria
+
+          Akaike (AIC)                    1581.118
+          Bayesian (BIC)                  1604.564
+          Sample-Size Adjusted BIC        1576.140
+            (n* = (n + 2) / 24)
+
+Chi-Square Test of Model Fit
+
+          Value                              0.000
+          Degrees of Freedom                     0
+          P-Value                           0.0000
+
+RMSEA (Root Mean Square Error Of Approximation)
+
+          Estimate                           0.000
+          90 Percent C.I.                    0.000  0.000
+          Probability RMSEA <= .05           0.000
+
+CFI/TLI
+
+          CFI                                1.000
+          TLI                                1.000
+
+Chi-Square Test of Model Fit for the Baseline Model
+
+          Value                             43.143
+          Degrees of Freedom                     3
+          P-Value                           0.0000
+
+SRMR (Standardized Root Mean Square Residual)
+
+          Value                              0.000
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+ Y        ON
+    M                  0.396      0.089      4.431      0.000
+    X                 -0.033      0.104     -0.314      0.753
+
+ M        ON
+    X                  0.517      0.095      5.466      0.000
+
+ Means
+    X                 -0.415      0.339     -1.222      0.222
+
+ Intercepts
+    M                 -0.644      0.339     -1.900      0.057
+    Y                  0.231      0.319      0.726      0.468
+
+ Variances
+    X                 11.269      1.393      8.089      0.000
+
+ Residual Variances
+    M                 11.183      2.041      5.478      0.000
+    Y                  9.788      1.359      7.204      0.000
+
+ New/Additional Parameters
+    IND_EFFE           0.204      0.060      3.383      0.001
+
+
+CONFIDENCE INTERVALS OF MODEL RESULTS
+
+                  Lower .5%  Lower 2.5%    Lower 5%    Estimate    Upper 5%  Upper 2.5%   Upper .5%
+
+ Y        ON
+    M                0.180       0.227       0.257       0.396       0.550       0.588       0.645
+    X               -0.306      -0.240      -0.206      -0.033       0.137       0.168       0.230
+
+ M        ON
+    X                0.251       0.320       0.357       0.517       0.664       0.697       0.755
+
+ Means
+    X               -1.360      -1.107      -1.003      -0.415       0.119       0.232       0.483
+
+ Intercepts
+    M               -1.512      -1.321      -1.215      -0.644      -0.093       0.025       0.220
+    Y               -0.649      -0.401      -0.314       0.231       0.719       0.807       1.020
+
+ Variances
+    X                8.156       8.842       9.169      11.269      13.884      14.484      15.234
+
+ Residual Variances
+    M                7.212       8.029       8.498      11.183      15.655      16.331      18.298
+    Y                6.768       7.542       7.944       9.788      12.480      12.924      13.795
+
+ New/Additional Parameters
+    IND_EFFE         0.085       0.111       0.124       0.204       0.326       0.360       0.412
+
+
+     Beginning Time:  14:13:34
+        Ending Time:  14:13:37
+       Elapsed Time:  00:00:03
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2010 Muthen & Muthen

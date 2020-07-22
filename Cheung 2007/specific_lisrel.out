@@ -1,0 +1,277 @@
+
+                                DATE:  9/ 1/2006
+                                  TIME: 15:08
+
+
+                                L I S R E L  8.72
+
+                                       BY
+
+                         Karl G. J”reskog & Dag S”rbom
+
+
+
+                    This program is published exclusively by
+                    Scientific Software International, Inc.
+                       7383 N. Lincoln Avenue, Suite 100
+                        Lincolnwood, IL 60712, U.S.A. 
+            Phone: (800)247-6113, (847)675-0720, Fax: (847)675-2140
+        Copyright by Scientific Software International, Inc., 1981-2005 
+          Use of this program is subject to the terms specified in the
+                        Universal Copyright Convention.
+                          Website: www.ssicentral.com
+
+ The following lines were read from file specific_lisrel.ls8:
+
+ TI Estimating SE on the indirect effect with two specific mediators
+ DA NI=4 AP=2   ! Create two additional parameters
+ RA FI=specific.dat
+  
+ LA
+ X M1 M2 Y
+  
+ SE
+ M1 M2 Y X /
+  
+ MO NY=3 NX=1 BE=FI PS=DI
+  
+ FR BE(3,1)
+ FR BE(3,2)
+  
+ ! Total specific effect
+ CO PAR(1)=GA(1,1)*BE(3,1) + GA(2,1)*BE(3,2)
+  
+ ! Difference between two specific effects
+ CO PAR(2)=GA(1,1)*BE(3,1) - GA(2,1)*BE(3,2)
+ OU ND=3
+
+ TI Estimating SE on the indirect effect with two specific mediators            
+
+                           Number of Input Variables  4
+                           Number of Y - Variables    3
+                           Number of X - Variables    1
+                           Number of ETA - Variables  3
+                           Number of KSI - Variables  1
+                           Number of Observations   100
+
+ TI Estimating SE on the indirect effect with two specific mediators            
+
+         Covariance Matrix       
+
+                  M1         M2          Y          X   
+            --------   --------   --------   --------
+       M1     16.527
+       M2      6.445     12.954
+        Y      8.636      7.579     18.167
+        X      7.662      6.103      6.179     10.899
+
+         Means   
+
+                  M1         M2          Y          X   
+            --------   --------   --------   --------
+              -0.256     -0.385     -0.707      0.057
+
+
+ TI Estimating SE on the indirect effect with two specific mediators            
+
+ Parameter Specifications
+
+         BETA        
+
+                  M1         M2          Y
+            --------   --------   --------
+       M1          0          0          0
+       M2          0          0          0
+        Y          1          2          0
+
+         GAMMA       
+
+                   X
+            --------
+       M1          3
+       M2          4
+        Y          5
+
+         PHI         
+
+                   X
+            --------
+                   6
+
+         PSI         
+
+                  M1         M2          Y
+            --------   --------   --------
+                   7          8          9
+
+         ALPHA       
+
+                  M1         M2          Y
+            --------   --------   --------
+                  10         11         12
+ 
+
+
+ TI Estimating SE on the indirect effect with two specific mediators            
+
+ Number of Iterations =  0
+
+ LISREL Estimates (Maximum Likelihood)                           
+
+         BETA        
+
+                  M1         M2          Y   
+            --------   --------   --------
+       M1       - -        - -        - - 
+ 
+       M2       - -        - -        - - 
+ 
+        Y      0.316      0.361       - - 
+             (0.104)    (0.112)
+               3.032      3.206
+ 
+
+         GAMMA       
+
+                   X   
+            --------
+       M1      0.703
+             (0.102)
+               6.883
+ 
+       M2      0.560
+             (0.094)
+               5.926
+ 
+        Y      0.143
+             (0.143)
+               1.003
+ 
+
+         Covariance Matrix of Y and X            
+
+                  M1         M2          Y          X   
+            --------   --------   --------   --------
+       M1     16.527
+       M2      4.290     12.954
+        Y      7.859      6.899     17.677
+        X      7.662      6.103      6.179     10.899
+
+         Mean Vector of Eta-Variables
+
+                  M1         M2          Y   
+            --------   --------   --------
+              -0.256     -0.385     -0.707
+
+         PHI         
+
+                   X   
+            --------
+              10.899
+             (1.557)
+               7.000
+ 
+
+         PSI         
+         Note: This matrix is diagonal.
+
+                  M1         M2          Y   
+            --------   --------   --------
+              11.141      9.537     11.824
+             (1.592)    (1.362)    (1.689)
+               7.000      7.000      7.000
+ 
+
+         Squared Multiple Correlations for Structural Equations  
+
+                  M1         M2          Y   
+            --------   --------   --------
+               0.326      0.264      0.331
+
+         Squared Multiple Correlations for Reduced Form          
+
+                  M1         M2          Y   
+            --------   --------   --------
+               0.326      0.264      0.198
+
+         Reduced Form                
+
+                   X   
+            --------
+       M1      0.703
+             (0.102)
+               6.883
+ 
+       M2      0.560
+             (0.094)
+               5.926
+ 
+        Y      0.567
+             (0.115)
+               4.922
+ 
+
+         ALPHA       
+
+                  M1         M2          Y   
+            --------   --------   --------
+              -0.296     -0.417     -0.496
+             (0.337)    (0.312)    (0.352)
+              -0.878     -1.337     -1.408
+ 
+
+         ADDITIONAL PARAMETERS   
+
+               AP(1)      AP(2)   
+            --------   --------
+               0.424      0.020
+             (0.107)    (0.107)
+               3.948      0.185
+ 
+
+
+                           Goodness of Fit Statistics
+
+                              Degrees of Freedom = 1
+               Minimum Fit Function Chi-Square = 4.422 (P = 0.0355)
+       Normal Theory Weighted Least Squares Chi-Square = 4.325 (P = 0.0376)
+                 Estimated Non-centrality Parameter (NCP) = 3.325
+            90 Percent Confidence Interval for NCP = (0.129 ; 13.871)
+ 
+                       Minimum Fit Function Value = 0.0447
+               Population Discrepancy Function Value (F0) = 0.0339
+            90 Percent Confidence Interval for F0 = (0.00131 ; 0.142)
+             Root Mean Square Error of Approximation (RMSEA) = 0.184
+           90 Percent Confidence Interval for RMSEA = (0.0362 ; 0.376)
+              P-Value for Test of Close Fit (RMSEA < 0.05) = 0.0615
+ 
+                  Expected Cross-Validation Index (ECVI) = 0.350
+            90 Percent Confidence Interval for ECVI = (0.256 ; 0.397)
+                         ECVI for Saturated Model = 0.204
+                       ECVI for Independence Model = 1.566
+ 
+      Chi-Square for Independence Model with 6 Degrees of Freedom = 145.431
+                            Independence AIC = 153.431
+                                Model AIC = 34.325
+                              Saturated AIC = 20.000
+                           Independence CAIC = 167.852
+                               Model CAIC = 88.402
+                             Saturated CAIC = 56.052
+ 
+                          Normed Fit Index (NFI) = 0.970
+                       Non-Normed Fit Index (NNFI) = 0.853
+                    Parsimony Normed Fit Index (PNFI) = 0.162
+                       Comparative Fit Index (CFI) = 0.975
+                       Incremental Fit Index (IFI) = 0.976
+                         Relative Fit Index (RFI) = 0.818
+ 
+                            Critical N (CN) = 149.548
+ 
+ 
+                     Root Mean Square Residual (RMR) = 0.771
+                            Standardized RMR = 0.0515
+                       Goodness of Fit Index (GFI) = 0.979
+                  Adjusted Goodness of Fit Index (AGFI) = 0.786
+                 Parsimony Goodness of Fit Index (PGFI) = 0.0979
+
+                           Time used:    0.016 Seconds

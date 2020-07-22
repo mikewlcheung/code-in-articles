@@ -1,0 +1,35 @@
+TITLE:	Constructing CIs on the mediating effect with two intermediate 
+!		mediators
+
+DATA:		FILE IS intermediate.dat;
+VARIABLE:	NAMES X M1 M2 Y;	! M1: first mediator, M2: second mediator
+		USEVARIABLES ARE ALL;
+
+ANALYSIS: BOOTSTRAP = 2000;
+
+MODEL:			! Model being analyzed: X -> M1 -> M2 -> Y
+			!			X -------------> Y 
+			!			     M1 -------> Y
+	Y ON M2* (p1);	! Path M2 -> Y
+	Y ON M1* X*;	! Include direct effects from X and M1 to Y
+	Y*;
+
+	M2 ON M1* (p2);	! Path M1 -> M2
+	M2 ON X*;	! Include direct effect from X to M2 
+	M2*;	
+
+	M1 ON X* (p3);	! Path X -> M1
+	M1*;
+
+	[X*];
+	X*;
+
+MODEL CONSTRAINT:
+	NEW(ind_effect);
+	ind_effect = p1*p2*p3;
+
+OUTPUT: CINTERVAL(bcbootstrap);	! Symmetric Wald CI: CINTERVAL(symmetric);
+				! Percentile bootstrap CI: CINTERVAL(bootstrap);
+				! BC bootstrap CI: CINTERVAL(bcbootstrap);
+
+
