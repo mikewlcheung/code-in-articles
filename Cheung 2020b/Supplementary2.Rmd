@@ -1,0 +1,367 @@
+---
+title: 'Synthesizing Indirect Effects in Mediation Models with Meta-Analytic Methods: Supplementary Materials 2'
+author: "Mike Cheung"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+    toc_depth: 3
+  word_document:
+    toc: yes
+---
+
+# Data preparation
+```{r, message=FALSE}
+library("metaSEM")
+
+## Check whether the correlation matrices are positive definite
+is.pd(Cooke16$data)
+
+## Drop the third study as the correlation matrix is not positive definite.
+Cooke16 <- lapply(Cooke16, function(x) x[-3])
+```
+
+# Illustration 1 with one mediator
+```{r}
+## Select ATT, Bi, and BEH for the illustration
+obs.vars <- c("BEH", "BI", "ATT")
+
+## Use new.df1 as the data set in illustration 1
+new.df1 <- Cooke16
+new.df1$data <- lapply(new.df1$data, function(x) x[obs.vars, obs.vars])
+
+## Show the first few studies
+head(new.df1)
+
+## Show the no. of studies per correlation
+pattern.na(new.df1$data, show.na = FALSE)
+
+## Show the total sample sizes per correlation
+pattern.n(new.df1$data, new.df1$n)
+```
+
+## Synthesizing indirect and direct effects
+
+### Caculation of indirect and direct effects
+```{r}
+## NA is not allowed in computing the indirect and direct effects.
+## They are excluded in the parameter-based MASEM.
+index1 <- sapply(new.df1$data, function(x) any(is.na(x)) )
+
+## Calculate the indirect and direct effects and their sampling covariance matrices
+IE.df1 <- indirectEffect(new.df1$data[!index1], new.df1$n[!index1])
+
+## Add percentage of female participants to the data
+IE.df1 <- data.frame(IE.df1, Female=new.df1$Female[!index1])
+
+## No. of studies
+nrow(IE.df1)
+
+## Show the first few studies
+head(IE.df1)
+```
+
+### Meta-analysis of indirect and direct effects
+```{r}
+## Random-effects model
+IE0 <- meta(y=cbind(ind_eff, dir_eff),
+            v=cbind(ind_var, ind_dir_cov, dir_var),
+            data=IE.df1,
+            model.name = "Random")
+summary(IE0)
+
+## Variance-covariance matrix of the random effects
+VarCorr(IE0)
+
+## Correlation matrix of the random effects
+cov2cor(VarCorr(IE0))
+
+## Plot the effect sizes
+plot(IE0, axis.labels = c("Indirect effect", "Direct effect"))
+
+## Mixed-effects model with Female as a moderator
+IE1 <- meta(y=cbind(ind_eff, dir_eff),
+            v=cbind(ind_var, ind_dir_cov, dir_var),
+            x=Female,
+            data=IE.df1,
+            model.name = "Mixed")
+summary(IE1)
+
+## Test the statistical significance betwen the models
+anova(IE1, IE0)
+```
+
+```{r, eval=FALSE, echo=FALSE}
+svg("Figure5.svg", width=7, height=5)
+plot(IE0, axis.labels = c("Indirect effect", "Direct effect"), add.margin = 0.05)
+dev.off()
+```
+
+## TSSEM
+
+### Stage 1 analysis
+```{r, message=FALSE}
+## Index of studies with no correlation
+index2 <- sapply(new.df1$data, function(x) sum(is.na(x[lower.tri(x)]))==3 )
+
+## No. of studies
+sum(index2!=TRUE)
+
+## Random-effects model
+random1 <- tssem1(new.df1$data[!index2], new.df1$n[!index2], method="REM")
+summary(random1)
+
+## Plot the effect sizes
+plot(random1, axis.labels = c("Cor(BI, BEH)", "Cor(ATT, BEH)", "Cor(ATT, BI)"), main="")
+
+## Average correlation matrix under a random-effects model
+vec2symMat(coef(random1, select="fixed"), diag = FALSE)
+
+## Heterogeneity variances of the random-effects
+coef(random1, select="random")
+```
+
+### Stage 2 analysis
+```{r, message=FALSE}
+## Proposed model in lavaan syntax
+model1 <- "BEH ~ c*ATT + b*BI
+           BI ~ a*ATT
+           ATT ~~ 1*ATT"
+plot(model1)
+
+## Convert the lavaan syntax to RAM specification used in metaSEM
+RAM1 <- lavaan2RAM(model1, obs.variables=obs.vars)
+RAM1
+
+## Request the likelihood-based confidence interval
+## Indirect effect: ind = a*b
+## Direct effect: dir = c
+tssem.fit <- tssem2(random1, RAM=RAM1, intervals.type = "LB",
+                    mx.algebras = list(ind=mxAlgebra(a*b, name="ind"),
+                                       dir=mxAlgebra(c, name="dir")))
+summary(tssem.fit)
+plot(tssem.fit)
+```
+
+## OSMASEM
+```{r, message=FALSE}
+## Prepare the data
+my.df1 <- Cor2DataFrame(new.df1)
+
+## Show the first few studies
+head(my.df1)
+
+## Fit a model without any moderator
+osmasem.fit0 <- osmasem(model.name="No moderator", RAM=RAM1, data=my.df1)
+## Rerun the model to remove non-convergence issue
+osmasem.fit0 <- rerun(osmasem.fit0, extraTries=30)
+summary(osmasem.fit0)
+
+## Get the heterogeneity of variances
+VarCorr(osmasem.fit0)
+
+## Plot the fitted model
+plot(osmasem.fit0)
+
+## Create A1 to represent the moderator on the A matrix
+A1 <- create.modMatrix(RAM1, output="A", "Female")
+A1
+
+## Fit a model with female as a moderator
+osmasem.fit1 <- osmasem(model.name="Female as a moderator", RAM=RAM1, Ax=A1, data=my.df1)
+summary(osmasem.fit1)
+
+## Test the statistical significance between the models
+anova(osmasem.fit1, osmasem.fit0)
+
+## Get the R2 on the correlation coefficients
+osmasemR2(osmasem.fit0, osmasem.fit1)
+```
+
+# Illustration 2 with one mediator and three independent variables
+
+## Synthesizing indirect and direct effects
+```{r}
+## Check if there are any missing data in the correlation matrices
+index3 <- sapply(Cooke16$data, function(x) any(is.na(x)))
+new.df2 <- lapply(Cooke16, function(x) x[!index3])
+
+## No. of studies
+length(new.df2$data)
+
+## Use new.df2 as the data set in illustration 2
+## Display the first few cases
+head(new.df2)
+```
+
+### Caculation of indirect and direct effects
+```{r}
+## Calculate indirect and direct effects as effect sizes in each study
+model2 <- "BEH ~ c1*SN + c2*ATT + c3*PBC + b*BI
+           BI ~ a1*SN + a2*ATT + a3*PBC
+           ## Indirect effects
+           Ind1 := a1*b
+           Ind2 := a2*b
+           Ind3 := a3*b
+           Dir1 := c1
+           Dir2 := c2
+           Dir3 := c3"
+
+## Display the proposed model
+plot(model2, edge.label.position=0.55)
+
+## Estimate the indirect and direct effects
+IE.df2 <- mapply(function(x, y) {calEffSizes(model=model2, n=y, Cov=x)},
+                 new.df2$data, new.df2$n,
+                 SIMPLIFY = FALSE)
+  
+## Rename the variances and covariances of the effect sizes from Cov1 to Cov21 for ease of reference
+IE.df2 <- t(sapply(IE.df2, 
+                   function(x) { acov <- vech(x$VCOV)
+                                 names(acov) <- paste0("Cov", 1:21)
+                                 c(x$ES, acov)} ))
+
+## Add female to the data
+IE.df2 <- data.frame(IE.df2, Female=new.df2$Female)
+
+## Show the first few studies
+head(IE.df2)
+```
+
+### Meta-analysis of indirect and direct effects
+```{r}
+## Random-effects model with independent random effects
+IE2 <- meta(y=IE.df2[, 1:6],
+            v=IE.df2[, 7:27],
+            RE.constraints = Diag(paste0("0.01*Tau2_", 1:6, "_", 1:6)))
+summary(IE2)
+
+## Mixed-effects model with Female as a moderator
+IE3 <- meta(y=IE.df2[, 1:6],
+            v=IE.df2[, 7:27],
+            x=IE.df2$Female,
+            RE.constraints = Diag(paste0("0.01*Tau2_", 1:6, "_", 1:6)))
+summary(IE3)
+
+## Test the statistical significance betwen the models
+anova(IE3, IE2)
+```
+
+## TSSEM
+
+### Stage 1 analysis
+```{r}
+## Random-effects model
+random1 <- tssem1(Cooke16$data, Cooke16$n)
+summary(random1)
+
+## Average correlation matrix under a random-effects model
+vec2symMat(coef(random1, select="fixed"), diag = FALSE)
+
+## Heterogeneity variances of the random-effects
+coef(random1, select="random")
+```
+
+### Stage 2 analysis
+```{r}
+model3 <- "BEH ~ c1*SN + c2*ATT + c3*PBC + b*BI
+           BI ~ a1*SN + a2*ATT + a3*PBC
+           SN ~~ 1*SN
+           ATT ~~ 1*ATT
+           PBC ~~ 1*PBC
+           SN ~~ ATT + PBC
+           ATT ~~ PBC"
+
+plot(model3, edge.label.position=0.55)
+
+RAM3 <- lavaan2RAM(model3, obs.variables=c("SN", "ATT", "PBC", "BI", "BEH"))
+RAM3
+
+tssem.fit <- tssem2(random1, RAM=RAM3, intervals.type = "LB",
+                    mx.algebras = list(ind1=mxAlgebra(a1*b, name="ind1"),
+                                       ind2=mxAlgebra(a2*b, name="ind2"),
+                                       ind3=mxAlgebra(a3*b, name="ind3"),
+                                       dir1=mxAlgebra(c1, name="dir1"),
+                                       dir2=mxAlgebra(c2, name="dir2"),
+                                       dir3=mxAlgebra(c3, name="dir3")))
+summary(tssem.fit)
+plot(tssem.fit)
+
+## A model without direct effects
+model4 <- "BEH ~ BI
+           BI ~ SN + ATT + PBC
+           SN ~~ 1*SN
+           ATT ~~ 1*ATT
+           PBC ~~ 1*PBC
+           SN ~~ ATT + PBC
+           ATT ~~ PBC"
+
+RAM4 <- lavaan2RAM(model4, obs.variables=c("SN", "ATT", "PBC", "BI", "BEH"))
+RAM4
+
+tssem.fit4 <- tssem2(random1, RAM=RAM4)
+summary(tssem.fit4)
+plot(tssem.fit4)
+
+## A model with equal path coefficients and without direct effects
+model5 <- "BEH ~ BI
+           BI ~ a*SN + a*ATT + a*PBC
+           SN ~~ 1*SN
+           ATT ~~ 1*ATT
+           PBC ~~ 1*PBC
+           SN ~~ ATT + PBC
+           ATT ~~ PBC"
+
+RAM5 <- lavaan2RAM(model5, obs.variables=c("SN", "ATT", "PBC", "BI", "BEH"))
+RAM5
+
+tssem.fit5 <- tssem2(random1, RAM=RAM5)
+summary(tssem.fit5)
+
+## Testing the significance of equal path coefficients
+anova(tssem.fit4, tssem.fit5)
+
+plot(tssem.fit5)
+```
+
+## OSMASEM
+```{r}
+## Prepare the data
+my.df2 <- Cor2DataFrame(Cooke16)
+
+## Show the first few studies
+head(my.df2)
+
+## Fit a model without any moderator
+osmasem.fit3 <- osmasem(model.name="No moderator", RAM=RAM3, data=my.df2)
+summary(osmasem.fit3)
+
+## Get the heterogeneity variances
+diag(VarCorr(osmasem.fit3))
+
+## Plot the fitted model
+plot(osmasem.fit3)
+
+## Create A2 to represent the moderator on the A matrix
+A2 <- create.modMatrix(RAM3, output="A", "Female")
+A2
+
+## Fit a model with female as a moderator
+osmasem.fit4 <- osmasem(RAM=RAM3, Ax=A2, data=my.df2)
+summary(osmasem.fit4)
+
+## Test the statistical significance between the models
+anova(osmasem.fit4, osmasem.fit3)
+
+## Get the R2 on the correlation coefficients
+osmasemR2(osmasem.fit3, osmasem.fit4)
+
+sessionInfo()
+```
+

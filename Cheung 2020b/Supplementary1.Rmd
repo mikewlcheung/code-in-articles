@@ -1,0 +1,122 @@
+---
+title: 'Synthesizing Indirect Effects in Mediation Models with Meta-Analytic Methods: Supplementary Materials 1'
+author: "Mike Cheung"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+    toc_depth: 3
+  word_document:
+    toc: yes
+---
+
+* This file demonstrates how to compute effect sizes and their sampling covariance matrix with two approaches using the delta method. The first approach uses a numeric approach with the structural equation modeling (SEM) framework. The second approach computes the sampling covariance matrix with the symbolic calculations.
+
+# Numeric calculations with the SEM approach
+
+## One mediator
+```{r, message=FALSE}
+library(metaSEM)
+
+## Model with one mediator: x -> m -> y
+model1 <- "y ~ c*x + b*m
+           m ~ a*x
+           # Define indirect and direct effects
+           Indirect := a*b
+           Direct := c"
+plot(model1)
+
+## Sample correlation matrix
+my.cor <- matrix(c(1, .5, .3,
+                   .5, 1, .4,
+                   .3, .4, 1),
+                 nrow = 3,
+                 ncol = 3,
+                 dimnames = list(c("y", "m", "x"),
+                                 c("y", "m", "x")))
+my.cor
+
+## Calculate the indirect and direct effects and their sampling covariance matrix
+calEffSizes(model=model1, n=300, Cov=my.cor)
+```
+
+## Two parallel mediators
+```{r}
+## Model with two specific mediators: x -> m1 -> y and x -> m2 -> y
+model2 <- "y ~ e*x + b*m1 + d*m2
+           m1 ~ a*x
+           m2 ~ c*x
+           # m1 and m2 are correlated
+           m1 ~~ m2
+           # Define indirect and direct effects
+           Ind_m1 := a*b
+           Ind_m2 := c*d
+           Direct := e"
+plot(model2)
+
+## Sample correlation matrix
+my.cor <- matrix(c(1, .5, .6, .3, 
+                   .5, 1, .4, .2,
+                   .6, .4, 1, .3,
+                   .3, .2, .3, 1),
+                 nrow = 4,
+                 ncol = 4,
+                 dimnames = list(c("y", "m1", "m2", "x"),
+                                 c("y", "m1", "m2", "x")))
+my.cor
+
+## Calculate the indirect and direct effects and their sampling covariance matrix
+calEffSizes(model=model2, n=300, Cov=my.cor)
+```
+
+## Two serial mediators
+```{r}
+## Model with two intermediate mediators: x -> m1 -> m2 -> y
+model3 <- "y ~ e*x + f*m1 + c*m2
+           m1 ~ a*x
+           m2 ~ b*m1
+           m2 ~ d*x
+           # Define indirect and direct effects
+           Ind_m1m2 := a*b*c
+           Direct := e"
+plot(model3)
+
+## Calculate the indirect and direct effects and their sampling covariance matrix
+calEffSizes(model=model3, n=300, Cov=my.cor)
+```
+
+# Symbolic calculations
+
+## One mediator
+```{r}
+library(symSEM)
+
+## fn: The effect sizes
+## Covfn: Sampling covariance matrix of fn
+## Va: Sampling variance of a
+## Vb: Sampling variance of b
+## Cba: Sampling covariance of a and b
+deltamethod(fn="a*b")
+```
+
+## Two parallel mediators
+```{r}
+deltamethod(fn=c("a*b", "c*d"))
+```
+
+## Two serial mediators
+```{r}
+deltamethod(fn="a*b*c")
+
+sessionInfo()
+```
+
+
+
+
