@@ -20,6 +20,21 @@ options(width = 100)
 knitr::opts_chunk$set(message=FALSE)
 ```
     
+```{r, echo=FALSE, eval=FALSE}    
+library(metaSEM)
+
+## Figure 1 in the paper
+fig1 <- 'f1 =~ x1+x2+x3
+         f2 =~ x4+x5+x6
+         f1 ~~ 1*f1
+         f2 ~~ 1*f2
+         f1 ~~ f2'
+
+svg(file="Fig1.svg", width=4, height=4)
+plot(fig1, color="yellow")
+dev.off()
+```    
+    
 # TSSEM    
 ## Data preparation
 ```{r}
@@ -72,8 +87,8 @@ RAM1
 tssem1b.fit <- tssem2(tssem1.fit, RAM=RAM1)
 summary(tssem1b.fit)
 
-## Plot the model
-## svg(file="Fig1.svg", width=4, height=4)
+## Figure 2 in the paper
+## svg(file="Fig2.svg", width=4, height=4)
 plot(tssem1b.fit, col="yellow", edge.label.position=0.58)
 ## dev.off()
 ```
