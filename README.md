@@ -18,9 +18,9 @@ http://dx.doi.org/10.1080/10705510709336745.
 
 [Cheung, M. W.-L. (2019)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202019). [A guide to conducting a meta-analysis with non-independent effect sizes](https://psyarxiv.com/5p7dj/). *Neuropsychology Review*, *29*(4), 387-396. https://doi.org/10.1007/s11065-019-09415-6
 
-[Cheung, M. W.-L. (2020a)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202020a). [Meta-analytic structural equation modeling](https://doi.org/10.31234/osf.io/epsqt). *Oxford Research Encyclopedia of Business and Management* (under review).
+[Cheung, M. W.-L. (2020a)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202020a). [Meta-analytic structural equation modeling](https://doi.org/10.31234/osf.io/epsqt). *Oxford Research Encyclopedia of Business and Management* (accepted for publication).
 
-[Cheung, M. W.-L. (2020b)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202020b). [Synthesizing indirect effects in mediation models with meta-analytic methods](https://doi.org/10.31234/osf.io/df6jp). *Manuscript under review*..
+[Cheung, M. W.-L. (2020b)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202020b). [Synthesizing indirect effects in mediation models with meta-analytic methods](https://doi.org/10.31234/osf.io/df6jp). *Manuscript under review*.
 
 [Cheung, M. W.-L. & Cheung, S.-F. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Cheung%202016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*, *7*(2), 140–155. http://doi.org/10.1002/jrsm.1166.
 
@@ -32,6 +32,8 @@ http://dx.doi.org/10.1080/10705510709336745.
 
 [Cheung, M. W.-L. & Vijayakumar, R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Vijayakumar%202016). An introduction to when and how to conduct a meta-analysis. *Neuropsychology Review*, *26*(2), 121–128. http://doi.org/10.1007/s11065-016-9319-z.
 
-[Jak, S., & Cheung, M. W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/tree/master/Jak%20and%20Cheung%202018). Testing moderator hypotheses in meta-analytic structural equation modeling using subgroup analysis. *Behavior Research Methods*, *50*(4), 1359–1373. https://doi.org/10.3758/s13428-018-1046-3
+[Jak, S., & Cheung, M. W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/blob/master/Jak%20and%20Cheung%202018). Testing moderator hypotheses in meta-analytic structural equation modeling using subgroup analysis. *Behavior Research Methods*, *50*(4), 1359–1373. https://doi.org/10.3758/s13428-018-1046-3
 
-[Jak, S. & Cheung, M. W.-L. (2019)](https://github.com/mikewlcheung/code-in-articles/tree/master/Jak%20and%20Cheung%202019). [Meta-analytic structural equation modeling with moderating effects on SEM parameters](https://psyarxiv.com/ce85j/). *Psychological Methods*. https://doi.org/10.1037/met0000245 
+[Jak, S. & Cheung, M. W.-L. (2019)](https://github.com/mikewlcheung/code-in-articles/blob/master/Jak%20and%20Cheung%202019). [Meta-analytic structural equation modeling with moderating effects on SEM parameters](https://psyarxiv.com/ce85j/). *Psychological Methods*, *25*(4), 430–455. https://doi.org/10.1037/met0000245 
+
+[Schutte N. S., Keng, S.-L. & Cheung, M. W.-L. (2020)](https://github.com/mikewlcheung/code-in-articles/blob/master/Schutte%20Keng%20and%20Cheung%202020). Emotional intelligence mediates the connection between mindfulness and gratitude: A meta-analytic structural equation modelling study.

@@ -1,0 +1,298 @@
+---
+title: "Emotional Intelligence Mediates the Connection Between Mindfulness and Gratitude"
+author: "Mike Cheung"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: 
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+    toc_depth: 2
+  pdf_document:
+    toc: no
+  word_document: null
+editor_options: 
+  chunk_output_type: console
+---
+
+# TSSEM
+
+## Data preparation
+```{r, message=FALSE}
+library(metaSEM)
+mxOption(key='Number of Threads', value=parallel::detectCores()-2)
+
+## Read data
+my.df <- foreign::read.spss("data.sav", use.value.labels = FALSE, to.data.frame=TRUE)
+
+## A function to convert rows into a 3x3 correlation matrix
+create.matrix <- function(x, type=c(1, 2, 3)) {
+  mat <- matrix(NA, ncol=3, nrow=3)
+  diag(mat) <- 1
+  type <- as.character(type)
+  ## Mindfulness, EI, Gratitude
+  ## 1: Mindfulness and EI
+  ## 2: Mindfulness and Gratitude
+  ## 3: EI and Gratitude
+  switch(type,
+         "1" = mat[1, 2] <- mat[2, 1] <- unlist(x),
+         "2" = mat[1, 3] <- mat[3, 1] <- unlist(x),
+         "3" = mat[2, 3] <- mat[3, 2] <- unlist(x))
+  mat
+}
+
+varlist <- c("Mindfulness", "EI", "Gratitude")
+
+my.cor <- lapply(split(my.df, seq(nrow(my.df))),
+                 function(x, y) create.matrix(x["Effect_size"], x["Type_of_Association"]))
+my.cor <- lapply(my.cor, function(x) {dimnames(x) <- list(varlist, varlist); x}  )
+names(my.cor) <- my.df$Study_name
+
+## Correlation matrices in the analysis
+my.cor
+
+## Sample sizes
+my.n <- my.df$N
+my.n
+
+## Number of studies in each cell
+pattern.na(my.cor, show.na = FALSE)
+
+## Total sample sizes in each cell
+pattern.n(my.cor, my.n)
+```
+
+## First-stage of analysis
+```{r}
+## Stage 1 analysis: find an average correlation matrix
+stage1 <- tssem1(my.cor, my.n)
+summary(stage1)
+
+## Average correlation matrix
+meanR <- vec2symMat(coef(stage1, select = "fixed"), diag = FALSE)
+dimnames(meanR) <- list(varlist, varlist)
+meanR
+
+## Absolute heterogeneity variance: tau^2
+tau2 <- vec2symMat(coef(stage1, select = "random"), diag = FALSE)
+dimnames(tau2) <- list(varlist, varlist)
+tau2
+
+## Relative heterogeneity index: I^2
+I2 <- vec2symMat(summary(stage1)$I2.values[, "Estimate"], diag = FALSE)
+dimnames(I2) <- list(varlist, varlist)
+I2
+```
+
+## Second-stage of analysis
+```{r, message=FALSE}
+## Proposed model
+model <- "Gratitude ~ c*Mindfulness + b*EI
+          EI ~ a*Mindfulness
+          Mindfulness ~~ 1*Mindfulness"
+plot(model, color="yellow")
+
+RAM1 <- lavaan2RAM(model, obs.variables = varlist)
+RAM1
+
+## Stage 2 analysis: fit the path model
+stage2 <- tssem2(stage1, RAM=RAM1, intervals.type = "LB",
+                 mx.algebras = list(Indirect=mxAlgebra(a*b, name="Indirect"),
+                                    Direct=mxAlgebra(c, name="Direct")))
+summary(stage2)
+
+plot(stage2, color="yellow")
+
+# svg("Fig4.svg", width=5, height=5)
+# plot(stage2, col="yellow")
+# dev.off()
+
+## Testing the hypothesis c = a*b
+stage2b <- tssem2(stage1, RAM=RAM1, intervals.type = "LB",
+                 mx.algebras = list(Indirect=mxAlgebra(a*b, name="Indirect"),
+                                    Direct=mxAlgebra(c, name="Direct")),
+                 run=FALSE)
+## Add a constraint on c=a*b
+stage2b <- mxModel(stage2b, mxConstraint(c==a*b, name="constraint"))
+stage2b <- mxRun(stage2b, intervals=TRUE)
+summary(stage2b)
+
+anova(stage2$mx.fit, stage2b)
+```
+
+# OSMASEM
+
+## Data preparation
+```{r}
+Publish <- ifelse(my.df$Publication_status==1, yes=1, no=0)
+
+tssem.df <- list(data=my.cor, 
+                 n=my.n,
+                 ## Center the Age and Female for ease of interpretations
+                 Age=c(scale(my.df$Age, scale=FALSE)), 
+                 Female=c(scale(my.df$Percent_female, scale=FALSE)),
+                 Publish=Publish)
+
+## Summary of mean age
+summary(tssem.df$Age)
+
+## Summary of percentage of female participants
+summary(tssem.df$Female)
+
+## No. of studies published vs. unpublished
+table(tssem.df$Publish)
+
+os.df <- Cor2DataFrame(tssem.df)
+
+## Show the first few studies
+# head(os.df)
+
+## Checking only
+# os.fit0 <- osmasem("No moderator", RAM=RAM1, data=os.df)
+# summary(os.fit0)
+# VarCorr(os.fit0)
+# plot(os.fit0)
+```
+
+## Mean age as a moderator
+```{r, message=FALSE}
+## missing data in Age
+indexA <- is.na(os.df$data$Age)
+A.df <- os.df
+A.df$data <- A.df$data[!indexA, ]
+
+## For checking only
+os.fit0 <- osmasem("No moderator", RAM=RAM1, data=A.df)
+summary(os.fit0)
+
+A.A <- create.modMatrix(RAM1, mod="Age")
+os.fitA <- osmasem("Age as a moderator", RAM=RAM1, Ax=A.A, data=A.df)
+os.fitA <- rerun(os.fitA)
+summary(os.fitA)
+
+anova(os.fitA, os.fit0)
+
+osmasemR2(os.fitA, os.fit0)
+
+## Test A[2,1] (a): significant
+A.21 <- A.A
+A.21[3,1] <- A.21[3,2] <- 0
+A.21
+os.fitA21 <- osmasem("Age A21", RAM=RAM1, Ax=A.21, data=A.df)
+summary(os.fitA21)
+anova(os.fitA21, os.fit0)
+
+## Test A[3,2] (b): not significant
+A.32 <- A.A
+A.32[2,1] <- A.32[3,1] <- 0
+A.32
+os.fitA32 <- osmasem("Age A32", RAM=RAM1, Ax=A.32, data=A.df)
+summary(os.fitA32)
+anova(os.fitA32, os.fit0)
+
+## Test A[3,1] (c): not significant
+A.31 <- A.A
+A.31[2,1] <- A.31[3,2] <- 0
+A.31
+os.fitA31 <- osmasem("Age A31", RAM=RAM1, Ax=A.31, data=A.df)
+summary(os.fitA31)
+anova(os.fitA31, os.fit0)
+
+## Mean of Age: 0
+## sd of Age
+(Age.sd <- sd(A.df$data$Age))
+
+## Path coefficients when Age is 0
+mxEval(A0, os.fitA$mx.fit)
+
+## Change of path coefficients when Age increases by 1 unit
+mxEval(A1, os.fitA$mx.fit)
+
+## Path coefficients when Age is -1SD
+mxEval(A0, os.fitA$mx.fit) - Age.sd*mxEval(A1, os.fitA$mx.fit)
+
+## Path coefficients when Age is +1SD
+mxEval(A0, os.fitA$mx.fit) + Age.sd*mxEval(A1, os.fitA$mx.fit)
+```
+
+## Percentage of female participants as a moderator
+```{r, message=FALSE}
+## missing data in Age
+indexF <- is.na(os.df$data$Female)
+F.df <- os.df
+F.df$data <- F.df$data[!indexF, ]
+
+## For checking only
+os.fit0 <- osmasem("No moderator", RAM=RAM1, data=F.df)
+summary(os.fit0)
+
+A.F <- create.modMatrix(RAM1, mod="Female")
+os.fitF <- osmasem("Female as a moderator", RAM=RAM1, Ax=A.F, data=F.df)
+os.fitF <- rerun(os.fitF, extraTries = 100)
+summary(os.fitF)
+
+anova(os.fitF, os.fit0)
+```
+
+## Published vs. unpublished
+```{r, message=FALSE}
+## No missing covariate
+## For checking only
+os.fit0 <- osmasem("No moderator", RAM=RAM1, data=os.df)
+summary(os.fit0)
+
+A.P <- create.modMatrix(RAM1, mod="Publish")
+os.fitP <- osmasem("Publish as a moderator", RAM=RAM1, Ax=A.P, data=os.df)
+os.fitP <- rerun(os.fitP, extraTries = 100)
+summary(os.fitP)
+
+anova(os.fitP, os.fit0)
+```
+
+# Sensitivity analyses on the correlations
+```{r, message=FALSE}
+library(metafor)
+
+## Create study labels        
+study <- row.names(os.df$data)
+
+fit1 <- rma(yi=os.df$data$EI_Mindfulness, 
+            vi=os.df$data$`C(EI_Mindfulness EI_Mindfulness)`,
+            method="ML", slab=study)
+fit1
+forest(fit1, main="Cor(EI, Mindfulness)", xlab="Correlation")
+trimfill(fit1)
+funnel(fit1, xlab="Correlation", main="Cor(EI, Mindfulness)")
+
+# svg("Fig5.svg", width = 10, height = 8)
+# forest(fit1, main="Cor(EI, Mindfulness)", xlab="Correlation")
+# dev.off()
+
+fit2 <- rma(yi=os.df$data$Gratitude_Mindfulness, 
+            vi=os.df$data$`C(Gratitude_Mindfulness Gratitude_Mindfulness)`,
+            method="ML", slab=study)
+fit2
+forest(fit2, main="Cor(Gratitude, Mindfulness)", xlab="Correlation")
+trimfill(fit2)
+funnel(fit2, xlab="Correlation", main="Cor(Gratitude, Mindfulness)")
+
+# svg("Fig6.svg", width = 10, height = 5)
+# forest(fit2, main="Cor(Gratitude, Mindfulness)", xlab="Correlation")
+# dev.off()
+
+
+fit3 <- rma(yi=os.df$data$Gratitude_EI, 
+            vi=os.df$data$`C(Gratitude_EI Gratitude_EI)`,
+            method="ML", slab=study)
+fit3
+forest(fit3, main="Cor(Gratitude, EI)", xlab="Correlation")
+trimfill(fit3)
+funnel(fit3, xlab="Correlation", main="Cor(Gratitude, EI)")
+
+# svg("Fig7.svg", width = 8, height = 4)
+# forest(fit3, main="Cor(Gratitude, EI)", xlab="Correlation")
+# dev.off()
+
+sessionInfo()
+```
