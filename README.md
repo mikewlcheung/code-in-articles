@@ -34,6 +34,6 @@ http://dx.doi.org/10.1080/10705510709336745.
 
 [Jak, S., & Cheung, M. W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/blob/master/Jak%20and%20Cheung%202018). Testing moderator hypotheses in meta-analytic structural equation modeling using subgroup analysis. *Behavior Research Methods*, *50*(4), 1359–1373. https://doi.org/10.3758/s13428-018-1046-3
 
-[Jak, S. & Cheung, M. W.-L. (2019)](https://github.com/mikewlcheung/code-in-articles/blob/master/Jak%20and%20Cheung%202019). [Meta-analytic structural equation modeling with moderating effects on SEM parameters](https://psyarxiv.com/ce85j/). *Psychological Methods*, *25*(4), 430–455. https://doi.org/10.1037/met0000245 
+[Jak, S. & Cheung, M. W.-L. (2020)](https://github.com/mikewlcheung/code-in-articles/blob/master/Jak%20and%20Cheung%202020). [Meta-analytic structural equation modeling with moderating effects on SEM parameters](https://psyarxiv.com/ce85j/). *Psychological Methods*, *25*(4), 430–455. https://doi.org/10.1037/met0000245 
 
 [Schutte N. S., Keng, S.-L. & Cheung, M. W.-L. (2020)](https://github.com/mikewlcheung/code-in-articles/blob/master/Schutte%20Keng%20and%20Cheung%202020). Emotional intelligence mediates the connection between mindfulness and gratitude: A meta-analytic structural equation modelling study.
