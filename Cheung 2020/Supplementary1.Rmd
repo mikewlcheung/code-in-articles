@@ -16,7 +16,7 @@ output:
     toc: yes
 ---
 
-* This file demonstrates how to compute effect sizes and their sampling covariance matrix with two approaches using the delta method. The first approach uses a numeric approach with the structural equation modeling (SEM) framework. The second approach computes the sampling covariance matrix with the symbolic calculations.
+* This file demonstrates how to compute effect sizes and their sampling covariance matrix with two approaches using the delta method. The first one uses a numeric approach with the structural equation modeling (SEM) framework. The second approach computes the sampling covariance matrix with the symbolic calculations.
 
 # Numeric calculations with the SEM approach
 
@@ -30,6 +30,8 @@ model1 <- "y ~ c*x + b*m
            # Define indirect and direct effects
            Indirect := a*b
            Direct := c"
+
+## Diplay the model
 plot(model1)
 
 ## Sample correlation matrix
@@ -58,7 +60,8 @@ model2 <- "y ~ e*x + b*m1 + d*m2
            Ind_m1 := a*b
            Ind_m2 := c*d
            Direct := e"
-plot(model2)
+
+plot(model2, layout="circle")
 
 ## Sample correlation matrix
 my.cor <- matrix(c(1, .5, .6, .3, 
@@ -84,8 +87,11 @@ model3 <- "y ~ e*x + f*m1 + c*m2
            m2 ~ d*x
            # Define indirect and direct effects
            Ind_m1m2 := a*b*c
+           Ind_m1 := a*f
+           Ind_m2 := d*c
            Direct := e"
-plot(model3)
+
+plot(model3, layout="circle")
 
 ## Calculate the indirect and direct effects and their sampling covariance matrix
 calEffSizes(model=model3, n=300, Cov=my.cor)
@@ -98,7 +104,7 @@ calEffSizes(model=model3, n=300, Cov=my.cor)
 library(symSEM)
 
 ## fn: The effect sizes
-## Covfn: Sampling covariance matrix of fn
+## Covfn: Sampling covariance matrix of fn: "b^2*Va+2*b*a*Cba+a^2*Vb"
 ## Va: Sampling variance of a
 ## Vb: Sampling variance of b
 ## Cba: Sampling covariance of a and b

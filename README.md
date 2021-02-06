@@ -18,9 +18,9 @@ http://dx.doi.org/10.1080/10705510709336745.
 
 [Cheung, M. W.-L. (2019)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202019). [A guide to conducting a meta-analysis with non-independent effect sizes](https://psyarxiv.com/5p7dj/). *Neuropsychology Review*, *29*(4), 387-396. https://doi.org/10.1007/s11065-019-09415-6
 
-[Cheung, M. W.-L. (2020a)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202020a). [Meta-analytic structural equation modeling](https://doi.org/10.31234/osf.io/epsqt). *Oxford Research Encyclopedia of Business and Management* (accepted for publication).
+[Cheung, M. W.-L. (2020)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202020). [Synthesizing indirect effects in mediation models with meta-analytic methods](https://doi.org/10.31234/osf.io/df6jp). *Manuscript under review*.
 
-[Cheung, M. W.-L. (2020b)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202020b). [Synthesizing indirect effects in mediation models with meta-analytic methods](https://doi.org/10.31234/osf.io/df6jp). *Manuscript under review*.
+[Cheung, M. W.-L. (2021)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202021). [Meta-analytic structural equation modeling](https://doi.org/10.31234/osf.io/epsqt). *Oxford Research Encyclopedia of Business and Management*, Oxford University Press. https://doi.org/10.1093/acrefore/9780190224851.013.225
 
 [Cheung, M. W.-L. & Cheung, S.-F. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Cheung%202016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*, *7*(2), 140–155. http://doi.org/10.1002/jrsm.1166.
 
@@ -36,4 +36,6 @@ http://dx.doi.org/10.1080/10705510709336745.
 
 [Jak, S. & Cheung, M. W.-L. (2020)](https://github.com/mikewlcheung/code-in-articles/blob/master/Jak%20and%20Cheung%202020). [Meta-analytic structural equation modeling with moderating effects on SEM parameters](https://psyarxiv.com/ce85j/). *Psychological Methods*, *25*(4), 430–455. https://doi.org/10.1037/met0000245 
 
-[Schutte N. S., Keng, S.-L. & Cheung, M. W.-L. (2020)](https://github.com/mikewlcheung/code-in-articles/blob/master/Schutte%20Keng%20and%20Cheung%202020). Emotional intelligence mediates the connection between mindfulness and gratitude: A meta-analytic structural equation modelling study.
+[Lim, A. & Cheung, M. W.-L. (2021)](https://github.com/Aaron0696/FIML_MI_JOC_MISSINGDATA). [Evaluating FIML and multiple imputation in joint ordinal-continuous measurements models with missing data](https://doi.org/10.31234/osf.io/j3b2t). *Manuscript under review*.
+
+[Schutte N. S., Keng, S.-L. & Cheung, M. W.-L. (2020)](https://github.com/mikewlcheung/code-in-articles/blob/master/Schutte%20Keng%20and%20Cheung%202020). Emotional intelligence mediates the connection between mindfulness and gratitude: A meta-analytic structural equation modelling study. *Manuscript under review*.

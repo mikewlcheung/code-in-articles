@@ -1,0 +1,395 @@
+---
+title: 'Synthesizing Indirect Effects in Mediation Models with Meta-Analytic Methods: Supplementary Materials 2'
+author: "Mike Cheung"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+    toc_depth: 3
+  word_document:
+    toc: yes
+---
+
+# Data preparation
+```{r, message=FALSE}
+library(metaSEM)
+
+## Get the data from the local file
+source("Hagger18.R")
+
+## Check whether the correlation matrices are positive definite
+which(is.pd(Hagger18$data)==FALSE)
+
+## Drop the 21th study as the correlation matrix is not positive definite.
+Hagger18 <- lapply(Hagger18, function(x) x[-21])
+```
+
+# Illustration 1 with one mediator
+```{r}
+## Use df1 as the data file in illustration 1
+df1 <- Hagger18
+
+## Select Beh, Int, and PB for the illustration
+obs.vars1 <- c("Beh", "Int", "PB")
+df1$data <- lapply(df1$data, function(x) x[obs.vars1, obs.vars1])
+
+## NA is not allowed in computing the indirect and direct effects.
+## Studies with NA are excluded first.
+index1 <- sapply(df1$data, function(x) any(is.na(vechs(x))) )
+df1 <- lapply(df1, function(x) x[!index1])
+
+## Show the first few studies
+head(df1)
+
+## Show the no. of studies per correlation
+pattern.na(df1$data, show.na = FALSE)
+
+## Show the total sample sizes per correlation
+pattern.n(df1$data, df1$n)
+```
+
+## Meta-analyzing the indirect and direct effects
+### Caculation of indirect and direct effects
+```{r}
+## Calculate the indirect and direct effects and their sampling covariance matrices
+## The variables are arranged as outcome, mediator, and predictor.
+IE.df1 <- indirectEffect(df1$data, df1$n)
+
+## Add behavior frequency to the data
+IE.df1 <- data.frame(IE.df1, beh_freq_high=df1$beh_freq_high)
+
+## Show the first few studies
+head(IE.df1)
+```
+
+### Meta-analysis of indirect and direct effects
+```{r, message=FALSE}
+## Random-effects model
+IE0 <- meta(y=cbind(ind_eff, dir_eff),
+            v=cbind(ind_var, ind_dir_cov, dir_var),
+            data=IE.df1,
+            model.name = "Random")
+summary(IE0)
+
+## Variance-covariance matrix of the random effects
+VarCorr(IE0)
+
+## Correlation matrix of the random effects
+cov2cor(VarCorr(IE0))
+
+## Plot the effect sizes
+plot(IE0, axis.labels = c("Indirect effect", "Direct effect"))
+
+## Mixed-effects model with behavior frequency as a moderator
+IE1 <- meta(y=cbind(ind_eff, dir_eff),
+            v=cbind(ind_var, ind_dir_cov, dir_var),
+            x=beh_freq_high,
+            data=IE.df1,
+            model.name = "Mixed")
+summary(IE1)
+
+## Test the statistical significance between the models
+anova(IE1, IE0)
+```
+
+```{r, eval=FALSE, echo=FALSE}
+svg("Figure4.svg", width=7, height=5)
+plot(IE0, axis.labels = c("Indirect effect", "Direct effect"), add.margin = 0.05)
+dev.off()
+```
+
+## TSSEM
+### Stage 1 analysis
+```{r, message=FALSE}
+## Random-effects model
+random1 <- tssem1(df1$data, df1$n, method="REM")
+summary(random1)
+
+## Average correlation matrix under a random-effects model
+averageR <- vec2symMat(coef(random1, select="fixed"), diag = FALSE)
+dimnames(averageR) <- list(obs.vars1, obs.vars1)
+averageR
+
+## Heterogeneity variances of the random-effects
+coef(random1, select="random")
+```
+
+### Stage 2 analysis
+```{r, message=FALSE}
+## Proposed model in lavaan syntax
+model1 <- "Beh ~ c*PB + b*Int
+           Int ~ a*PB
+           PB ~~ 1*PB"
+plot(model1)
+
+## Convert the lavaan syntax to RAM specification used in metaSEM
+RAM1 <- lavaan2RAM(model1, obs.variables=obs.vars1)
+RAM1
+
+## Request the likelihood-based confidence interval
+## Indirect effect: ind = a*b
+## Direct effect: dir = c
+tssem.fit <- tssem2(random1, RAM=RAM1, intervals.type = "LB",
+                    mx.algebras = list(ind=mxAlgebra(a*b, name="ind"),
+                                       dir=mxAlgebra(c, name="dir")))
+summary(tssem.fit)
+plot(tssem.fit, color="green")
+```
+
+```{r, eval=FALSE, echo=FALSE}
+svg("Figure4.svg", width=5, height=5)
+plot(tssem.fit, color="gray")
+dev.off()
+```
+
+## OSMASEM
+### Model without any moderator
+```{r, message=FALSE}
+## Convert the data format from TSSEM to OSMASEM
+osmasem.df1 <- Cor2DataFrame(df1)
+
+## Show the first few studies
+head(osmasem.df1)
+
+## Fit a model without any moderator
+osmasem.fit0 <- osmasem(model.name="No moderator", RAM=RAM1, data=osmasem.df1)
+summary(osmasem.fit0)
+
+## Get the heterogeneity of variances
+VarCorr(osmasem.fit0)
+
+## Plot the fitted model
+plot(osmasem.fit0, color="yellow")
+```
+
+### Model with a moderator
+```{r}
+## Create A1 to represent the moderator on the A matrix
+A1 <- create.modMatrix(RAM1, output="A", "beh_freq_high")
+A1
+
+## Fit a model with female as a moderator
+osmasem.fit1 <- osmasem(model.name="Female as a moderator", RAM=RAM1, Ax=A1, data=osmasem.df1)
+summary(osmasem.fit1)
+
+## Test the statistical significance between the models
+anova(osmasem.fit1, osmasem.fit0)
+
+## Get the R2 on the correlation coefficients
+osmasemR2(osmasem.fit0, osmasem.fit1)
+```
+
+
+# Illustration 2 with two parallel mediators (Aut and Cap)
+```{r}
+## Use new.df2 as the data file in illustration 2
+df2 <- Hagger18
+
+## Select Aut, Cap, Beh, and PB for the illustration
+obs.vars2 <- c("Aut", "Cap", "Beh", "PB")
+df2$data <- lapply(df2$data, function(x) x[obs.vars2, obs.vars2])
+
+## Drop studies do not include all correlation in c("Aut", "Cap", "Beh", "PB")
+index2 <- sapply(df2$data, function(x) any(is.na(vechs(x))))
+df2 <- lapply(df2, function(x) x[!index2])
+
+## Show the first few studies
+head(df2)
+
+## Show the no. of studies per correlation
+pattern.na(df2$data, show.na = FALSE)
+
+## Show the total sample sizes per correlation
+pattern.n(df2$data, df2$n)
+```
+
+## Meta-analyzing the indirect and direct effects
+### Caculation of indirect and direct effects
+```{r}
+## Calculate indirect and direct effects as effect sizes in each study
+## PB -> Cap -> Beh
+## PB -> Aut -> Beh
+model2 <- "Cap ~ a*PB
+           Aut ~ c*PB
+           Beh ~ b*Cap + d*Aut + e*PB
+           Cap ~~ f*Aut
+           PB ~~ 1*PB
+           ## Define indirect and direct effects
+           Ind_Cap := a*b
+           Ind_Aut := c*d
+           Dir_PB := f"
+
+## Display the proposed model
+plot(model2, layout="circle")
+
+## Estimate the indirect and direct effects
+IE.df2 <- mapply(function(x, y) {calEffSizes(model=model2, n=y, Cov=x)},
+                                 df2$data, df2$n, SIMPLIFY = FALSE)
+
+head(IE.df2)
+  
+## Rename the variances and covariances of the effect sizes from Cov1 to Cov6 for ease of reference
+IE.df2 <- t(sapply(IE.df2, 
+                   function(x) { acov <- vech(x$VCOV)
+                                 names(acov) <- paste0("Cov", 1:6)
+                                 c(x$ES, acov)} ))
+
+## Show the first few studies
+head(IE.df2)
+```
+
+### Meta-analysis of indirect and direct effects
+```{r, message=FALSE}
+## Random-effects model with independent random effects
+## Tau2_2_2 is close to negative. It is fixed at 0.
+IE2 <- meta(y=IE.df2[, c("Ind_Cap", "Ind_Aut", "Dir_PB")],
+            v=IE.df2[, paste0("Cov", 1:6)],
+            RE.constraints = Diag(c("0.01*Tau2_1_1", "0", "0.01*Tau2_3_3")))
+summary(IE2)
+```
+
+## TSSEM
+### Stage 1 analysis
+```{r}
+## Random-effects model
+random1 <- tssem1(df2$data, df2$n)
+summary(random1)
+
+## Average correlation matrix under a random-effects model
+averageR <- vec2symMat(coef(random1, select="fixed"), diag = FALSE)
+dimnames(averageR) <- list(obs.vars2, obs.vars2)
+averageR
+
+## Heterogeneity variances of the random-effects
+coef(random1, select="random")
+```
+
+### Stage 2 analysis
+```{r}
+RAM2 <- lavaan2RAM(model2, obs.variables=obs.vars2)
+RAM2
+
+tssem.fit <- tssem2(random1, RAM=RAM2, intervals.type = "LB",
+                    mx.algebras = list(Ind_Cap=mxAlgebra(a*b, name="Ind_Cap"),
+                                       Ind_Aut=mxAlgebra(c*d, name="Ind_Aut"),
+                                       Dir_PB=mxAlgebra(f, name="Dir_PB")))
+summary(tssem.fit)
+plot(tssem.fit, layout="circle", color="green")
+```
+
+```{r, eval=FALSE, echo=FALSE}
+svg("Figure5.svg", width=5, height=5)
+plot(tssem.fit, layout="circle", color="gray")
+dev.off()
+```
+
+# Illustration 3 with two serial mediators (Aut and Cap)
+```{r}
+## Use df3 as the data file in illustration 3
+df3 <- Hagger18
+
+## Select Cap, Int, Beh, and PB for the illustration
+obs.vars3 <- c("Cap", "Int", "Beh", "PB")
+df3$data <- lapply(df3$data, function(x) x[obs.vars3, obs.vars3])
+
+## Drop studies do not include all correlations in c("Cap", "Int", "Beh", "PB")
+index3 <- sapply(df3$data, function(x) any(is.na(vechs(x))))
+df3 <- lapply(df3, function(x) x[!index3])
+
+## Show the first few studies
+head(df3)
+
+## Show the no. of studies per correlation
+pattern.na(df3$data, show.na = FALSE)
+
+## Show the total sample sizes per correlation
+pattern.n(df3$data, df3$n)
+```
+
+## Meta-analyzing the indirect and direct effects
+### Caculation of indirect and direct effects
+```{r}
+## Calculate indirect and direct effects as effect sizes in each study
+## PB -> Cap -> Int -> Beh
+model3 <- "Cap ~ a*PB
+           Int ~ b*Cap + d*PB
+           Beh ~ e*Cap + c*Int + f*PB
+           PB ~~ 1*PB
+           ## Define indirect and direct effects
+           Ind_CapInt := a*b*c
+           Ind_Cap := a*e
+           Ind_Int := d*c
+           Dir_PB := f"
+
+## Display the proposed model
+plot(model3, layout="circle")
+
+## Estimate the indirect and direct effects
+IE.df3 <- mapply(function(x, y) {calEffSizes(model=model3, n=y, Cov=x)},
+                                 df3$data, df3$n, SIMPLIFY = FALSE)
+  
+## Rename the variances and covariances of the effect sizes from Cov1 to Cov10 for ease of reference
+IE.df3 <- t(sapply(IE.df3, 
+                   function(x) { acov <- vech(x$VCOV)
+                                 names(acov) <- paste0("Cov", 1:10)
+                                 c(x$ES, acov)} ))
+
+## Show the first few studies
+head(IE.df3)
+```
+
+### Meta-analysis of indirect and direct effects
+```{r}
+## Random-effects model with independent random effects
+IE3 <- meta(y=IE.df3[, c("Ind_CapInt", "Ind_Cap", "Ind_Int", "Dir_PB")],
+            v=IE.df3[, paste0("Cov", 1:10)],
+            RE.constraints = Diag(paste0("0.01*Tau2_", 1:4, "_", 1:4)))
+summary(IE3)
+```
+
+## TSSEM
+### Stage 1 analysis
+```{r}
+## Random-effects model
+random1 <- tssem1(df3$data, df3$n)
+summary(random1)
+
+## Average correlation matrix under a random-effects model
+averageR <- vec2symMat(coef(random1, select="fixed"), diag = FALSE)
+dimnames(averageR) <- list(obs.vars3, obs.vars3)
+averageR
+
+## Heterogeneity variances of the random-effects
+coef(random1, select="random")
+```
+
+### Stage 2 analysis
+```{r}
+RAM3 <- lavaan2RAM(model3, obs.variables=obs.vars3)
+RAM3
+
+tssem.fit <- tssem2(random1, RAM=RAM3, intervals.type = "LB",
+                    mx.algebras = list(Ind_CapInt=mxAlgebra(a*b*c, name="Ind_CapInt"),
+                                       Ind_Cap=mxAlgebra(a*e, name="Ind_Cap"),
+                                       Ind_Int=mxAlgebra(d*c, name="Ind_Int"),
+                                       Dir_PB=mxAlgebra(f, name="Dir_PB")))
+summary(tssem.fit)
+plot(tssem.fit, layout="circle", color="green")
+```
+
+```{r, eval=FALSE, echo=FALSE}
+svg("Figure6.svg", width=5, height=5)
+plot(tssem.fit, layout="circle", color="gray")
+dev.off()
+```
+
+```{r}
+sessionInfo()
+```
+
