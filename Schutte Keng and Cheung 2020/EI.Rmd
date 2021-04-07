@@ -1,6 +1,6 @@
 ---
 title: "Emotional Intelligence Mediates the Connection Between Mindfulness and Gratitude"
-author: "Mike Cheung"
+author: "Nicola Schutte, Keng Shian Ling, and Mike Cheung"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: 
   html_document:
@@ -20,11 +20,14 @@ editor_options:
 
 ## Data preparation
 ```{r, message=FALSE}
+## Whether to output figures as SVG format
+plot.figures <- FALSE
+
 library(metaSEM)
 mxOption(key='Number of Threads', value=parallel::detectCores()-2)
 
 ## Read data
-my.df <- foreign::read.spss("data.sav", use.value.labels = FALSE, to.data.frame=TRUE)
+my.df <- foreign::read.spss("data.sav", use.value.labels = TRUE, to.data.frame=TRUE)
 
 ## A function to convert rows into a 3x3 correlation matrix
 create.matrix <- function(x, type=c(1, 2, 3)) {
@@ -114,8 +117,11 @@ stage2b <- tssem2(stage1, RAM=RAM1, intervals.type = "LB",
                                     Direct=mxAlgebra(c, name="Direct")),
                  run=FALSE)
 ## Add a constraint on c=a*b
+## Rerun to remove errors
 stage2b <- mxModel(stage2b, mxConstraint(c==a*b, name="constraint"))
-stage2b <- mxRun(stage2b, intervals=TRUE)
+stage2b <- mxRun(stage2b)
+stage2b <- mxTryHard(stage2b, extraTries = 100)
+stage2b <- mxRun(stage2b, intervals = TRUE)
 summary(stage2b)
 
 anova(stage2$mx.fit, stage2b)
@@ -125,14 +131,39 @@ anova(stage2$mx.fit, stage2b)
 
 ## Data preparation
 ```{r}
-Publish <- ifelse(my.df$Publication_status==1, yes=1, no=0)
+## Mindfulness scale for the correlation between mindfulness and EI
+table(my.df[my.df$Type_of_Association=="mindfulness and emotional intelligence", "Mindfulness_Scale"], useNA="always")
+
+## Mindfulness scale for the correlation between mindfulness and gratitude
+table(my.df[my.df$Type_of_Association=="mindfulness and gratitude", "Mindfulness_Scale"], useNA="always")
+
+## Indicators for mindfulness scale
+FFMQ<- ifelse(my.df$Mindfulness_Scale=="FFMQ", yes=1, no=0)
+Freiburg<- ifelse(my.df$Mindfulness_Scale=="Freiburg", yes=1, no=0)
+MAAS<- ifelse(my.df$Mindfulness_Scale=="MAAS", yes=1, no=0)
+kentucky<- ifelse(my.df$Mindfulness_Scale=="kentucky", yes=1, no=0)
+CAMM <- ifelse(my.df$Mindfulness_Scale=="CAMM", yes=1, no=0)
+other<- ifelse(my.df$Mindfulness_Scale=="other", yes=1, no=0)
+
+FFMQ[is.na(FFMQ)] <- 0
+Freiburg[is.na(Freiburg)] <- 0
+MAAS[is.na(MAAS)] <- 0
+kentucky[is.na(kentucky)] <- 0
+CAMM[is.na(CAMM)] <- 0
+other[is.na(other)] <- 0
 
 tssem.df <- list(data=my.cor, 
                  n=my.n,
                  ## Center the Age and Female for ease of interpretations
                  Age=c(scale(my.df$Age, scale=FALSE)), 
                  Female=c(scale(my.df$Percent_female, scale=FALSE)),
-                 Publish=Publish)
+                 Publish=ifelse(my.df$Publication_status=="published", yes=1, no=0),
+                 FFMQ=FFMQ,
+                 Freiburg=Freiburg,
+                 MAAS=MAAS,
+                 kentucky=kentucky,
+                 CAMM=CAMM,
+                 other=other)
 
 ## Summary of mean age
 summary(tssem.df$Age)
@@ -155,19 +186,72 @@ os.df <- Cor2DataFrame(tssem.df)
 # plot(os.fit0)
 ```
 
-## Mean age as a moderator
+## Mindfulness scale
+```{r, message=FALSE, message=FALSE}
+## Select data without missing data in Female
+indexMindScale <- !is.na(os.df$data$FFMQ)
+
+## Note that some studies are dropped because of missing values in mindfulness scale
+os.fit0 <- osmasem("No moderator", RAM=RAM1, data=os.df)
+summary(os.fit0)
+
+## Create several A matrices to test the moderating effect from Mindfulness to EI [2,1]
+A_FFMQ <- matrix(0, ncol=3, nrow=3,
+                 dimnames = list(c("Mindfulness", "EI", "Gratitude"),
+                                 c("Mindfulness", "EI", "Gratitude")))
+A_Freiburg <- A_MAAS <- A_kentucky <- A_CAMM <- A_other <- A_FFMQ
+A_FFMQ[2,1] <- "0*data.FFMQ"
+A_Freiburg[2,1] <- "0*data.Freiburg"
+A_MAAS[2,1] <- "0*data.MAAS"
+A_kentucky[2,1] <- "0*data.kentucky"
+A_CAMM[2,1] <- "0*data.CAMM"
+## A_other[2,1] <- "0*data.other"
+
+## A_other is not included as it is used as the reference. 
+os.fitMind <- osmasem("Mindfulness scale", RAM=RAM1, data=os.df,
+                      Ax=list(A_FFMQ, A_Freiburg, A_MAAS, A_kentucky, A_CAMM))
+summary(os.fitMind)
+
+anova(os.fitMind, os.fit0)
+
+## Compute the path coefficients on each mindfulness scale
+est <- c(mxEval(c(a, a+a_1, a+a_2, a+a_3, a+a_4, a+a_5), os.fitMind$mx.fit))
+names(est) <- c("Other", "FFMQ", "Freiburg", "MAAS", "Kentucky", "CAMM")
+
+Cov <- mxSE(rbind(a, a+a_1, a+a_2, a+a_3, a+a_4, a+a_5), os.fitMind$mx.fit, details = TRUE,
+           silent=TRUE)$Cov
+dimnames(Cov) <- list(c("Other", "FFMQ", "Freiburg", "MAAS", "Kentucky", "CAMM"),
+                      c("Other", "FFMQ", "Freiburg", "MAAS", "Kentucky", "CAMM"))
+se <- sqrt(diag(Cov))
+
+p <- 2*pnorm(-abs(est/se))
+z <- qnorm(.975)
+lbound <- est - z*se
+ubound <- est + z*se
+Mindscale <- cbind(est, se, p, lbound, ubound)
+dimnames(Mindscale) <- list(c("Other", "FFMQ", "Freiburg", "MAAS", "Kentucky", "CAMM"),
+                            c("Estimate", "se", "p value", "lbound (95%)", "ubound (95%)"))  
+Mindscale
+
+## Compute the post-hoc comparisons with adjusted with multiple comparisons 
+library(cg)
+comp <- comparisons(est, Cov, endptscale = "original", type = "pairwise", mcadjust=TRUE, display="none")
+
+knitr::kable(comp, caption="Comparisons Table: Differences (A-B)\n95% Confidence (alpha of 0.05), Multiplicity Adjusted")
+```
+
+## Mean age
 ```{r, message=FALSE}
-## missing data in Age
-indexA <- is.na(os.df$data$Age)
-A.df <- os.df
-A.df$data <- A.df$data[!indexA, ]
+## Select data without missing data in Age
+indexAge <- !is.na(os.df$data$Age)
 
 ## For checking only
-os.fit0 <- osmasem("No moderator", RAM=RAM1, data=A.df)
+os.fit0 <- osmasem("No moderator", RAM=RAM1, data=os.df, subset.rows=indexAge)
 summary(os.fit0)
 
 A.A <- create.modMatrix(RAM1, mod="Age")
-os.fitA <- osmasem("Age as a moderator", RAM=RAM1, Ax=A.A, data=A.df)
+os.fitA <- osmasem("Age as a moderator", RAM=RAM1, Ax=A.A, data=os.df, 
+                   subset.rows=indexAge)
 os.fitA <- rerun(os.fitA)
 summary(os.fitA)
 
@@ -179,7 +263,7 @@ osmasemR2(os.fitA, os.fit0)
 A.21 <- A.A
 A.21[3,1] <- A.21[3,2] <- 0
 A.21
-os.fitA21 <- osmasem("Age A21", RAM=RAM1, Ax=A.21, data=A.df)
+os.fitA21 <- osmasem("Age A21", RAM=RAM1, Ax=A.21, data=os.df, subset.rows=indexAge)
 summary(os.fitA21)
 anova(os.fitA21, os.fit0)
 
@@ -187,7 +271,7 @@ anova(os.fitA21, os.fit0)
 A.32 <- A.A
 A.32[2,1] <- A.32[3,1] <- 0
 A.32
-os.fitA32 <- osmasem("Age A32", RAM=RAM1, Ax=A.32, data=A.df)
+os.fitA32 <- osmasem("Age A32", RAM=RAM1, Ax=A.32, data=os.df, subset.rows=indexAge)
 summary(os.fitA32)
 anova(os.fitA32, os.fit0)
 
@@ -195,13 +279,13 @@ anova(os.fitA32, os.fit0)
 A.31 <- A.A
 A.31[2,1] <- A.31[3,2] <- 0
 A.31
-os.fitA31 <- osmasem("Age A31", RAM=RAM1, Ax=A.31, data=A.df)
+os.fitA31 <- osmasem("Age A31", RAM=RAM1, Ax=A.31, data=os.df, subset.rows=indexAge)
 summary(os.fitA31)
 anova(os.fitA31, os.fit0)
 
 ## Mean of Age: 0
 ## sd of Age
-(Age.sd <- sd(A.df$data$Age))
+(Age.sd <- sd(os.df$data$Age, na.rm=TRUE))
 
 ## Path coefficients when Age is 0
 mxEval(A0, os.fitA$mx.fit)
@@ -216,19 +300,18 @@ mxEval(A0, os.fitA$mx.fit) - Age.sd*mxEval(A1, os.fitA$mx.fit)
 mxEval(A0, os.fitA$mx.fit) + Age.sd*mxEval(A1, os.fitA$mx.fit)
 ```
 
-## Percentage of female participants as a moderator
+## Percentage of female participants
 ```{r, message=FALSE}
-## missing data in Age
-indexF <- is.na(os.df$data$Female)
-F.df <- os.df
-F.df$data <- F.df$data[!indexF, ]
+## Select data without missing data in Female
+indexFemale <- !is.na(os.df$data$Female)
 
 ## For checking only
-os.fit0 <- osmasem("No moderator", RAM=RAM1, data=F.df)
+os.fit0 <- osmasem("No moderator", RAM=RAM1, data=os.df, subset.rows=indexFemale)
 summary(os.fit0)
 
 A.F <- create.modMatrix(RAM1, mod="Female")
-os.fitF <- osmasem("Female as a moderator", RAM=RAM1, Ax=A.F, data=F.df)
+os.fitF <- osmasem("Female as a moderator", RAM=RAM1, Ax=A.F, data=os.df,
+                   subset.rows=indexFemale)
 os.fitF <- rerun(os.fitF, extraTries = 100)
 summary(os.fitF)
 
@@ -244,7 +327,7 @@ summary(os.fit0)
 
 A.P <- create.modMatrix(RAM1, mod="Publish")
 os.fitP <- osmasem("Publish as a moderator", RAM=RAM1, Ax=A.P, data=os.df)
-os.fitP <- rerun(os.fitP, extraTries = 100)
+os.fitP <- rerun(os.fitP, extraTries =200)
 summary(os.fitP)
 
 anova(os.fitP, os.fit0)
@@ -256,43 +339,101 @@ library(metafor)
 
 ## Create study labels        
 study <- row.names(os.df$data)
+```
 
-fit1 <- rma(yi=os.df$data$EI_Mindfulness, 
-            vi=os.df$data$`C(EI_Mindfulness EI_Mindfulness)`,
-            method="ML", slab=study)
-fit1
-forest(fit1, main="Cor(EI, Mindfulness)", xlab="Correlation")
-trimfill(fit1)
-funnel(fit1, xlab="Correlation", main="Cor(EI, Mindfulness)")
-
-# svg("Fig5.svg", width = 10, height = 8)
-# forest(fit1, main="Cor(EI, Mindfulness)", xlab="Correlation")
-# dev.off()
-
-fit2 <- rma(yi=os.df$data$Gratitude_Mindfulness, 
+## Correlation between Mindfulness and Gratitude
+```{r, message=FALSE}
+fit1 <- rma(yi=os.df$data$Gratitude_Mindfulness, 
             vi=os.df$data$`C(Gratitude_Mindfulness Gratitude_Mindfulness)`,
             method="ML", slab=study)
+fit1
+
+forest(fit1, main="Correlation between Mindfulness and Gratitude", xlab="Correlation")
+
+funnel(fit1, xlab="Correlation", main="Correlation between Mindfulness and Gratitude",
+       level=c(90, 95, 99), shade=c("white", "gray55", "gray75"), legend=TRUE)
+
+trimfill(fit1)
+hc(fit1)
+regtest(fit1)
+ranktest(fit1)
+
+if (plot.figures) {
+  svg("Fig3.svg", width = 10, height = 5)
+  forest(fit1, main="Correlation between Mindfulness and Gratitude", xlab="Correlation")
+  dev.off()
+  
+  svg("Fig4.svg", width = 10, height = 5)
+  funnel(fit1, xlab="Correlation", main="Correlation between Mindfulness and Gratitude",
+         level=c(90, 95, 99), shade=c("white", "gray55", "gray75"), legend=TRUE)
+  dev.off()  
+}
+```
+
+## Correlation between Mindfulness and Emotional Intelligence
+```{r, message=FALSE}
+fit2 <- rma(yi=os.df$data$EI_Mindfulness, 
+            vi=os.df$data$`C(EI_Mindfulness EI_Mindfulness)`,
+            method="ML", slab=study)
 fit2
-forest(fit2, main="Cor(Gratitude, Mindfulness)", xlab="Correlation")
+
+forest(fit2, main="Correlation between Mindfulness and Emotional Intelligence", xlab="Correlation")
+
+funnel(fit2, xlab="Correlation", main="Correlation between Mindfulness and Emotional Intelligence",
+       level=c(90, 95, 99), shade=c("white", "gray55", "gray75"), legend=TRUE)
+
 trimfill(fit2)
-funnel(fit2, xlab="Correlation", main="Cor(Gratitude, Mindfulness)")
+hc(fit2)
+regtest(fit2)
+ranktest(fit2)
 
-# svg("Fig6.svg", width = 10, height = 5)
-# forest(fit2, main="Cor(Gratitude, Mindfulness)", xlab="Correlation")
-# dev.off()
+if (plot.figures) {
+  svg("Fig5.svg", width = 10, height = 5)
+  forest(fit2, main="Correlation between Mindfulness and Emotional Intelligence", xlab="Correlation")
+  dev.off()
+  
+  svg("Fig6.svg", width = 10, height = 5)
+  funnel(fit2, xlab="Correlation", main="Correlation between Mindfulness and Emotional Intelligence",
+         level=c(90, 95, 99), shade=c("white", "gray55", "gray75"), legend=TRUE)
+  dev.off()  
+}
+```
 
-
+## Correlation between Emotional Intelligence and Gratitude
+```{r, message=FALSE}
 fit3 <- rma(yi=os.df$data$Gratitude_EI, 
             vi=os.df$data$`C(Gratitude_EI Gratitude_EI)`,
             method="ML", slab=study)
 fit3
-forest(fit3, main="Cor(Gratitude, EI)", xlab="Correlation")
-trimfill(fit3)
-funnel(fit3, xlab="Correlation", main="Cor(Gratitude, EI)")
 
-# svg("Fig7.svg", width = 8, height = 4)
-# forest(fit3, main="Cor(Gratitude, EI)", xlab="Correlation")
-# dev.off()
+forest(fit3, main="Correlation between Emotional Intelligence and Gratitude", xlab="Correlation")
+
+funnel(fit3, xlab="Correlation", main="Correlation between Emotional Intelligence and Gratitude",
+       level=c(90, 95, 99), shade=c("white", "gray55", "gray75"), legend=TRUE)
+
+trimfill(fit3)
+hc(fit3)
+regtest(fit3)
+ranktest(fit3)
+
+if (plot.figures) {
+  svg("Fig7.svg", width = 10, height = 5)
+  forest(fit3, main="Correlation between Emotional Intelligence and Gratitude", xlab="Correlation")
+  dev.off()
+  
+  svg("Fig8.svg", width = 10, height = 5)
+  funnel(fit3, xlab="Correlation", main="Correlation between Emotional Intelligence and Gratitude",
+         level=c(90, 95, 99), shade=c("white", "gray55", "gray75"), legend=TRUE)
+  dev.off()  
+}
 
 sessionInfo()
+```
+
+
+```{r, echo=FALSE, eval=FALSE, warning=FALSE}
+library(ggplot2)
+p <- ggplot(my.df, aes(x=Percent_female)) + geom_histogram(binwidth=5) + 
+  ggtitle("Distribution of percentage of female participants")
+ggsave("gender.svg", p)
 ```
