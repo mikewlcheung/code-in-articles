@@ -1,6 +1,6 @@
-Mplus VERSION 8.2 (Linux)
+Mplus VERSION 8.4 (Linux)
 MUTHEN & MUTHEN
-05/27/2019  11:39 AM
+05/03/2021   9:20 AM
 
 INPUT INSTRUCTIONS
 
@@ -207,8 +207,8 @@ QUALITY OF NUMERICAL RESULTS
        (ratio of smallest to largest eigenvalue)
 
 
-     Beginning Time:  11:39:29
-        Ending Time:  11:39:29
+     Beginning Time:  09:20:34
+        Ending Time:  09:20:34
        Elapsed Time:  00:00:00
 
 
@@ -222,4 +222,4 @@ Fax: (310) 391-8971
 Web: www.StatModel.com
 Support: Support@StatModel.com
 
-Copyright (c) 1998-2018 Muthen & Muthen
+Copyright (c) 1998-2019 Muthen & Muthen

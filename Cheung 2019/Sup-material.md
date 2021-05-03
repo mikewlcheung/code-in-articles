@@ -1,7 +1,7 @@
 ---
 title: 'Supplementary Materials for "A Guide to Conducting a Meta-Analysis with Non-Independent Effect Sizes"'
 author: Mike W.-L. Cheung
-date: 'July 09, 2019'
+date: 'May 03, 2021'
 output:
   html_document:
     keep_md: yes
@@ -118,12 +118,12 @@ summary(meta(y=LRD_logOR, v=LRD_v, data=Nam03))
 ## 
 ## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
-##               Estimate   Std.Error      lbound      ubound z value
-## Intercept1  0.29576274  0.05688763  0.18426504  0.40726045  5.1991
-## Tau2_1_1    0.05081379  0.02612091 -0.00038226  0.10200984  1.9453
-##             Pr(>|z|)    
-## Intercept1 2.003e-07 ***
-## Tau2_1_1     0.05174 .  
+##               Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)
+## Intercept1  0.29576274  0.05688763  0.18426504  0.40726045  5.1991 2.003e-07
+## Tau2_1_1    0.05081379  0.02612091 -0.00038226  0.10200984  1.9453   0.05174
+##               
+## Intercept1 ***
+## Tau2_1_1   .  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -217,7 +217,7 @@ forest(rma(yi=LRD_logOR, vi=LRD_v, slab=ID, data=Nam03),
 title("Forest plot of LRD")
 ```
 
-![](Sup_material_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+![](Sup-material_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 
 
@@ -238,9 +238,9 @@ anova(fit0a, fit1a)
 ```
 
 ```
-##       base           comparison ep minus2LL df       AIC   diffLL diffdf
-## 1 Multi MA                 <NA>  5 42.55209 62 -81.44791       NA     NA
-## 2 Multi MA Equality constraints  3 45.32722 64 -82.67278 2.775128      2
+##       base           comparison ep minus2LL df      AIC   diffLL diffdf
+## 1 Multi MA                 <NA>  5 42.55209 62 52.55209       NA     NA
+## 2 Multi MA Equality constraints  3 45.32722 64 51.32722 2.775128      2
 ##           p
 ## 1        NA
 ## 2 0.2496827
@@ -313,20 +313,20 @@ summary(fit2a)
 ## 
 ## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
-##               Estimate   Std.Error      lbound      ubound z value
-## Intercept1  0.26807390  0.04865798  0.17270602  0.36344178  5.5094
-## Intercept2  0.27292919  0.04744385  0.17994095  0.36591742  5.7527
-## Slope1_1   -0.03809070  0.01558287 -0.06863257 -0.00754882 -2.4444
-## Slope2_1   -0.02366521  0.00935199 -0.04199477 -0.00533565 -2.5305
-## Tau2_1_1    0.02831617  0.01439380  0.00010483  0.05652751  1.9672
-## Tau2_2_2    0.02970105  0.01560339 -0.00088104  0.06028314  1.9035
-##             Pr(>|z|)    
-## Intercept1 3.602e-08 ***
-## Intercept2 8.784e-09 ***
-## Slope1_1     0.01451 *  
-## Slope2_1     0.01139 *  
-## Tau2_1_1     0.04915 *  
-## Tau2_2_2     0.05698 .  
+##               Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)
+## Intercept1  0.26807390  0.04865798  0.17270602  0.36344178  5.5094 3.602e-08
+## Intercept2  0.27292919  0.04744385  0.17994095  0.36591742  5.7527 8.784e-09
+## Slope1_1   -0.03809070  0.01558287 -0.06863257 -0.00754882 -2.4444   0.01451
+## Slope2_1   -0.02366521  0.00935199 -0.04199477 -0.00533565 -2.5305   0.01139
+## Tau2_1_1    0.02831617  0.01439380  0.00010483  0.05652750  1.9672   0.04915
+## Tau2_2_2    0.02970105  0.01560339 -0.00088104  0.06028314  1.9035   0.05698
+##               
+## Intercept1 ***
+## Intercept2 ***
+## Slope1_1   *  
+## Slope2_1   *  
+## Tau2_1_1   *  
+## Tau2_2_2   .  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -372,9 +372,9 @@ anova(fit2a, fit3a)
 ```
 
 ```
-##       base           comparison ep minus2LL df       AIC    diffLL diffdf
-## 1 Mixed MA                 <NA>  6 38.83728 61 -83.16272        NA     NA
-## 2 Mixed MA Equality constraints  5 39.47544 62 -84.52456 0.6381537      1
+##       base           comparison ep minus2LL df      AIC    diffLL diffdf
+## 1 Mixed MA                 <NA>  6 38.83728 61 50.83728        NA     NA
+## 2 Mixed MA Equality constraints  5 39.47544 62 49.47544 0.6381537      1
 ##           p
 ## 1        NA
 ## 2 0.4243802
@@ -395,18 +395,18 @@ summary(fit3a)
 ## 
 ## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
-##               Estimate   Std.Error      lbound      ubound z value
-## Intercept1  0.25595987  0.04598891  0.16582326  0.34609648  5.5657
-## Intercept2  0.27564678  0.04748103  0.18258568  0.36870787  5.8054
-## Slope1     -0.02760823  0.00826731 -0.04381186 -0.01140460 -3.3394
-## Tau2_1_1    0.02808574  0.01465925 -0.00064586  0.05681735  1.9159
-## Tau2_2_2    0.03111654  0.01582491  0.00010029  0.06213278  1.9663
-##             Pr(>|z|)    
-## Intercept1 2.611e-08 ***
-## Intercept2 6.421e-09 ***
-## Slope1     0.0008395 ***
-## Tau2_1_1   0.0553771 .  
-## Tau2_2_2   0.0492638 *  
+##               Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)
+## Intercept1  0.25595987  0.04598891  0.16582326  0.34609648  5.5657 2.611e-08
+## Intercept2  0.27564678  0.04748103  0.18258568  0.36870788  5.8054 6.421e-09
+## Slope1     -0.02760823  0.00826731 -0.04381186 -0.01140460 -3.3394 0.0008395
+## Tau2_1_1    0.02808574  0.01465925 -0.00064586  0.05681735  1.9159 0.0553771
+## Tau2_2_2    0.03111654  0.01582491  0.00010029  0.06213278  1.9663 0.0492638
+##               
+## Intercept1 ***
+## Intercept2 ***
+## Slope1     ***
+## Tau2_1_1   .  
+## Tau2_2_2   *  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -453,7 +453,7 @@ summary(fit0b)
 ## Coefficients:
 ##             Estimate Std.Error    lbound    ubound z value  Pr(>|z|)    
 ## Intercept1 0.2659166 0.0544499 0.1591968 0.3726363  4.8837 1.041e-06 ***
-## Intercept2 0.3135788 0.0563451 0.2031444 0.4240132  5.5653 2.617e-08 ***
+## Intercept2 0.3135788 0.0563451 0.2031444 0.4240131  5.5653 2.617e-08 ***
 ## Tau2_1_1   0.0635368 0.0279824 0.0086923 0.1183814  2.2706  0.023171 *  
 ## Tau2_2_1   0.0560841 0.0205646 0.0157782 0.0963901  2.7272  0.006387 ** 
 ## Tau2_2_2   0.0521575 0.0247765 0.0035964 0.1007185  2.1051  0.035281 *  
@@ -513,15 +513,15 @@ forest(rma(yi=LRD_logOR, vi=LRD_v, slab=ID, data=Nam03),
 ```
 
 ```
-## Warning in rma(yi = LRD_logOR, vi = LRD_v, slab = ID, data = Nam03):
-## Studies with NAs omitted from model fitting.
+## Warning in rma(yi = LRD_logOR, vi = LRD_v, slab = ID, data = Nam03): Studies
+## with NAs omitted from model fitting.
 ```
 
 ```r
 title("Forest plot of LRD")
 ```
 
-![](Sup_material_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![](Sup-material_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 
 ```r
@@ -540,9 +540,9 @@ anova(fit0b, fit1b)
 ```
 
 ```
-##       base           comparison ep minus2LL df       AIC   diffLL diffdf
-## 1 Multi MA                 <NA>  5 44.17176 62 -79.82824       NA     NA
-## 2 Multi MA Equality constraints  3 46.29695 64 -81.70305 2.125192      2
+##       base           comparison ep minus2LL df      AIC   diffLL diffdf
+## 1 Multi MA                 <NA>  5 44.17176 62 54.17176       NA     NA
+## 2 Multi MA Equality constraints  3 46.29695 64 52.29695 2.125192      2
 ##           p
 ## 1        NA
 ## 2 0.3455577
@@ -615,20 +615,20 @@ summary(fit2b)
 ## 
 ## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
-##               Estimate   Std.Error      lbound      ubound z value
-## Intercept1  0.26839859  0.04968285  0.17102199  0.36577520  5.4022
-## Intercept2  0.27343978  0.04870472  0.17798029  0.36889927  5.6142
-## Slope1_1   -0.03802625  0.01589945 -0.06918861 -0.00686390 -2.3917
-## Slope2_1   -0.02375587  0.00956054 -0.04249418 -0.00501756 -2.4848
-## Tau2_1_1    0.03037997  0.01525122  0.00048812  0.06027182  1.9920
-## Tau2_2_2    0.03189970  0.01675576 -0.00094098  0.06474039  1.9038
-##             Pr(>|z|)    
-## Intercept1 6.581e-08 ***
-## Intercept2 1.974e-08 ***
-## Slope1_1     0.01677 *  
-## Slope2_1     0.01296 *  
-## Tau2_1_1     0.04637 *  
-## Tau2_2_2     0.05694 .  
+##               Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)
+## Intercept1  0.26839859  0.04968285  0.17102199  0.36577520  5.4022 6.581e-08
+## Intercept2  0.27343978  0.04870472  0.17798029  0.36889927  5.6142 1.974e-08
+## Slope1_1   -0.03802625  0.01589945 -0.06918861 -0.00686390 -2.3917   0.01677
+## Slope2_1   -0.02375587  0.00956054 -0.04249418 -0.00501756 -2.4848   0.01296
+## Tau2_1_1    0.03037997  0.01525122  0.00048812  0.06027182  1.9920   0.04637
+## Tau2_2_2    0.03189970  0.01675576 -0.00094098  0.06474039  1.9038   0.05694
+##               
+## Intercept1 ***
+## Intercept2 ***
+## Slope1_1   *  
+## Slope2_1   *  
+## Tau2_1_1   *  
+## Tau2_2_2   .  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -674,12 +674,9 @@ anova(fit2b, fit3b)
 ```
 
 ```
-##       base           comparison ep minus2LL df       AIC   diffLL diffdf
-## 1 Mixed MA                 <NA>  6 39.97773 61 -82.02227       NA     NA
-## 2 Mixed MA Equality constraints  5 40.57193 62 -83.42807 0.594199      1
-##        p
-## 1     NA
-## 2 0.4408
+##       base           comparison ep minus2LL df      AIC   diffLL diffdf      p
+## 1 Mixed MA                 <NA>  6 39.97773 61 51.97773       NA     NA     NA
+## 2 Mixed MA Equality constraints  5 40.57193 62 50.57193 0.594199      1 0.4408
 ```
 
 ```r
@@ -697,18 +694,18 @@ summary(fit3b)
 ## 
 ## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
-##               Estimate   Std.Error      lbound      ubound z value
-## Intercept1  2.5673e-01  4.7057e-02  1.6450e-01  3.4896e-01  5.4558
-## Intercept2  2.7559e-01  4.8693e-02  1.8015e-01  3.7103e-01  5.6597
-## Slope1     -2.7675e-02  8.3864e-03 -4.4112e-02 -1.1238e-02 -3.3000
-## Tau2_1_1    3.0141e-02  1.5511e-02 -2.5987e-04  6.0542e-02  1.9432
-## Tau2_2_2    3.3103e-02  1.6914e-02 -4.7814e-05  6.6255e-02  1.9571
-##             Pr(>|z|)    
-## Intercept1 4.876e-08 ***
-## Intercept2 1.517e-08 ***
-## Slope1     0.0009668 ***
-## Tau2_1_1   0.0519908 .  
-## Tau2_2_2   0.0503313 .  
+##               Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)
+## Intercept1  2.5673e-01  4.7057e-02  1.6450e-01  3.4896e-01  5.4558 4.876e-08
+## Intercept2  2.7559e-01  4.8693e-02  1.8015e-01  3.7103e-01  5.6597 1.517e-08
+## Slope1     -2.7675e-02  8.3864e-03 -4.4112e-02 -1.1238e-02 -3.3000 0.0009668
+## Tau2_1_1    3.0141e-02  1.5511e-02 -2.5987e-04  6.0542e-02  1.9432 0.0519908
+## Tau2_2_2    3.3103e-02  1.6914e-02 -4.7814e-05  6.6255e-02  1.9571 0.0503313
+##               
+## Intercept1 ***
+## Intercept2 ***
+## Slope1     ***
+## Tau2_1_1   .  
+## Tau2_2_2   .  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -815,15 +812,15 @@ forest(rma(yi=LRD_logOR, vi=LRD_v, slab=ID, data=Nam03),
 ```
 
 ```
-## Warning in rma(yi = LRD_logOR, vi = LRD_v, slab = ID, data = Nam03):
-## Studies with NAs omitted from model fitting.
+## Warning in rma(yi = LRD_logOR, vi = LRD_v, slab = ID, data = Nam03): Studies
+## with NAs omitted from model fitting.
 ```
 
 ```r
 title("Forest plot of LRD")
 ```
 
-![](Sup_material_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](Sup-material_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
 
 ```r
@@ -842,9 +839,9 @@ anova(fit0c, fit1c)
 ```
 
 ```
-##       base           comparison ep minus2LL df       AIC   diffLL diffdf
-## 1 Multi MA                 <NA>  5 40.83324 62 -83.16676       NA     NA
-## 2 Multi MA Equality constraints  3 44.31864 64 -83.68136 3.485405      2
+##       base           comparison ep minus2LL df      AIC   diffLL diffdf
+## 1 Multi MA                 <NA>  5 40.83324 62 50.83324       NA     NA
+## 2 Multi MA Equality constraints  3 44.31864 64 50.31864 3.485405      2
 ##           p
 ## 1        NA
 ## 2 0.1750467
@@ -917,20 +914,20 @@ summary(fit2c)
 ## 
 ## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
-##               Estimate   Std.Error      lbound      ubound z value
-## Intercept1  2.6742e-01  4.7779e-02  1.7378e-01  3.6107e-01  5.5970
-## Intercept2  2.7264e-01  4.6412e-02  1.8168e-01  3.6361e-01  5.8744
-## Slope1_1   -3.8071e-02  1.5347e-02 -6.8151e-02 -7.9907e-03 -2.4806
-## Slope2_1   -2.3580e-02  9.2084e-03 -4.1628e-02 -5.5316e-03 -2.5607
-## Tau2_1_1    2.6934e-02  1.3733e-02  1.7209e-05  5.3850e-02  1.9612
-## Tau2_2_2    2.8248e-02  1.4782e-02 -7.2416e-04  5.7220e-02  1.9110
-##             Pr(>|z|)    
-## Intercept1 2.181e-08 ***
-## Intercept2 4.243e-09 ***
-## Slope1_1     0.01312 *  
-## Slope2_1     0.01045 *  
-## Tau2_1_1     0.04985 *  
-## Tau2_2_2     0.05601 .  
+##               Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)
+## Intercept1  2.6742e-01  4.7779e-02  1.7378e-01  3.6107e-01  5.5970 2.181e-08
+## Intercept2  2.7264e-01  4.6412e-02  1.8168e-01  3.6361e-01  5.8744 4.243e-09
+## Slope1_1   -3.8071e-02  1.5347e-02 -6.8151e-02 -7.9907e-03 -2.4806   0.01312
+## Slope2_1   -2.3580e-02  9.2084e-03 -4.1628e-02 -5.5316e-03 -2.5607   0.01045
+## Tau2_1_1    2.6934e-02  1.3733e-02  1.7209e-05  5.3850e-02  1.9612   0.04985
+## Tau2_2_2    2.8248e-02  1.4782e-02 -7.2416e-04  5.7220e-02  1.9110   0.05601
+##               
+## Intercept1 ***
+## Intercept2 ***
+## Slope1_1   *  
+## Slope2_1   *  
+## Tau2_1_1   *  
+## Tau2_2_2   .  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -976,9 +973,9 @@ anova(fit2c, fit3c)
 ```
 
 ```
-##       base           comparison ep minus2LL df       AIC    diffLL diffdf
-## 1 Mixed MA                 <NA>  6 37.96009 61 -84.03991        NA     NA
-## 2 Mixed MA Equality constraints  5 38.62837 62 -85.37163 0.6682878      1
+##       base           comparison ep minus2LL df      AIC    diffLL diffdf
+## 1 Mixed MA                 <NA>  6 37.96009 61 49.96009        NA     NA
+## 2 Mixed MA Equality constraints  5 38.62837 62 48.62837 0.6682878      1
 ##           p
 ## 1        NA
 ## 2 0.4136492
@@ -999,18 +996,18 @@ summary(fit3c)
 ## 
 ## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
-##               Estimate   Std.Error      lbound      ubound z value
-## Intercept1  0.25511009  0.04511419  0.16668790  0.34353228  5.6548
-## Intercept2  0.27567384  0.04648069  0.18457336  0.36677432  5.9309
-## Slope1     -0.02753187  0.00818095 -0.04356623 -0.01149750 -3.3654
-## Tau2_1_1    0.02670746  0.01399698 -0.00072612  0.05414104  1.9081
-## Tau2_2_2    0.02976481  0.01503751  0.00029183  0.05923779  1.9794
-##             Pr(>|z|)    
-## Intercept1 1.561e-08 ***
-## Intercept2 3.012e-09 ***
-## Slope1     0.0007644 ***
-## Tau2_1_1   0.0563800 .  
-## Tau2_2_2   0.0477743 *  
+##               Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)
+## Intercept1  0.25511009  0.04511419  0.16668790  0.34353228  5.6548 1.561e-08
+## Intercept2  0.27567384  0.04648069  0.18457337  0.36677432  5.9309 3.012e-09
+## Slope1     -0.02753187  0.00818095 -0.04356623 -0.01149750 -3.3654 0.0007644
+## Tau2_1_1    0.02670746  0.01399698 -0.00072612  0.05414104  1.9081 0.0563800
+## Tau2_2_2    0.02976481  0.01503751  0.00029183  0.05923779  1.9794 0.0477743
+##               
+## Intercept1 ***
+## Intercept2 ***
+## Slope1     ***
+## Tau2_1_1   .  
+## Tau2_2_2   *  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -1209,9 +1206,9 @@ anova(fit5, fit4)
 ```
 
 ```
-##                    base            comparison ep  minus2LL df       AIC
-## 1 Meta analysis with ML                  <NA>  4 -9.962584 56 -121.9626
-## 2 Meta analysis with ML Meta analysis with ML  3 -5.445110 57 -119.4451
+##                    base            comparison ep  minus2LL df        AIC
+## 1 Meta analysis with ML                  <NA>  4 -9.962584 56 -1.9625842
+## 2 Meta analysis with ML Meta analysis with ML  3 -5.445110 57  0.5548902
 ##     diffLL diffdf          p
 ## 1       NA     NA         NA
 ## 2 4.517474      1 0.03355032
@@ -1231,16 +1228,11 @@ summary(fit5)
 ## 
 ## 95% confidence intervals: z statistic approximation (robust=FALSE)
 ## Coefficients:
-##            Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)
-## Slope_1  0.35088633  0.05009279  0.25270627  0.44906639  7.0047 2.475e-12
-## Slope_2  0.48409148  0.03778644  0.41003142  0.55815154 12.8112 < 2.2e-16
-## Tau2_2   0.01752965  0.00952992 -0.00114866  0.03620796  1.8394   0.06585
-## Tau2_3   0.01868845  0.00996217 -0.00083704  0.03821395  1.8759   0.06066
-##            
-## Slope_1 ***
-## Slope_2 ***
-## Tau2_2  .  
-## Tau2_3  .  
+##            Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)    
+## Slope_1  0.35088633  0.05009279  0.25270627  0.44906639  7.0047 2.475e-12 ***
+## Slope_2  0.48409148  0.03778644  0.41003142  0.55815154 12.8112 < 2.2e-16 ***
+## Tau2_2   0.01752965  0.00952992 -0.00114866  0.03620796  1.8394   0.06585 .  
+## Tau2_3   0.01868845  0.00996217 -0.00083704  0.03821395  1.8759   0.06066 .  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -1364,9 +1356,9 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 # [Mplus output file](./Nam03a.out)
 # ```
 # 
-# Mplus VERSION 8.2 (Linux)
+# Mplus VERSION 8.4 (Linux)
 # MUTHEN & MUTHEN
-# 02/06/2019   6:31 PM
+# 05/03/2021   9:20 AM
 # 
 # INPUT INSTRUCTIONS
 # 
@@ -1556,9 +1548,9 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 #        (ratio of smallest to largest eigenvalue)
 # 
 # 
-#      Beginning Time:  18:31:14
-#         Ending Time:  18:31:15
-#        Elapsed Time:  00:00:01
+#      Beginning Time:  09:20:16
+#         Ending Time:  09:20:16
+#        Elapsed Time:  00:00:00
 # 
 # 
 # 
@@ -1571,7 +1563,7 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 # Web: www.StatModel.com
 # Support: Support@StatModel.com
 # 
-# Copyright (c) 1998-2018 Muthen & Muthen
+# Copyright (c) 1998-2019 Muthen & Muthen
 # ```
 ```
 
@@ -1633,9 +1625,9 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 # [Mplus output file](./Nam03b.out)
 # ```
 # 
-# Mplus VERSION 8.2 (Linux)
+# Mplus VERSION 8.4 (Linux)
 # MUTHEN & MUTHEN
-# 02/06/2019   6:31 PM
+# 05/03/2021   9:20 AM
 # 
 # INPUT INSTRUCTIONS
 # 
@@ -1830,8 +1822,8 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 #        (ratio of smallest to largest eigenvalue)
 # 
 # 
-#      Beginning Time:  18:31:17
-#         Ending Time:  18:31:17
+#      Beginning Time:  09:20:20
+#         Ending Time:  09:20:20
 #        Elapsed Time:  00:00:00
 # 
 # 
@@ -1845,7 +1837,7 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 # Web: www.StatModel.com
 # Support: Support@StatModel.com
 # 
-# Copyright (c) 1998-2018 Muthen & Muthen
+# Copyright (c) 1998-2019 Muthen & Muthen
 # ```
 ```
 
@@ -1920,9 +1912,9 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 # [Mplus output file](./Nam03c.out)
 # ```
 # 
-# Mplus VERSION 8.2 (Linux)
+# Mplus VERSION 8.4 (Linux)
 # MUTHEN & MUTHEN
-# 02/06/2019   6:31 PM
+# 05/03/2021   9:20 AM
 # 
 # INPUT INSTRUCTIONS
 # 
@@ -2149,9 +2141,9 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 #        (ratio of smallest to largest eigenvalue)
 # 
 # 
-#      Beginning Time:  18:31:19
-#         Ending Time:  18:31:20
-#        Elapsed Time:  00:00:01
+#      Beginning Time:  09:20:23
+#         Ending Time:  09:20:23
+#        Elapsed Time:  00:00:00
 # 
 # 
 # 
@@ -2164,7 +2156,7 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 # Web: www.StatModel.com
 # Support: Support@StatModel.com
 # 
-# Copyright (c) 1998-2018 Muthen & Muthen
+# Copyright (c) 1998-2019 Muthen & Muthen
 # ```
 ```
 
@@ -2225,9 +2217,9 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 # [Mplus output file](./Stadler15a.out)
 # ```
 # 
-# Mplus VERSION 8.2 (Linux)
+# Mplus VERSION 8.4 (Linux)
 # MUTHEN & MUTHEN
-# 05/27/2019  10:58 AM
+# 05/03/2021   9:20 AM
 # 
 # INPUT INSTRUCTIONS
 # 
@@ -2412,8 +2404,8 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 #        (ratio of smallest to largest eigenvalue)
 # 
 # 
-#      Beginning Time:  10:58:17
-#         Ending Time:  10:58:17
+#      Beginning Time:  09:20:32
+#         Ending Time:  09:20:32
 #        Elapsed Time:  00:00:00
 # 
 # 
@@ -2427,7 +2419,7 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 # Web: www.StatModel.com
 # Support: Support@StatModel.com
 # 
-# Copyright (c) 1998-2018 Muthen & Muthen
+# Copyright (c) 1998-2019 Muthen & Muthen
 # ```
 ```
 
@@ -2494,9 +2486,9 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 # [Mplus output file](./Stadler15b.out)
 # ```
 # 
-# Mplus VERSION 8.2 (Linux)
+# Mplus VERSION 8.4 (Linux)
 # MUTHEN & MUTHEN
-# 05/27/2019  11:39 AM
+# 05/03/2021   9:20 AM
 # 
 # INPUT INSTRUCTIONS
 # 
@@ -2703,8 +2695,8 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 #        (ratio of smallest to largest eigenvalue)
 # 
 # 
-#      Beginning Time:  11:39:29
-#         Ending Time:  11:39:29
+#      Beginning Time:  09:20:34
+#         Ending Time:  09:20:34
 #        Elapsed Time:  00:00:00
 # 
 # 
@@ -2718,7 +2710,7 @@ write.table(my.df, "Stadler15.dat", na = ".", row.names = FALSE, col.names = FAL
 # Web: www.StatModel.com
 # Support: Support@StatModel.com
 # 
-# Copyright (c) 1998-2018 Muthen & Muthen
+# Copyright (c) 1998-2019 Muthen & Muthen
 # ```
 ```
 
@@ -2733,13 +2725,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.6.1 (2019-07-05)
+## R version 4.0.3 (2020-10-10)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Linux Mint 19.1
+## Running under: Ubuntu 20.10
 ## 
 ## Matrix products: default
-## BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
-## LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_SG.UTF-8       LC_NUMERIC=C              
@@ -2753,13 +2745,14 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] metafor_2.1-0   Matrix_1.2-17   metaSEM_1.2.2.1 OpenMx_2.13.2  
+## [1] metafor_2.4-0 Matrix_1.2-18 metaSEM_1.2.5 OpenMx_2.19.1
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.1      knitr_1.23      magrittr_1.5    MASS_7.3-51.4  
-##  [5] mnormt_1.5-5    pbivnorm_0.6.0  ellipse_0.4.1   lattice_0.20-38
-##  [9] stringr_1.4.0   tools_3.6.1     parallel_3.6.1  grid_3.6.1     
-## [13] nlme_3.1-140    xfun_0.8        htmltools_0.3.6 yaml_2.2.0     
-## [17] digest_0.6.20   lavaan_0.6-4    evaluate_0.14   rmarkdown_1.13 
-## [21] stringi_1.4.3   compiler_3.6.1  stats4_3.6.1    mvtnorm_1.0-11
+##  [1] Rcpp_1.0.5      knitr_1.29      magrittr_2.0.1  MASS_7.3-53    
+##  [5] mnormt_2.0.2    pbivnorm_0.6.0  ellipse_0.4.2   lattice_0.20-41
+##  [9] rlang_0.4.7     stringr_1.4.0   tools_4.0.3     parallel_4.0.3 
+## [13] grid_4.0.3      nlme_3.1-149    tmvnsim_1.0-2   xfun_0.19      
+## [17] htmltools_0.4.0 yaml_2.2.1      digest_0.6.25   lifecycle_0.2.0
+## [21] lavaan_0.6-7    evaluate_0.14   rmarkdown_2.5   stringi_1.4.6  
+## [25] compiler_4.0.3  stats4_4.0.3    mvtnorm_1.1-1
 ```

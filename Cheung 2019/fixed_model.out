@@ -1,0 +1,143 @@
+Mplus VERSION 8.4 (Linux)
+MUTHEN & MUTHEN
+05/03/2021   9:03 AM
+
+INPUT INSTRUCTIONS
+
+  TITLE:	Fixed-effect meta-analysis
+
+  ! Read the dataset
+  DATA:	FILE IS Stadler15.dat;
+
+  ! Variable names in the dataset
+  ! ID: Level 2 label
+  ! Study: Level 3 label
+  ! r: effect size (correlation)
+  ! v: known sampling variance of r
+  ! GenInt: Dummy code for Intelligence Measure (General Intelligence)
+  ! Reason: Dummy code for Intelligence Measure (Reasoning)
+  VARIABLE: NAMES ID Study r v GenInt Reason;
+
+          USEVARIABLES ARE r;
+
+  		! Known sampling variance
+  		CONSTRAINT ARE v
+
+  MODEL:
+  		! Estimate the common effect
+  		[r*];
+
+  		! Known sampling variance
+  		r (L1);
+
+  		MODEL CONSTRAINT:
+  		L1 = v;
+
+
+
+*** WARNING in MODEL command
+  All variables are uncorrelated with all other variables in the model.
+  Check that this is what is intended.
+   1 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+Fixed-effect meta-analysis
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                          60
+
+Number of dependent variables                                    1
+Number of independent variables                                  0
+Number of continuous latent variables                            0
+
+Observed dependent variables
+
+  Continuous
+   R
+
+
+Estimator                                                       ML
+Information matrix                                        OBSERVED
+Maximum number of iterations                                  1000
+Convergence criterion                                    0.500D-04
+Maximum number of steepest descent iterations                   20
+
+Input data file(s)
+  Stadler15.dat
+
+Input data format  FREE
+
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     R                     0.386      -0.318      -0.300    1.67%       0.190      0.330      0.390
+              60.000       0.060      -0.024       0.860    1.67%       0.460      0.590
+     V                     0.015       1.314       0.000    1.67%       0.002      0.005      0.011
+              60.000       0.000       0.954       0.063    1.67%       0.013      0.025
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                        1
+
+Loglikelihood
+
+          H0 Value                        -481.526
+
+Information Criteria
+
+          Akaike (AIC)                     965.053
+          Bayesian (BIC)                   967.147
+          Sample-Size Adjusted BIC         964.002
+            (n* = (n + 2) / 24)
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+ Means
+    R                  0.651      0.005    130.640      0.000
+
+ Variances
+    R                999.000      0.000    999.000    999.000
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.248E-04
+       (ratio of smallest to largest eigenvalue)
+
+
+     Beginning Time:  09:03:12
+        Ending Time:  09:03:12
+       Elapsed Time:  00:00:00
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2019 Muthen & Muthen

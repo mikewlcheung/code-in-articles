@@ -1,0 +1,37 @@
+TITLE:	Mixed-effects meta-analysis
+
+! Read the dataset
+DATA:	FILE IS Stadler15.dat;
+
+! Variable names in the dataset
+! ID: Level 2 label
+! Study: Level 3 label
+! r: effect size (correlation)
+! v: known sampling variance of r
+! GenInt: Dummy code for Intelligence Measure (General Intelligence)
+! Reason: Dummy code for Intelligence Measure (Reasoning)
+VARIABLE: NAMES ID Study r v GenInt Reason;
+
+        USEVARIABLES ARE r GenInt;
+
+		! Known sampling variance
+		CONSTRAINT ARE v
+
+MODEL:
+		! Define a latent variable to represent the true effect size
+		f BY r;
+		
+		! Estimate the intercept effect
+		[f*];
+
+		! Estimate the effect of GenInt on f
+		f ON GenInt;
+
+		! Fix the observed mean at 0
+		[r@0];
+
+		! Known sampling variance
+		r (L1);
+
+		MODEL CONSTRAINT:
+		L1 = v;
