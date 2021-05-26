@@ -20,7 +20,9 @@ http://dx.doi.org/10.1080/10705510709336745.
 
 [Cheung, M. W.-L. (2020)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202020). [Synthesizing indirect effects in mediation models with meta-analytic methods](https://doi.org/10.31234/osf.io/df6jp). *Manuscript under review*.
 
-[Cheung, M. W.-L. (2021)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202021). [Meta-analytic structural equation modeling](https://doi.org/10.31234/osf.io/epsqt). *Oxford Research Encyclopedia of Business and Management*, Oxford University Press. https://doi.org/10.1093/acrefore/9780190224851.013.225
+[Cheung, M. W.-L. (2021a)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202021a). [Meta-analytic structural equation modeling](https://doi.org/10.31234/osf.io/epsqt). *Oxford Research Encyclopedia of Business and Management*, Oxford University Press. https://doi.org/10.1093/acrefore/9780190224851.013.225
+
+[Cheung, M. W.-L. (2021b)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202021b). [Structural equation modeling (SEM)-based meta-analysis](https://psyarxiv.com/93nfr/). To appear in Hoyle, R. H. (Ed.) *Handbook of Structural Equation Modeling* (2nd edition).
 
 [Cheung, M. W.-L. & Cheung, S.-F. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Cheung%202016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*, *7*(2), 140–155. http://doi.org/10.1002/jrsm.1166.
 
@@ -31,6 +33,8 @@ http://dx.doi.org/10.1080/10705510709336745.
 [Cheung, M. W.-L. & Jak, S. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Jak%202016). Analyzing big data in psychology: A split/analyze/meta-analyze approach. *Frontiers in Psychology*, *7* (738). http://doi.org/10.3389/fpsyg.2016.00738.
 
 [Cheung, M. W.-L. & Vijayakumar, R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Vijayakumar%202016). An introduction to when and how to conduct a meta-analysis. *Neuropsychology Review*, *26*(2), 121–128. http://doi.org/10.1007/s11065-016-9319-z.
+
+Hagger, H. S., Cheung, M. W.-L., Ajzen, I., & Hamilton, K. (2021). [Moderation effects in the Theory of Planned Behavior: A meta-analysis in the health behavior domain](https://osf.io/yg3ms). *Manuscript under review*.
 
 [Jak, S., & Cheung, M. W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/blob/master/Jak%20and%20Cheung%202018). Testing moderator hypotheses in meta-analytic structural equation modeling using subgroup analysis. *Behavior Research Methods*, *50*(4), 1359–1373. https://doi.org/10.3758/s13428-018-1046-3
 

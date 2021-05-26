@@ -1,0 +1,408 @@
+---
+title: 'Meta-Analysis Using Structural Equation Modeling'
+author: "Mike Cheung"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+  word_document: default
+  pdf_document:
+    toc: no
+editor_options: 
+  chunk_output_type: console
+---
+
+<style>
+.main-container { width: 1200px; max-width:2800px;}
+</style>
+
+
+# Univariate meta-analysis
+## Data preparation
+```{r}
+options(width=200)
+
+library(metaSEM)
+
+head(Stadler15)
+
+## Make a copy of the data
+df1 <- Stadler15
+
+## Convert General Intelligence vs Reasoning to an indicator of General Intelligence of 0 and 1
+GI <- ifelse(Stadler15$IntelligenceMeasure=="General intelligence", yes=1, no=0)
+df1 <- Stadler15[, c("Authors", "r", "v")]
+df1$GI <- GI
+
+df1
+```
+
+## Fixed-effect model
+```{r}
+## Use the meta function directly
+summary( meta(y=r, v=v, RE.constraints=0, data=df1) )
+
+## Create a SEM manually
+model_fix <- "f =~ 1*r
+              ## Average effect
+              f ~ Intercept1*1        
+              ## Heterogeneity variance is fixed at 0
+              f ~~ 0*f     
+              ## Known sampling variance
+              ## data.v means that the parameter is fixed at the value of
+              ## the variable named 'v' in the dataset.
+              r ~~ data.v*r"
+
+plot(model_fix, col="yellow")
+
+## Convert the lavaan model to RAM
+RAM_fix <- lavaan2RAM(model_fix, std.lv=FALSE)
+RAM_fix
+
+## Create and fit the model
+mx_fix <- create.mxModel("Fixed MA", RAM=RAM_fix, data=df1)
+summary(mx_fix)
+```
+
+## Random-effects model
+```{r}
+## Use the meta function directly
+summary( meta(y=r, v=v, data=df1, I2="I2hm") )
+
+## Create a SEM manually
+model_ran <- "f =~ 1*r
+              ## Average effect
+              f ~ Intercept1*1        
+              ## Heterogeneity variance
+              f ~~ Tau2_1_1*f     
+              ## Known sampling variance
+              r ~~ data.v*r"
+
+plot(model_ran, col="yellow")
+
+## Convert the lavaan model to RAM
+RAM_ran <- lavaan2RAM(model_ran, std.lv=FALSE)
+RAM_ran
+
+## Create and fit the model
+mx_ran <- create.mxModel("Uni MA", RAM=RAM_ran, data=df1)
+summary(mx_ran)
+
+## Harmonic mean of v, which is used to calculate I2
+(average_v <- psych::harmonic.mean(df1$v))
+
+## Calculate the I2
+mxEval(Tau2_1_1/(Tau2_1_1+average_v), mx_ran)
+```
+
+## Mixed-effects model
+```{r}
+## Use the meta function directly
+summary( meta(y=r, v=v, x=GI, data=df1) )
+
+## Create a SEM manually
+model_mix <- "f =~ 1*r
+              ## Intercept
+              f ~ Intercept1*1
+              ## Heterogeneity variance after controlling GI
+              f ~~ Tau2_1_1*f     
+              ## Known sampling variance
+              r ~~ data.v*r
+              ## A phantom variable
+              p =~ 0
+              p ~~ 0*p
+              p ~ data.GI*1
+              ## Slope
+              f ~ Slope1_1*p"
+
+plot(model_mix, col="yellow")
+
+## Convert the lavaan model to RAM
+RAM_mix <- lavaan2RAM(model_mix, std.lv=FALSE)
+RAM_mix
+
+## Create and fit the model
+mx_mix <- create.mxModel("Mixed MA", RAM=RAM_mix, data=df1)
+summary(mx_mix)
+
+## Tau2 with and with the covariate
+tau2_0 <- mxEval(Tau2_1_1, mx_ran)
+tau2_1 <- mxEval(Tau2_1_1, mx_mix)
+
+## Calculate the R2
+(R2 <- (tau2_0-tau2_1)/tau2_0)
+```
+
+# Three-level meta-analysis
+## Data preparation
+```{r}
+## No. of effect sizes per cluster
+table(table(df1$Authors))
+
+## maximum no. of effect sizes in level-2
+k <- max(table(df1$Authors))
+
+## Create a variable called "time" to store: 1, 2, 3, ... k
+df1$time <- with(df1, ave(r, Authors, FUN = seq_along))
+
+## Convert long format to wide format by "District"
+my.wide <- reshape(df1, timevar="time", idvar=c("Authors"), sep="", direction="wide")
+
+## NA in v is due to NA in y in wide format
+## Replace NA with 1e10 in "v"
+temp <- my.wide[, paste("v", 1:k, sep="")]
+temp[is.na(temp)] <- 1e10
+my.wide[, paste("v", 1:k, sep="")] <- temp
+
+## Replace NA with 0 in "GI"
+temp <- my.wide[, paste("GI", 1:k, sep="")]
+temp[is.na(temp)] <- 0
+my.wide[, paste("GI", 1:k, sep="")] <- temp
+
+my.wide
+```
+
+## Random-effects model
+```{r}
+## Use the meta3 function directly
+summary( meta3(r, v, Authors, data=df1, I2="I2hm") )
+
+## Create a SEM manually
+model_ran <- "## Level-3 latent factor
+              f3 =~ 1*r1 + 1*r2 + 1*r3 + 1*r4
+              ## Level-2 latent factor
+              f21 =~ 1*r1
+              f22 =~ 1*r2
+              f23 =~ 1*r3
+              f24 =~ 1*r4
+              ## Average effects
+              f3 ~ Intercept*1
+              ## Heterogeneity variances
+              f3 ~~ Tau2_3*f3
+              f21 ~~ Tau2_2*f21
+              f22 ~~ Tau2_2*f22
+              f23 ~~ Tau2_2*f23
+              f24 ~~ Tau2_2*f24
+              ## Known sampling variances
+              r1 ~~ data.v1*r1
+              r2 ~~ data.v2*r2
+              r3 ~~ data.v3*r3
+              r4 ~~ data.v4*r4"
+plot(model_ran, col="yellow")
+
+## Convert the lavaan model to RAM
+RAM_ran <- lavaan2RAM(model_ran, std.lv=FALSE)
+RAM_ran
+
+## Create and fit the model
+mx_ran <- create.mxModel("Uni MA", RAM=RAM_ran, data=my.wide)
+summary(mx_ran)
+
+## Harmonic mean of v, which is used to calculate I2
+(average_v <- psych::harmonic.mean(df1$v, na.rm=TRUE))
+
+## Calculate the I2 at level 2
+mxEval(Tau2_2/(Tau2_2+Tau2_3+average_v), mx_ran)
+
+## Calculate the I2 at level 3
+mxEval(Tau2_3/(Tau2_2+Tau2_3+average_v), mx_ran)
+```
+
+## Mixed-effects model
+```{r}
+## Use the meta3 function directly
+summary(meta3(y=r, v=v, cluster=Authors, x=GI, data=df1))
+
+## Create a SEM manually
+model_mix <- "## Level-3 latent factor
+              f3 =~ 1*r1 + 1*r2 + 1*r3 + 1*r4
+              ## Level-2 latent factors
+              f21 =~ 1*r1
+              f22 =~ 1*r2
+              f23 =~ 1*r3
+              f24 =~ 1*r4
+              ## Average effects
+              f3 ~ Intercept*1
+              ## Heterogeneity variances
+              f3 ~~ Tau2_3*f3
+              f21 ~~ Tau2_2*f21
+              f22 ~~ Tau2_2*f22
+              f23 ~~ Tau2_2*f23
+              f24 ~~ Tau2_2*f24
+              ## Known sampling variances
+              r1 ~~ data.v1*r1
+              r2 ~~ data.v2*r2
+              r3 ~~ data.v3*r3
+              r4 ~~ data.v4*r4
+              ## A phantom variable
+              p =~ 0
+              p ~~ 0*p
+              p ~ Slope_1*1
+              r1 ~ data.GI1*p
+              r2 ~ data.GI2*p
+              r3 ~ data.GI3*p
+              r4 ~ data.GI4*p"
+
+plot(model_mix, col="yellow")
+
+## Convert the lavaan model to RAM
+RAM_mix <- lavaan2RAM(model_mix, std.lv=FALSE)
+RAM_mix
+
+## Create and fit the model
+mx_mix <- create.mxModel("Uni MA", RAM=RAM_mix, data=my.wide)
+summary(mx_mix)
+
+tau2_0 <- mxEval(c(Tau2_2, Tau2_3), mx_ran)
+tau2_1 <- mxEval(c(Tau2_2, Tau2_3), mx_mix)
+(R2 <- (tau2_0-tau2_1)/tau2_0)
+```
+
+# Multivariate meta-analysis
+## Data prepartion
+```{r}
+## Make a copy before transforming the data
+df2 <- Nam03[, c("ID", "Age", "Asthma_logOR", "LRD_logOR", "Asthma_v", "AsthmaLRD_cov_05", "LRD_v")] 
+
+## NA is not allowed in definition variable. Replace NA with 1e5 for variances and 0 for covariances.
+df2$Asthma_v[is.na(df2$Asthma_v)] <- 1e5
+df2$LRD_v[is.na(df2$LRD_v)] <- 1e5
+df2$AsthmaLRD_cov_05[is.na(df2$AsthmaLRD_cov_05)] <- 0
+
+## Center the Age to improve stability of the results
+df2$Age <- scale(df2$Age, scale=FALSE)
+
+df2
+```
+
+## Fixed- (or common) effect model
+```{r}
+## Use the meta function directly
+summary( meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_05, LRD_v), 
+              RE.constraints=matrix(0, ncol=2, nrow=2), 
+              data=Nam03) ) 
+
+## Create a SEM manually
+model_fix <- "f_Ast =~ 1*Asthma_logOR
+              f_LRD =~ 1*LRD_logOR
+              ## Common effects
+              f_Ast ~ Intercept1*1
+              f_LRD ~ Intercept2*1
+              ## Heterogeneity variance is fixed at 0
+              f_Ast ~~ 0*f_Ast
+              f_LRD ~~ 0*f_LRD
+              f_Ast ~~ 0*f_LRD
+              ## Known sampling variances and covariance
+              Asthma_logOR ~~ data.Asthma_v*Asthma_logOR
+              LRD_logOR ~~ data.LRD_v*LRD_logOR
+              Asthma_logOR ~~ data.AsthmaLRD_cov_05*LRD_logOR"
+
+plot(model_fix, col="yellow")
+
+## Convert the lavaan model to RAM
+RAM_fix <- lavaan2RAM(model_fix, std.lv=FALSE)
+RAM_fix
+
+## Create and fit the model
+mx_fix <- create.mxModel("Fixed MA", RAM=RAM_fix, data=df2)
+summary(mx_fix)
+```
+
+## Random-effects model
+```{r}
+## Use the meta function directly
+mult.ran <- meta(y=cbind(Asthma_logOR, LRD_logOR), 
+                 v=cbind(Asthma_v, AsthmaLRD_cov_05, LRD_v), 
+                 data=Nam03, I2="I2hm")
+summary(mult.ran) 
+
+## Plot the (complete) effect sizes and their 95% confidence ellipses
+plot(mult.ran, xlim=c(-0.5, 1.5), ylim=c(-0.5, 1.5), axis.labels=c("Asthma", "LRD"),
+     randeff.ellipse.lty=2, 
+     main="Log-odds ratio")
+
+## Create a SEM manually
+model_ran <- "f_Ast =~ 1*Asthma_logOR
+              f_LRD =~ 1*LRD_logOR
+              ## Average effects
+              f_Ast ~ Intercept1*1
+              f_LRD ~ Intercept2*1
+              ## Heterogeneity variances and covariance
+              f_Ast ~~ Tau2_1_1*f_Ast
+              f_Ast ~~ Tau2_2_1*f_LRD
+              f_LRD ~~ Tau2_2_2*f_LRD
+              ## Known sampling variances and covariance
+              Asthma_logOR ~~ data.Asthma_v*Asthma_logOR
+              LRD_logOR ~~ data.LRD_v*LRD_logOR
+              Asthma_logOR ~~ data.AsthmaLRD_cov_05*LRD_logOR"
+plot(model_ran, col="yellow")
+
+## Convert the lavaan model to RAM
+RAM_ran <- lavaan2RAM(model_ran, std.lv=FALSE)
+RAM_ran
+
+## Create and fit the model
+mx_ran <- create.mxModel("Uni MA", RAM=RAM_ran, data=df2)
+summary(mx_ran)
+
+## Harmonic mean of v, which is used to calculate I2
+(average_Asthma_v <- psych::harmonic.mean(Nam03$Asthma_v, na.rm=TRUE))
+(average_LRD_v <- psych::harmonic.mean(Nam03$LRD_v, na.rm=TRUE))
+
+## Calculate the I2 of Asthma and LRD
+mxEval(Tau2_1_1/(Tau2_1_1+average_Asthma_v), mx_ran)
+mxEval(Tau2_2_2/(Tau2_2_2+average_LRD_v), mx_ran)
+```
+
+## Mixed-effects model
+```{r}
+## Use the meta function directly
+summary( meta(y=cbind(Asthma_logOR, LRD_logOR), 
+              v=cbind(Asthma_v, AsthmaLRD_cov_05, LRD_v),
+              x=scale(Age, scale=FALSE),
+              RE.constraints=Diag(c("0.1*Tau2_1_1", "0.1*Tau2_2_2")), 
+              data=Nam03) ) 
+
+## Create a SEM manually
+model_mix <- "f_Ast =~ 1*Asthma_logOR
+              f_LRD =~ 1*LRD_logOR
+              ## Average effects
+              f_Ast ~ Intercept1*1
+              f_LRD ~ Intercept2*1
+              ## Heterogeneity variances and covariance
+              f_Ast ~~ Tau2_1_1*f_Ast
+              f_LRD ~~ Tau2_2_2*f_LRD
+              f_Ast ~~ 0*f_LRD
+              ## Known sampling variances and covariance
+              Asthma_logOR ~~ data.Asthma_v*Asthma_logOR
+              LRD_logOR ~~ data.LRD_v*LRD_logOR
+              Asthma_logOR ~~ data.AsthmaLRD_cov_05*LRD_logOR
+              ## A phantom variable
+              p =~ 0
+              p ~~ 0*p
+              p ~ data.Age*1
+              ## Slopes
+              f_Ast ~ Slope1_1*p
+              f_LRD ~ Slope2_1*p"
+
+plot(model_mix, col="yellow")
+
+## Convert the lavaan model to RAM
+RAM_mix <- lavaan2RAM(model_mix, std.lv=FALSE)
+RAM_mix
+
+## Create and fit the model
+mx_mix <- create.mxModel("Mixed MA", RAM=RAM_mix, data=df2)
+summary(mx_mix)
+
+## Calculate the R2 for Asthma and LRD
+tau2_0 <- mxEval(c(Tau2_1_1, Tau2_2_2), mx_ran)
+tau2_1 <- mxEval(c(Tau2_1_1, Tau2_2_2), mx_mix)
+(R2 <- (tau2_0-tau2_1)/tau2_0)
+
+sessionInfo()
+```
