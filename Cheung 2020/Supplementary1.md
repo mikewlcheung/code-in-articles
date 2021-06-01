@@ -1,22 +1,22 @@
 ---
 title: 'Synthesizing Indirect Effects in Mediation Models with Meta-Analytic Methods: Supplementary Materials 1'
 author: "Mike Cheung"
-date: 'December 28, 2020'
+date: 'June 01, 2021'
 output:
-  pdf_document:
-    toc: yes
-    toc_depth: 3
   html_document:
     keep_md: yes
     self_contained: yes
     theme: united
     toc: yes
     toc_depth: 3
+  pdf_document:
+    toc: yes
+    toc_depth: 3
   word_document:
     toc: yes
 ---
 
-* This file demonstrates how to compute effect sizes and their sampling covariance matrix with two approaches using the delta method. The first approach uses a numeric approach with the structural equation modeling (SEM) framework. The second approach computes the sampling covariance matrix with the symbolic calculations.
+* This file demonstrates how to compute effect sizes and their sampling covariance matrix with two approaches using the delta method. The first one uses a numeric approach with the structural equation modeling (SEM) framework. The second approach computes the sampling covariance matrix with the symbolic calculations.
 
 # Numeric calculations with the SEM approach
 
@@ -31,6 +31,8 @@ model1 <- "y ~ c*x + b*m
            # Define indirect and direct effects
            Indirect := a*b
            Direct := c"
+
+## Diplay the model
 plot(model1)
 ```
 
@@ -84,7 +86,8 @@ model2 <- "y ~ e*x + b*m1 + d*m2
            Ind_m1 := a*b
            Ind_m2 := c*d
            Direct := e"
-plot(model2)
+
+plot(model2, layout="circle")
 ```
 
 ![](Supplementary1_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
@@ -137,8 +140,11 @@ model3 <- "y ~ e*x + f*m1 + c*m2
            m2 ~ d*x
            # Define indirect and direct effects
            Ind_m1m2 := a*b*c
+           Ind_m1 := a*f
+           Ind_m2 := d*c
            Direct := e"
-plot(model3)
+
+plot(model3, layout="circle")
 ```
 
 ![](Supplementary1_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
@@ -150,13 +156,15 @@ calEffSizes(model=model3, n=300, Cov=my.cor)
 
 ```
 ## $ES
-##   Ind_m1m2     Direct 
-## 0.03177221 0.10554090 
+##   Ind_m1m2     Ind_m1     Ind_m2     Direct 
+## 0.03177221 0.05989446 0.10279244 0.10554090 
 ## 
 ## $VCOV
-##               Ind_m1m2        Direct
-## Ind_m1m2  0.0001144605 -0.0000376544
-## Direct   -0.0000376544  0.0020297130
+##               Ind_m1m2        Ind_m1        Ind_m2        Direct
+## Ind_m1m2  1.144605e-04  0.0001405997  1.559037e-05 -0.0000376544
+## Ind_m1    1.405997e-04  0.0003749419 -3.765440e-05 -0.0000386612
+## Ind_m2    1.559037e-05 -0.0000376544  6.734239e-04 -0.0001218231
+## Direct   -3.765440e-05 -0.0000386612 -1.218231e-04  0.0020297130
 ```
 
 # Symbolic calculations
@@ -167,7 +175,7 @@ calEffSizes(model=model3, n=300, Cov=my.cor)
 library(symSEM)
 
 ## fn: The effect sizes
-## Covfn: Sampling covariance matrix of fn
+## Covfn: Sampling covariance matrix of fn: "b^2*Va+2*b*a*Cba+a^2*Vb"
 ## Va: Sampling variance of a
 ## Vb: Sampling variance of b
 ## Cba: Sampling covariance of a and b
@@ -265,7 +273,7 @@ sessionInfo()
 ```
 ## R version 4.0.3 (2020-10-10)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 20.10
+## Running under: Ubuntu 20.04.2 LTS
 ## 
 ## Matrix products: default
 ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
@@ -283,46 +291,44 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] symSEM_0.1    metaSEM_1.2.5 OpenMx_2.18.1
+## [1] symSEM_0.1.1    metaSEM_1.2.5.1 OpenMx_2.19.5  
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] minqa_1.2.4         colorspace_1.4-1    rjson_0.2.20       
-##   [4] ellipsis_0.3.1      rprojroot_1.3-2     htmlTable_1.13.3   
-##   [7] corpcor_1.6.9       base64enc_0.1-3     rstudioapi_0.11    
-##  [10] lavaan_0.6-7        mvtnorm_1.1-1       splines_4.0.3      
-##  [13] mnormt_2.0.2        knitr_1.29          glasso_1.11        
-##  [16] pkgload_1.0.2       Formula_1.2-4       nloptr_1.2.2.2     
-##  [19] cluster_2.1.0       png_0.1-7           regsem_1.6.2       
-##  [22] compiler_4.0.3      backports_1.2.0     assertthat_0.2.1   
-##  [25] Matrix_1.2-18       acepack_1.4.1       htmltools_0.4.0    
-##  [28] tools_4.0.3         igraph_1.2.5        coda_0.19-4        
-##  [31] gtable_0.3.0        glue_1.4.1          reshape2_1.4.4     
-##  [34] dplyr_1.0.2         Rcpp_1.0.5          carData_3.0-4      
-##  [37] vctrs_0.3.2         nlme_3.1-149        lisrelToR_0.1.4    
-##  [40] psych_2.0.7         xfun_0.19           stringr_1.4.0      
-##  [43] testthat_3.0.0      openxlsx_4.1.5      lme4_1.1-26        
-##  [46] lifecycle_0.2.0     gtools_3.8.2        statmod_1.4.35     
-##  [49] XML_3.99-0.3        MASS_7.3-53         scales_1.1.0       
-##  [52] BDgraph_2.63        Ryacas_1.1.3.1      kutils_1.70        
-##  [55] parallel_4.0.3      huge_1.3.4.1        RColorBrewer_1.1-2 
-##  [58] yaml_2.2.1          pbapply_1.4-2       gridExtra_2.3      
-##  [61] ggplot2_3.3.2       rpart_4.1-15        latticeExtra_0.6-29
-##  [64] stringi_1.4.6       desc_1.2.0          sem_3.1-11         
-##  [67] checkmate_2.0.0     boot_1.3-25         zip_2.0.4          
-##  [70] truncnorm_1.0-8     rlang_0.4.7         pkgconfig_2.0.3    
-##  [73] d3Network_0.5.2.1   Rsolnp_1.16         arm_1.11-2         
-##  [76] evaluate_0.14       lattice_0.20-41     purrr_0.3.4        
-##  [79] htmlwidgets_1.5.1   tidyselect_1.1.0    plyr_1.8.6         
-##  [82] magrittr_2.0.1      R6_2.5.0            generics_0.1.0     
-##  [85] Hmisc_4.4-0         pillar_1.4.4        whisker_0.4        
-##  [88] foreign_0.8-80      withr_2.2.0         rockchalk_1.8.144  
-##  [91] survival_3.1-12     semPlot_1.1.2       abind_1.4-5        
-##  [94] nnet_7.3-14         tibble_3.0.4        crayon_1.3.4       
-##  [97] fdrtool_1.2.15      ellipse_0.4.2       tmvnsim_1.0-2      
-## [100] rmarkdown_2.5       jpeg_0.1-8.1        grid_4.0.3         
-## [103] qgraph_1.6.5        data.table_1.13.0   pbivnorm_0.6.0     
-## [106] matrixcalc_1.0-3    digest_0.6.25       xtable_1.8-4       
-## [109] mi_1.0              stats4_4.0.3        munsell_0.5.0
+##   [1] nlme_3.1-152        RColorBrewer_1.1-2  rprojroot_1.3-2    
+##   [4] mi_1.0              tools_4.0.3         backports_1.2.1    
+##   [7] R6_2.5.0            rpart_4.1-15        Hmisc_4.4-1        
+##  [10] colorspace_1.4-1    nnet_7.3-14         withr_2.3.0        
+##  [13] tidyselect_1.1.0    gridExtra_2.3       mnormt_2.0.2       
+##  [16] compiler_4.0.3      fdrtool_1.2.15      qgraph_1.6.9       
+##  [19] htmlTable_2.1.0     regsem_1.6.2        desc_1.2.0         
+##  [22] scales_1.1.1        checkmate_2.0.0     psych_2.0.9        
+##  [25] mvtnorm_1.1-1       pbapply_1.4-3       sem_3.1-11         
+##  [28] stringr_1.4.0       digest_0.6.27       pbivnorm_0.6.0     
+##  [31] foreign_0.8-80      minqa_1.2.4         rmarkdown_2.7      
+##  [34] base64enc_0.1-3     jpeg_0.1-8.1        pkgconfig_2.0.3    
+##  [37] htmltools_0.5.0     lme4_1.1-26         lisrelToR_0.1.4    
+##  [40] htmlwidgets_1.5.2   rlang_0.4.10        rstudioapi_0.11    
+##  [43] generics_0.0.2      gtools_3.8.2        dplyr_1.0.2        
+##  [46] zip_2.1.1           magrittr_1.5        Formula_1.2-3      
+##  [49] Matrix_1.2-18       Rcpp_1.0.5          munsell_0.5.0      
+##  [52] abind_1.4-5         rockchalk_1.8.144   lifecycle_0.2.0    
+##  [55] stringi_1.5.3       yaml_2.2.1          carData_3.0-4      
+##  [58] MASS_7.3-53         plyr_1.8.6          matrixcalc_1.0-3   
+##  [61] lavaan_0.6-8        grid_4.0.3          parallel_4.0.3     
+##  [64] crayon_1.3.4        lattice_0.20-41     semPlot_1.1.2      
+##  [67] kutils_1.70         splines_4.0.3       Ryacas_1.1.3.1     
+##  [70] tmvnsim_1.0-2       knitr_1.30          pillar_1.4.6       
+##  [73] igraph_1.2.6        boot_1.3-25         corpcor_1.6.9      
+##  [76] pkgload_1.1.0       reshape2_1.4.4      stats4_4.0.3       
+##  [79] XML_3.99-0.5        glue_1.4.2          evaluate_0.14      
+##  [82] latticeExtra_0.6-29 data.table_1.13.2   png_0.1-7          
+##  [85] vctrs_0.3.4         nloptr_1.2.2.2      testthat_3.0.2     
+##  [88] gtable_0.3.0        purrr_0.3.4         assertthat_0.2.1   
+##  [91] ggplot2_3.3.2       xfun_0.19           openxlsx_4.2.2     
+##  [94] xtable_1.8-4        coda_0.19-4         Rsolnp_1.16        
+##  [97] glasso_1.11         survival_3.2-7      truncnorm_1.0-8    
+## [100] tibble_3.0.4        arm_1.11-2          ellipse_0.4.2      
+## [103] cluster_2.1.0       statmod_1.4.35      ellipsis_0.3.1
 ```
 
 

@@ -3,13 +3,13 @@ title: 'Synthesizing Indirect Effects in Mediation Models with Meta-Analytic Met
 author: "Mike Cheung"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output:
-  pdf_document:
-    toc: yes
-    toc_depth: 3
   html_document:
     keep_md: yes
     self_contained: yes
     theme: united
+    toc: yes
+    toc_depth: 3
+  pdf_document:
     toc: yes
     toc_depth: 3
   word_document:

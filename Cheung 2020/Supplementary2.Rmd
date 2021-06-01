@@ -174,8 +174,9 @@ plot(osmasem.fit0, color="yellow")
 A1 <- create.modMatrix(RAM1, output="A", "beh_freq_high")
 A1
 
-## Fit a model with female as a moderator
-osmasem.fit1 <- osmasem(model.name="Female as a moderator", RAM=RAM1, Ax=A1, data=osmasem.df1)
+## Fit a model with behavior frequency as a moderator
+osmasem.fit1 <- osmasem(model.name="Behavior frequency as a moderator", 
+                        RAM=RAM1, Ax=A1, data=osmasem.df1)
 summary(osmasem.fit1)
 
 ## Test the statistical significance between the models
