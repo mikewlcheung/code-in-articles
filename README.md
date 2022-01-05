@@ -22,7 +22,7 @@ http://dx.doi.org/10.1080/10705510709336745.
 
 [Cheung, M. W.-L. (2021b)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202021b). [Structural equation modeling (SEM)-based meta-analysis](https://psyarxiv.com/93nfr/). To appear in Hoyle, R. H. (Ed.) *Handbook of Structural Equation Modeling* (2nd edition).
 
-[Cheung, M. W.-L. (2021c)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202021c). [Synthesizing indirect effects in mediation models with meta-analytic methods](https://doi.org/10.31234/osf.io/df6jp). *Alcohol and Alcoholism* (paper accepted for publication).
+[Cheung, M. W.-L. (2021c)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202021c). [Synthesizing indirect effects in mediation models with meta-analytic methods](https://doi.org/10.31234/osf.io/df6jp). *Alcohol and Alcoholism*. doi:/10.1093/alcalc/agab044
 
 [Cheung, M. W.-L. & Cheung, S.-F. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Cheung%202016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*, *7*(2), 140–155. http://doi.org/10.1002/jrsm.1166.
 
@@ -34,12 +34,14 @@ http://dx.doi.org/10.1080/10705510709336745.
 
 [Cheung, M. W.-L. & Vijayakumar, R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Vijayakumar%202016). An introduction to when and how to conduct a meta-analysis. *Neuropsychology Review*, *26*(2), 121–128. http://doi.org/10.1007/s11065-016-9319-z.
 
-Hagger, H. S., Cheung, M. W.-L., Ajzen, I., & Hamilton, K. (2021). [Moderation effects in the Theory of Planned Behavior: A meta-analysis in the health behavior domain](https://osf.io/yg3ms). *Manuscript under review*.
+[Hagger, H. S., Cheung, M. W.-L., Ajzen, I., & Hamilton, K. (2021)](https://osf.io/3w2k7/files/). [Moderation effects in the Theory of Planned Behavior: A meta-analysis in the health behavior domain](https://osf.io/yg3ms). *Health Psychology* (accepted for publication).
 
 [Jak, S., & Cheung, M. W.-L. (2018)](https://github.com/mikewlcheung/code-in-articles/blob/master/Jak%20and%20Cheung%202018). Testing moderator hypotheses in meta-analytic structural equation modeling using subgroup analysis. *Behavior Research Methods*, *50*(4), 1359–1373. https://doi.org/10.3758/s13428-018-1046-3
 
 [Jak, S. & Cheung, M. W.-L. (2020)](https://github.com/mikewlcheung/code-in-articles/blob/master/Jak%20and%20Cheung%202020). [Meta-analytic structural equation modeling with moderating effects on SEM parameters](https://psyarxiv.com/ce85j/). *Psychological Methods*, *25*(4), 430–455. https://doi.org/10.1037/met0000245 
 
-[Lim, A. & Cheung, M. W.-L. (accepted for publication)](https://github.com/Aaron0696/FIML_MI_JOC_MISSINGDATA). [Evaluating FIML and multiple imputation in joint ordinal-continuous measurements models with missing data](https://doi.org/10.31234/osf.io/j3b2t). *Behavior Research Methods*.
+[Lim, A. & Cheung, M. W.-L. (2021)](https://github.com/Aaron0696/FIML_MI_JOC_MISSINGDATA). [Evaluating FIML and multiple imputation in joint ordinal-continuous measurements models with missing data](https://doi.org/10.31234/osf.io/j3b2t). *Behavior Research Methods*. doi:/10.3758/s13428-021-01582-w
 
-[Schutte N. S., Keng, S.-L. & Cheung, M. W.-L. (2020)](https://github.com/mikewlcheung/code-in-articles/blob/master/Schutte%20Keng%20and%20Cheung%202020). Emotional intelligence mediates the connection between mindfulness and gratitude: A meta-analytic structural equation modelling study. *Manuscript under review*.
+[Schutte N. S., Keng, S.-L. & Cheung, M. W.-L. (2021)](https://github.com/mikewlcheung/code-in-articles/blob/master/Schutte%20Keng%20and%20Cheung%202021). Emotional intelligence mediates the connection between mindfulness and gratitude: A meta-analytic structural equation modelling study. *Mindfulness*, *12*(11), 2613-2623. doi:/10.1007/s12671-021-01725-2
+
+[Valentine, J. C., Cheung, M. W.-L., Smith, E. J., Alexander, O., Hatton, J. M., Hong, R. Y., Huckaby, L. T., Patton, S. C., Pössel, P., & Seely, H. D. (2021)](https://github.com/jeffreycvalentine/masem-prevention_science). A primer on meta-analytic structural equation modeling: The case of depression. *Prevention Science*. doi:/10.1007/s11121-021-01298-5
