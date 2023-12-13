@@ -32,6 +32,8 @@ http://dx.doi.org/10.1080/10705510709336745.
 
 [Cheung, M. W.-L. & Jak, S. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Jak%202016). Analyzing big data in psychology: A split/analyze/meta-analyze approach. *Frontiers in Psychology*, *7* (738). http://doi.org/10.3389/fpsyg.2016.00738.
 
+[Cheung, M. W.-L. & Jak, S. (2023)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Jak%202023). Advanced meta-analytic techniques. https://osf.io/preprints/psyarxiv/b489w
+
 [Cheung, M. W.-L. & Vijayakumar, R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Vijayakumar%202016). An introduction to when and how to conduct a meta-analysis. *Neuropsychology Review*, *26*(2), 121–128. http://doi.org/10.1007/s11065-016-9319-z.
 
 [Hagger, H. S., Cheung, M. W.-L., Ajzen, I., & Hamilton, K. (2021)](https://osf.io/3w2k7/files/). [Moderation effects in the Theory of Planned Behavior: A meta-analysis in the health behavior domain](https://osf.io/yg3ms). *Health Psychology* (accepted for publication).

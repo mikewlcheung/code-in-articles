@@ -1,0 +1,168 @@
+---
+title: 'Advanced Meta-Analytic Techniques'
+author: "Mike W.-L. Cheung and Suzanne Jak"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+    toc_float: true
+  pdf_document:
+    toc: yes
+  word_document: default
+---
+
+
+# Multivariate meta-analysis
+```{r, message=FALSE}
+library(metaSEM)
+
+## Dataset
+Gleser94$MES
+
+## Calculate the sampling variances and covariance and amend into the data set
+Gleser94$MES$Uncoached.V11 <- with(Gleser94$MES, SD.Uncoached.Math^2)
+Gleser94$MES$Uncoached.V21 <- with(Gleser94$MES,
+                                   SD.Uncoached.Math*Cor.Math.Verbal*SD.Uncoached.Verbal)
+Gleser94$MES$Uncoached.V22 <- with(Gleser94$MES, SD.Uncoached.Verbal^2)
+
+Gleser94$MES$Coached.V11 <- with(Gleser94$MES, SD.Coached.Math^2)
+Gleser94$MES$Coached.V21 <- with(Gleser94$MES,
+                                 SD.Coached.Math*Cor.Math.Verbal*SD.Coached.Verbal)
+Gleser94$MES$Coached.V22 <- with(Gleser94$MES, SD.Coached.Verbal^2)
+
+## Assuming homogeneity of covariance matrices
+my.MES <- t(apply(Gleser94$MES, MARGIN=1,
+                  function(x)
+                    smdMES(m1=x[c("Mean.Uncoached.Math", "Mean.Uncoached.Verbal")],
+                           m2=x[c("Mean.Coached.Math", "Mean.Coached.Verbal")],
+                           V1=vec2symMat(x[c("Uncoached.V11", "Uncoached.V21", "Uncoached.V22")]),
+                           V2=vec2symMat(x[c("Coached.V11", "Coached.V21", "Coached.V22")]),
+                           n1=x["N.Uncoached"],
+                           n2=x["N.Coached"],
+                           homogeneity="covariance", list.output=FALSE)))
+
+## Fixed-effects multivariate meta-analysis
+fit.MES <- meta(y=my.MES[, 1:2], 
+                v=my.MES[, 3:5], 
+                model.name="MES")
+summary(fit.MES)
+
+## Correlation between the random effects
+cov2cor(VarCorr(fit.MES))
+
+plot(fit.MES, axis.labels=c("Math effect", "Verbal effect"),
+     univariate.polygon.width = 0.1)
+```
+
+# Three-level meta-analysis
+```{r}
+## Dataset
+data(Bornmann07)
+
+## No. of effect sizes per cluster
+table(table(Bornmann07$Cluster))
+
+#### ML estimation method
+## No predictor
+summary( meta3L(y=logOR, v=v, cluster=Cluster, data=Bornmann07) )
+
+## Type as a predictor
+## Grant: 0
+## Fellowship: 1
+summary( meta3L(y=logOR, v=v, x=(as.numeric(Type)-1),
+                cluster=Cluster, data=Bornmann07) )
+```
+
+# Meta-analytic structural equation modeling (MASEM)
+```{r}
+## Dataset
+pattern.na(Scalco17$data, show.na=FALSE)
+
+## Variable names
+varnames <- colnames(Scalco17$data[[1]])
+
+## Model specified in lavaan syntax
+modelH <-'BI ~ a41*ATT + a42*SN + a43*PBC
+          BEH ~ a54*BI + a53*PBC
+          ATT ~~ s21*SN
+          ATT ~~ s31*PBC
+          SN ~~ s32*PBC
+          ATT ~~ 1*ATT
+          SN ~~ 1*SN
+          PBC ~~ 1*PBC
+          BI ~~ s44*BI
+          BEH ~~ s55*BEH'
+
+plot(modelH)
+
+## Model in RAM speciification
+RAM1 <- lavaan2RAM(modelH, obs.variables = varnames,
+                    A.notation="on", S.notation="with")
+
+RAM1
+```
+
+## Two-stage structural equation modeling (TSSEM)
+```{r}
+## First stage of analysis
+stage1random <- tssem1(Cov=Scalco17$data, n = Scalco17$n, method="REM", RE.type="Diag")
+
+## Average correlation matrix under a random-effects model
+average.R <- vec2symMat(coef(stage1random, select="fixed"), diag = FALSE)
+dimnames(average.R) <- list(varnames, varnames)
+average.R
+
+## Second stage of analysis
+stage2Out <- tssem2(stage1random, Amatrix=RAM1$A, Smatrix=RAM1$S)
+summary(stage2Out)
+
+plot(stage2Out, col="yellow")
+```
+
+## One-stage meta-analytical structural equation modeling (OSMASEM)
+```{r}
+## Data preparation
+data_scalco <- Cor2DataFrame(x = Scalco17$data, n = Scalco17$n)
+
+## Model without any moderator
+osmasemOut <- osmasem(RAM = RAM1, data = data_scalco)
+summary(osmasemOut)
+
+plot(osmasemOut, col="green")
+
+## one-stage MASEM with mean age as moderator
+## add moderator with centered age
+data_scalco$data$Age <- scale(Scalco17$Age, scale=FALSE)
+
+## Indicator on the presence of data
+present_age <- !is.na(Scalco17$Age)
+
+## Create matrix for moderating effects
+Ax <- matrix(c(0,0,0,0,0,
+               0,0,0,0,0,
+               0,0,0,0,0,
+               0,0,0,0,0,
+               0,0,0,"0*data.Age",0),
+             nrow=5, ncol=5, byrow=TRUE)
+Ax
+
+## Create the model implied correlation structure with moderator
+M1 <- create.vechsR(A0=RAM1$A, S0=RAM1$S, Ax=Ax)
+
+T1 <- create.Tau2(RAM1)
+
+## Fit model without the moderator
+osmasem_modOut <- osmasem(model.name = "moderator",
+                          Mmatrix=M1, Tmatrix=T1, 
+                          data=data_scalco,
+                          subset.rows = present_age)
+summary(osmasem_modOut)
+
+## Make sure that the same number of studies is used in the overall moderator test
+osmasemOut <- osmasem(RAM = RAM1, data = data_scalco, subset.rows = present_age)
+
+anova(osmasem_modOut, osmasemOut)
+```
