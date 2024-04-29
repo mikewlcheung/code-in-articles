@@ -1,1 +1,0 @@
-R --no-save --no-restore -e "library(rmarkdown); render(\"multivariateMA.Rmd\", \"md_document\")"

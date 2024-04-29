@@ -1,6 +1,0 @@
-#!/bin/bash
-
-for f in *.inp
-do
-  mplus $f
-done
