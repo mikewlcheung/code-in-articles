@@ -1,0 +1,93 @@
+---
+title: "Multivariate meta-analysis as structural equation models"
+author: "Mike W.-L. Cheung"
+date: 1 Nov 2015
+output:
+  md_document
+---
+
+# Fitting a multivariate random-effects model
+```{r, message=FALSE}
+## Load the metaSEM library for the multivariate meta-analysis
+## See http://courses.nus.edu.sg/course/psycwlm/internet/metaSEM/
+library(metaSEM)
+  
+## Random-effects model. 
+## y: effect sizes; 
+## v: known sampling covariance matrices
+random.ma1 <- meta(y=cbind(lifesat, lifecon),
+                   v=cbind(lifesat_var, inter_cov, lifecon_var), data=wvs94a,
+                   model.name="Random effects model")
+
+summary(random.ma1)
+
+## Estimating correlation between random effects
+
+cov2cor(vec2symMat(coef(random.ma1, select="random")))
+
+## Testing the null hypothesis of both population effect sizes are zero
+random.ma2 <- meta(y=cbind(lifesat, lifecon),
+                   v=cbind(lifesat_var, inter_cov, lifecon_var), data=wvs94a,
+                   intercept.constraints=matrix(0, nrow=1, ncol=2),
+                   model.name="Effect sizes are fixed at 0")
+  
+summary(random.ma2)
+
+##  Conducting a likelihood ratio test between these two nested models
+anova(random.ma1, random.ma2) 
+```
+
+# Fitting a multivariate fixed-effects model
+```{r}
+## Fix the variance component at 0 by using
+## RE.constraints=matrix(0, ncol=2, nrow=2)
+fixed.ma <- meta(y=cbind(lifesat, lifecon),
+                 v=cbind(lifesat_var, inter_cov, lifecon_var), data=wvs94a,
+                 RE.constraints=matrix(0, ncol=2, nrow=2),
+                 model.name="Fixed effects model")
+  
+summary(fixed.ma)
+```
+
+# Fitting a multivariate mixed-effects model
+```{r}
+## x: predictors
+## gnp is divided by 10000 and centered by using 
+## scale(gnp/10000, scale=FALSE)
+mixed.ma1 <- meta(y=cbind(lifesat, lifecon),
+                  v=cbind(lifesat_var, inter_cov, lifecon_var),
+                  x=scale(gnp/10000, scale=FALSE), data=wvs94a,
+                  model.name="GNP as a predictor")
+  
+summary(mixed.ma1)
+```
+
+# Fitting a mixed-effects model with an equality constraint on the regression coefficients
+```{r}
+## Fix the coefficients by using
+## coef.constraints=matrix(c("0.0*Eq_slope", "0.0*Eq_slope"), nrow=2)
+mixed.ma2 <- meta(y=cbind(lifesat, lifecon),
+                  v=cbind(lifesat_var, inter_cov, lifecon_var),
+                  x=scale(gnp/10000, scale=FALSE), data=wvs94a,
+                  coef.constraints=matrix(c("0.0*Eq_slope",
+                                            "0.0*Eq_slope"), nrow=2),
+                  model.name="GNP as a predictor with equal slope")
+  
+summary(mixed.ma2)
+
+## Conducting a likelihood ratio test between these two nested models
+anova(mixed.ma1, mixed.ma2)  
+```
+
+# Plotting multivariate effect sizes
+```{r}
+plot(random.ma1, study.min.cex=0.8, add.margin=0.02,
+     estimate.ellipse.lwd=2, randeff.ellipse.lty=2, randeff.ellipse.lwd=4,
+     main="Estimated effect sizes and their 95% confidence ellipses",
+     axis.label=c("Gender difference on life satisfaction",
+                  "Gender difference on life control"))
+
+## R session
+sessionInfo()
+```
+

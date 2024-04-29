@@ -1,0 +1,1694 @@
+% Created 2024-04-29 Mon 09:20
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{framed}
+\usepackage{xcolor}
+\definecolor{shadecolor}{gray}{.9}
+\newenvironment{results}{\begin{shaded}}{\end{shaded}}
+\author{Mike W.-L. Cheung}
+\date{\today}
+\title{Conducting Three-level Meta-analyses using the \texttt{metaSEM} Package}
+\hypersetup{
+ pdfauthor={Mike W.-L. Cheung},
+ pdftitle={Conducting Three-level Meta-analyses using the \texttt{metaSEM} Package},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 29.3 (Org mode 9.6.27)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Introduction}
+\label{sec:orgab8a2d7}
+This file illustrates how to conduct three-level meta-analyses using the \href{https://cran.r-project.org/package=metaSEM}{metaSEM} and \href{https://openmx.ssri.psu.edu}{OpenMx} packages available in the \href{https://www.r-project.org/}{R} environment. The \texttt{metaSEM} package was written to simplify the procedures to conduct meta-analysis. Most readers may only need to use the \texttt{metaSEM} package to conduct the analysis. The next section shows how to conduct two- and three-level meta-analyses with the \texttt{meta()} and \texttt{meta3L()} functions. The third section demonstrates more complicated three-level meta-analyses using a dataset with more predictors. The final section shows how to implement three-level meta-analyses as structural equation models using the \texttt{OpenMx} package. It provides detailed steps on how three-level meta-analyses can be formulated as structural equation models.
+
+This file also demonstrates the advantages of using the SEM approach to conduct three-level meta-analyses. These include flexibility on imposing constraints for model comparisons and construction of likelihood-based confidence interval (LBCI). I also demonstrate how to conduct three-level meta-analysis with restricted (or residual) maximum likelihood (REML) using the \texttt{reml3L()} function and handling missing covariates with full information maximum likelihood (FIML) using the \texttt{meta3LFIML()} function. Readers may refer to Cheung (2015) for the design and implementation of the \texttt{metaSEM} package and Cheung (2014) for the theory and issues on how to formulate three-level meta-analyses as structural equation models. 
+
+Two datasets from published meta-analyses were used in the illustrations. The first dataset was based on Cooper et al. (2003) and Konstantopoulos (2011). Konstantopoulos (2011) selected part of the dataset to illustrate how to conduct three-level meta-analysis. The second dataset was reported by Bornmann et al. (2007) and Marsh et al. (2009). They conducted a three-level meta-analysis on gender effects in peer reviews of grant proposals. 
+
+\section{Comparisons between Two- and Three-Level Models with Cooper et al.'s (2003) Dataset}
+\label{sec:orgd68cc19}
+As an illustration, I first conduct the tradition (two-level) meta-analysis using the \texttt{meta()} function. Then I conduct a three-level meta-analysis using the \texttt{meta3()} function. We may compare the similarities and differences between these two sets of results. 
+
+\subsection{Inspecting the data}
+\label{sec:org2e8dfbd}
+Before running the analyses, we need to load the \texttt{metaSEM} library. The datasets are stored in the library. It is always a good idea to inspect the data before the analyses. We may display the first few cases of the dataset by using the \texttt{head()} command. 
+\begin{verbatim}
+#### Cooper et al. (2003)
+
+library("metaSEM")
+head(Cooper03)
+\end{verbatim}
+
+\begin{verbatim}
+  District Study     y     v Year
+1       11     1 -0.18 0.118 1976
+2       11     2 -0.22 0.118 1976
+3       11     3  0.23 0.144 1976
+4       11     4 -0.30 0.144 1976
+5       12     5  0.13 0.014 1989
+6       12     6 -0.26 0.014 1989
+\end{verbatim}
+
+\subsection{Two-level meta-analysis}
+\label{sec:org44c59c0}
+Similar to other \texttt{R} packages, we may use \texttt{summary()} to extract the results after running the analyses. I first conduct a random-effects meta-analysis and then a fixed- and mixed-effects meta-analyses.
+
+\begin{enumerate}
+\item Random-effects model
+\label{sec:org94c1e6a}
+The \emph{Q} statistic on testing the homogeneity of effect sizes was 578.86, \emph{df} = 55, \emph{p} < .001. The estimated heterogeneity \(\tau^2\) (labeled \texttt{Tau2\_1\_1} in the output) and \(I^2\) were 0.0866 and 0.9459, respectively. This indicates that the between-study effect explains about 95\% of the total variation. The average population effect (labeled \texttt{Intercept1} in the output; and its 95\% Wald CI) was 0.1280 (0.0428, 0.2132).
+\begin{verbatim}
+#### Two-level meta-analysis
+
+## Random-effects model  
+summary( meta(y=y, v=v, data=Cooper03) )
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta(y = y, v = v, data = Cooper03)
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+           Estimate Std.Error   lbound   ubound z value  Pr(>|z|)    
+Intercept1 0.128003  0.043472 0.042799 0.213207  2.9445  0.003235 ** 
+Tau2_1_1   0.086537  0.019485 0.048346 0.124728  4.4411 8.949e-06 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 578.864
+Degrees of freedom of the Q statistic: 55
+P value of the Q statistic: 0
+
+Heterogeneity indices (based on the estimated Tau2):
+                             Estimate
+Intercept1: I2 (Q statistic)   0.9459
+
+Number of studies (or clusters): 56
+Number of observed statistics: 56
+Number of estimated parameters: 2
+Degrees of freedom: 54
+-2 log likelihood: 33.2919 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\item Fixed-effects model
+\label{sec:orgb7b9a2f}
+A fixed-effects meta-analysis can be conducted by fixing the heterogeneity of the random effects at 0 with the \texttt{RE.constraints} argument (random-effects constraints). The estimated common effect (and its 95\% Wald CI) was 0.0464 (0.0284, 0.0644).
+\begin{verbatim}
+## Fixed-effects model
+summary( meta(y=y, v=v, data=Cooper03, RE.constraints=0) )
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta(y = y, v = v, data = Cooper03, RE.constraints = 0)
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+            Estimate Std.Error    lbound    ubound z value Pr(>|z|)    
+Intercept1 0.0464072 0.0091897 0.0283957 0.0644186  5.0499 4.42e-07 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 578.864
+Degrees of freedom of the Q statistic: 55
+P value of the Q statistic: 0
+
+Heterogeneity indices (based on the estimated Tau2):
+                             Estimate
+Intercept1: I2 (Q statistic)        0
+
+Number of studies (or clusters): 56
+Number of observed statistics: 56
+Number of estimated parameters: 1
+Degrees of freedom: 55
+-2 log likelihood: 434.2075 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\item Mixed-effects model
+\label{sec:org64bda5c}
+\texttt{Year} was used as a covariate. It is easier to interpret the intercept by centering the \texttt{Year} with \texttt{scale(Year, scale=FALSE)}. The \texttt{scale=FALSE} argument means that it is centered, but not standardized. The estimated regression coefficient (labeled \texttt{Slope1\_1} in the output; and its 95\% Wald CI) was 0.0051 (-0.0033, 0.0136) which is not significant at \(\alpha=.05\). The \(R^2\) is 0.0164. 
+\begin{verbatim}
+## Mixed-effects model
+summary( meta(y=y, v=v, x=scale(Year, scale=FALSE), data=Cooper03) )
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta(y = y, v = v, x = scale(Year, scale = FALSE), data = Cooper03)
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+             Estimate  Std.Error     lbound     ubound z value  Pr(>|z|)    
+Intercept1  0.1259126  0.0432028  0.0412367  0.2105884  2.9145  0.003563 ** 
+Slope1_1    0.0051307  0.0043248 -0.0033457  0.0136071  1.1864  0.235483    
+Tau2_1_1    0.0851153  0.0190462  0.0477856  0.1224451  4.4689 7.862e-06 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 578.864
+Degrees of freedom of the Q statistic: 55
+P value of the Q statistic: 0
+
+Explained variances (R2):
+                           y1
+Tau2 (no predictor)    0.0865
+Tau2 (with predictors) 0.0851
+R2                     0.0164
+
+Number of studies (or clusters): 56
+Number of observed statistics: 56
+Number of estimated parameters: 3
+Degrees of freedom: 53
+-2 log likelihood: 31.88635 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+\end{enumerate}
+
+\subsection{Three-level meta-analysis}
+\label{sec:org18b8f44}
+\begin{enumerate}
+\item Random-effects model
+\label{sec:org0d6bb7a}
+The \emph{Q} statistic on testing the homogeneity of effect sizes was the same as that under the two-level meta-analysis. The estimated heterogeneity at level 2 \(\tau^2_{(2)}\) (labeled \texttt{Tau2\_2} in the output) and at level 3 \(\tau^2_{(3)}\) (labeled \texttt{Tau2\_3} in the output) were 0.0329 and 0.0577, respectively. The level 2 \(I^2_{(2)}\) (labeled \texttt{I2\_2} in the output) and the level 3 \(I^2_{(3)}\) (labeled \texttt{I2\_3} in the output) were 0.3440 and 0.6043, respectively. Schools (level 2) and districts (level 3) explain about 34\% and 60\% of the total variation, respectively. The average population effect (and its 95\% Wald CI) was 0.1845 (0.0266, 0.3423).
+\begin{verbatim}
+#### Three-level meta-analysis
+
+## Random-effects model
+summary( meta3L(y=y, v=v, cluster=District, data=Cooper03) )
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3L(y = y, v = v, cluster = District, data = Cooper03)
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+            Estimate  Std.Error     lbound     ubound z value Pr(>|z|)   
+Intercept  0.1844554  0.0805411  0.0265977  0.3423131  2.2902 0.022010 * 
+Tau2_2     0.0328648  0.0111397  0.0110314  0.0546982  2.9502 0.003175 **
+Tau2_3     0.0577384  0.0307423 -0.0025154  0.1179921  1.8781 0.060362 . 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 578.864
+Degrees of freedom of the Q statistic: 55
+P value of the Q statistic: 0
+
+Heterogeneity indices (based on the estimated Tau2):
+                              Estimate
+I2_2 (Typical v: Q statistic)   0.3440
+I2_3 (Typical v: Q statistic)   0.6043
+
+Number of studies (or clusters): 11
+Number of observed statistics: 56
+Number of estimated parameters: 3
+Degrees of freedom: 53
+-2 log likelihood: 16.78987 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\item Mixed-effects model
+\label{sec:org017f21d}
+\texttt{Year} was used as a covariate. The estimated regression coefficient (labeled \texttt{Slope\_1} in the output; and its 95\% Wald CI) was 0.0051 (-0.0116, 0.0218) which is not significant at \(\alpha=.05\). The estimated level 2 \(R^2_{(2)}\) and level 3 \(R^2_{(3)}\) were 0.0000 and 0.0221, respectively.
+\begin{verbatim}
+## Mixed-effects model
+summary( meta3L(y=y, v=v, cluster=District, x=scale(Year, scale=FALSE), data=Cooper03) )
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3L(y = y, v = v, cluster = District, x = scale(Year, scale = FALSE), 
+    data = Cooper03)
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+            Estimate  Std.Error     lbound     ubound z value Pr(>|z|)   
+Intercept  0.1780268  0.0805219  0.0202067  0.3358469  2.2109 0.027042 * 
+Slope_1    0.0050737  0.0085266 -0.0116382  0.0217856  0.5950 0.551814   
+Tau2_2     0.0329390  0.0111620  0.0110618  0.0548162  2.9510 0.003168 **
+Tau2_3     0.0564628  0.0300330 -0.0024007  0.1153264  1.8800 0.060104 . 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 578.864
+Degrees of freedom of the Q statistic: 55
+P value of the Q statistic: 0
+
+Explained variances (R2):
+                        Level 2 Level 3
+Tau2 (no predictor)    0.032865  0.0577
+Tau2 (with predictors) 0.032939  0.0565
+R2                     0.000000  0.0221
+
+Number of studies (or clusters): 11
+Number of observed statistics: 56
+Number of estimated parameters: 4
+Degrees of freedom: 52
+-2 log likelihood: 16.43629 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+\end{enumerate}
+
+\subsection{Model comparisons}
+\label{sec:org1dd10d8}
+Many research hypotheses involve model comparisons among nested models. \texttt{anova()}, a generic function to comparing nested models, may be used to conduct a likelihood ratio test which is also known as a chi-square difference test.
+
+\begin{enumerate}
+\item Testing \(H_0: \tau^2_{(3)} = 0\)
+\label{sec:orga82ed6d}
+\begin{itemize}
+\item Based on the data structure, it is clear that a 3-level meta-analysis is preferred to a traditional 2-level meta-analysis. It is still of interest to test whether the 3-level model is statistically better than the 2-level model by testing \(H_0: \tau^2_{(3)}=0\). Since the models with \(\tau^2_{(3)}\) being freely estimated and with \(\tau^2_{(3)}=0\) are nested, we may compare them by the use of a likelihood ratio test.
+\item It should be noted, however, that \(H_0: \tau^2_{(3)}=0\) is tested on the boundary. The likelihood ratio test is not distributed as a chi-square variate with 1 \emph{df}. A simple strategy to correct this bias is to reject the null hypothesis when the observed \emph{p} value is larger than .10 for \(\alpha=.05\).
+
+\item The likelihood-ratio test was 16.5020 (\emph{df} =1), \emph{p} < .001. This clearly demonstrates that the three-level model is statistically better than the two-level model.
+\end{itemize}
+\begin{verbatim}
+## Model comparisons
+
+model2 <- meta(y=y, v=v, data=Cooper03, model.name="2 level model", silent=TRUE) 
+#### An equivalent model by fixing tau2 at level 3=0 in meta3()
+## model2 <- meta3L(y=y, v=v, cluster=District, data=Cooper03, 
+##                  model.name="2 level model", RE3.constraints=0) 
+model3 <- meta3L(y=y, v=v, cluster=District, data=Cooper03, 
+                model.name="3 level model", silent=TRUE) 
+anova(model3, model2)
+\end{verbatim}
+
+\begin{verbatim}
+           base    comparison ep minus2LL df      AIC   diffLL diffdf            p
+1 3 level model          <NA>  3 16.78987 53 22.78987       NA     NA           NA
+2 3 level model 2 level model  2 33.29190 54 37.29190 16.50203      1 4.859793e-05
+\end{verbatim}
+
+\item Testing \(H_0: \tau^2_{(2)} = \tau^2_{(3)}\)
+\label{sec:orga4373c5}
+\begin{itemize}
+\item From the results of the 3-level random-effects meta-analysis, it appears the level 3 heterogeneity is much larger than that at level 2.
+\item We may test the null hypothesis \(H_0: \tau^2_{(2)} = \tau^2_{(3)}\) by the use of a likelihood-ratio test.
+\item We may impose an equality constraint on \(\tau^2_{(2)} = \tau^2_{(3)}\) by using the same label in \texttt{meta3()}. For example, \texttt{Eq\_tau2} is used as the label in \texttt{RE2.constraints} and \texttt{RE3.constraints} meaning that both the level 2 and level 3 random effects heterogeneity variances are constrained equally. The value of \texttt{0.1} was used as the starting value in the constraints.
+\item The likelihood-ratio test was 0.6871 (\emph{df} = 1), \emph{p} = 0.4072. This indicates that there is not enough evidence to reject \(H_0: \tau^2_2=\tau^2_3\).
+\end{itemize}
+\begin{verbatim}
+## Testing \tau^2_2 = \tau^2_3
+modelEqTau2 <- meta3L(y=y, v=v, cluster=District, data=Cooper03, 
+                      model.name="Equal tau2 at both levels",
+                      RE2.constraints="0.1*Eq_tau2", RE3.constraints="0.1*Eq_tau2") 
+anova(model3, modelEqTau2)
+\end{verbatim}
+
+\begin{verbatim}
+           base                comparison ep minus2LL df      AIC    diffLL diffdf
+1 3 level model                      <NA>  3 16.78987 53 22.78987        NA     NA
+2 3 level model Equal tau2 at both levels  2 17.47697 54 21.47697 0.6870959      1
+          p
+1        NA
+2 0.4071539
+\end{verbatim}
+\end{enumerate}
+
+\subsection{Likelihood-based confidence interval}
+\label{sec:org26b0d91}
+\begin{itemize}
+\item A Wald CI is constructed by \(\hat{\theta} \pm 1.96 SE\) where \(\hat{\theta}\) and \(SE\) are the parameter estimate and its estimated standard error.
+\item A LBCI can be constructed by the use of the likelihood ratio statistic (e.g., Cheung, 2009; Neal \& Miller, 1997).
+\item It is well known that the performance of Wald CI on variance components is very poor. For example, the 95\% Wald CI on \(\hat{\tau}^2_{(3)}\) in the three-level random-effects meta-analysis was (-0.0025, 0.1180). The lower bound falls outside 0.
+\item A LBCI on the heterogeneity variance is preferred. Since \(I^2_{(2)}\) and \(I^2_{(3)}\) are functions of \(\tau^2_{(2)}\) and \(\tau^2_{(3)}\), LBCI on these indices may also be requested and used to indicate the precision of these indices.
+\item LBCI may be requested by specifying \texttt{LB} in the \texttt{intervals.type} argument.
+\item The 95\% LBCI on \(\hat{\tau}^2_{(3)}\) is (0.0198, 0.1763) that stay inside the meaningful boundaries. Regarding the \(I^2\), the 95\% LBCIs on \(I^2_{(2)}\) and \(I^2_{(3)}\) were (0.1274, 0.6573) and (0.2794, 0.8454), respectively.
+\end{itemize}
+\begin{verbatim}
+## Likelihood-based CI
+summary( meta3L(y=y, v=v, cluster=District, data=Cooper03, 
+                I2=c("I2q", "ICC"), intervals.type="LB") ) 
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3L(y = y, v = v, cluster = District, data = Cooper03, intervals.type = "LB", 
+    I2 = c("I2q", "ICC"))
+
+95% confidence intervals: Likelihood-based statistic
+Coefficients:
+          Estimate Std.Error   lbound   ubound z value Pr(>|z|)
+Intercept 0.184455        NA 0.011605 0.358269      NA       NA
+Tau2_2    0.032865        NA 0.016298 0.063113      NA       NA
+Tau2_3    0.057738        NA 0.019780 0.177329      NA       NA
+
+Q statistic on the homogeneity of effect sizes: 578.864
+Degrees of freedom of the Q statistic: 55
+P value of the Q statistic: 0
+
+Heterogeneity indices (I2) and their 95% likelihood-based CIs:
+                               lbound Estimate ubound
+I2_2 (Typical v: Q statistic) 0.12739  0.34396 0.6568
+ICC_2 (tau^2/(tau^2+tau^3))   0.13116  0.36273 0.7006
+I2_3 (Typical v: Q statistic) 0.27835  0.60429 0.8452
+ICC_3 (tau^3/(tau^2+tau^3))   0.29938  0.63727 0.8688
+
+Number of studies (or clusters): 11
+Number of observed statistics: 56
+Number of estimated parameters: 3
+Degrees of freedom: 53
+-2 log likelihood: 16.78987 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\begin{itemize}
+\item A LBCI may also be requested in mixed-effects meta-analysis.
+\end{itemize}
+\begin{verbatim}
+summary( meta3L(y=y, v=v, cluster=District, x=scale(Year, scale=FALSE), 
+                data=Cooper03, intervals.type="LB") ) 
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3L(y = y, v = v, cluster = District, x = scale(Year, scale = FALSE), 
+    data = Cooper03, intervals.type = "LB")
+
+95% confidence intervals: Likelihood-based statistic
+Coefficients:
+            Estimate Std.Error     lbound     ubound z value Pr(>|z|)
+Intercept  0.1780268        NA  0.0047821  0.3513321      NA       NA
+Slope_1    0.0050737        NA -0.0128999  0.0238841      NA       NA
+Tau2_2     0.0329390        NA  0.0163205  0.0632855      NA       NA
+Tau2_3     0.0564628        NA  0.0192097  0.1614703      NA       NA
+
+Q statistic on the homogeneity of effect sizes: 578.864
+Degrees of freedom of the Q statistic: 55
+P value of the Q statistic: 0
+
+Explained variances (R2):
+                        Level 2 Level 3
+Tau2 (no predictor)    0.032865  0.0577
+Tau2 (with predictors) 0.032939  0.0565
+R2                     0.000000  0.0221
+
+Number of studies (or clusters): 11
+Number of observed statistics: 56
+Number of estimated parameters: 4
+Degrees of freedom: 52
+-2 log likelihood: 16.43629 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\subsection{Restricted maximum likelihood estimation}
+\label{sec:orgdf5c79a}
+\begin{itemize}
+\item REML may also be used in three-level meta-analysis. The parameter estimates for \(\tau^2_{(2)}\) and \(\tau^2_{(3)}\) were 0.0327 and 0.0651, respectively.
+\end{itemize}
+\begin{verbatim}
+## REML
+summary( reml1 <- reml3L(y=y, v=v, cluster=District, data=Cooper03) )
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+reml3L(y = y, v = v, cluster = District, data = Cooper03)
+
+95% confidence intervals: z statistic approximation
+Coefficients:
+         Estimate  Std.Error     lbound     ubound z value Pr(>|z|)   
+Tau2_2  0.0327365  0.0110922  0.0109963  0.0544768  2.9513 0.003164 **
+Tau2_3  0.0650619  0.0355102 -0.0045368  0.1346607  1.8322 0.066921 . 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Number of studies (or clusters): 56
+Number of observed statistics: 55
+Number of estimated parameters: 2
+Degrees of freedom: 53
+-2 log likelihood: -81.14044 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\begin{itemize}
+\item We may impose an equality constraint on \(\tau^2_{(2)}\) and \(\tau^2_{(3)}\) and test whether this constraint is statistically significant. The estimated value for \(\tau^2_{(2)}=\tau^2_{(3)}\) was 0.0404. When this model is compared against the unconstrained model, the test statistic was 1.0033 (\emph{df} = 1), \emph{p} = .3165, which is not significant.
+\end{itemize}
+\begin{verbatim}
+summary( reml0 <- reml3L(y=y, v=v, cluster=District, data=Cooper03,
+                         RE.equal=TRUE, model.name="Equal Tau2") )
+anova(reml1, reml0)
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+reml3L(y = y, v = v, cluster = District, data = Cooper03, RE.equal = TRUE, 
+    model.name = "Equal Tau2")
+
+95% confidence intervals: z statistic approximation
+Coefficients:
+     Estimate Std.Error   lbound   ubound z value  Pr(>|z|)    
+Tau2 0.040418  0.010290 0.020249 0.060587  3.9277 8.576e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Number of studies (or clusters): 56
+Number of observed statistics: 55
+Number of estimated parameters: 1
+Degrees of freedom: 54
+-2 log likelihood: -80.1371 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+                          base comparison ep  minus2LL df       AIC   diffLL diffdf
+1 Variance component with REML       <NA>  2 -81.14044 -2 -77.14044       NA     NA
+2 Variance component with REML Equal Tau2  1 -80.13710 -1 -78.13710 1.003336      1
+          p
+1        NA
+2 0.3165046
+\end{verbatim}
+
+\begin{itemize}
+\item We may also estimate the residual heterogeneity after controlling for the covariate. The estimated residual heterogeneity for \(\tau^2_{(2)}\) and \(\tau^2_{(3)}\) were 0.0327 and 0.0723, respectively.
+\end{itemize}
+\begin{verbatim}
+summary( reml3L(y=y, v=v, cluster=District, x=scale(Year, scale=FALSE), data=Cooper03) )
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+reml3L(y = y, v = v, cluster = District, x = scale(Year, scale = FALSE), 
+    data = Cooper03)
+
+95% confidence intervals: z statistic approximation
+Coefficients:
+         Estimate  Std.Error     lbound     ubound z value Pr(>|z|)   
+Tau2_2  0.0326502  0.0110529  0.0109870  0.0543134  2.9540 0.003137 **
+Tau2_3  0.0722656  0.0405349 -0.0071813  0.1517125  1.7828 0.074619 . 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Number of studies (or clusters): 56
+Number of observed statistics: 54
+Number of estimated parameters: 2
+Degrees of freedom: 52
+-2 log likelihood: -72.09405 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\section{More Complex 3-Level Meta-Analyses with Bornmann et al.'s (2007) Dataset}
+\label{sec:org1b53aa8}
+This section replicates the findings in Table 3 of Marsh et al. (2009). Several additional analyses on model comparisons were conducted. Missing data were artificially introduced to illustrate how missing data might be handled with FIML.
+
+\subsection{Inspecting the data}
+\label{sec:orga44584d}
+The effect size and its sampling variance are \texttt{logOR} (log of the odds ratio) and \texttt{v}, respectively. \texttt{Cluster} is the variable representing the cluster effect, whereas the potential covariates are \texttt{Year} (year of publication), \texttt{Type} (\texttt{Grants} vs. \texttt{Fellowship}), \texttt{Discipline} (\texttt{Physical sciences}, \texttt{Life sciences/biology}, \texttt{Social sciences/humanities} and \texttt{Multidisciplinary}) and \texttt{Country} (\texttt{United States}, \texttt{Canada}, \texttt{Australia}, \texttt{United Kingdom} and \texttt{Europe}).
+
+\begin{verbatim}
+#### Bornmann et al. (2007)
+
+library("metaSEM")
+head(Bornmann07)
+\end{verbatim}
+
+\begin{verbatim}
+  Id                       Study Cluster    logOR          v Year       Type
+1  1 Ackers (2000a; Marie Curie)       1 -0.40108 0.01391692 1996 Fellowship
+2  2 Ackers (2000b; Marie Curie)       1 -0.05727 0.03428793 1996 Fellowship
+3  3 Ackers (2000c; Marie Curie)       1 -0.29852 0.03391122 1996 Fellowship
+4  4 Ackers (2000d; Marie Curie)       1  0.36094 0.03404025 1996 Fellowship
+5  5 Ackers (2000e; Marie Curie)       1 -0.33336 0.01282103 1996 Fellowship
+6  6 Ackers (2000f; Marie Curie)       1 -0.07173 0.01361189 1996 Fellowship
+                  Discipline Country
+1          Physical sciences  Europe
+2          Physical sciences  Europe
+3          Physical sciences  Europe
+4          Physical sciences  Europe
+5 Social sciences/humanities  Europe
+6          Physical sciences  Europe
+\end{verbatim}
+
+\subsection{Model 0: Intercept}
+\label{sec:orgee0804c}
+The \emph{Q} statistic was 221.2809 (\emph{df} = 65), \emph{p} < .001. The estimated average effect (and its 95\% Wald CI) was -0.1008 (-0.1794, -0.0221). The \(\hat{\tau}^2_{(2)}\) and \(\hat{\tau}^3_{(3)}\) were 0.0038 and 0.0141, respectively. The \(I^2_{(2)}\) and \(I^2_{(3)}\) were 0.1568 and 0.5839, respectively. 
+
+\begin{verbatim}
+## Model 0: Intercept  
+summary( Model0 <- meta3L(y=logOR, v=v, cluster=Cluster, data=Bornmann07, 
+                         model.name="3 level model") )
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3L(y = logOR, v = v, cluster = Cluster, data = Bornmann07, 
+    model.name = "3 level model")
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+            Estimate  Std.Error     lbound     ubound z value Pr(>|z|)  
+Intercept -0.1007784  0.0401327 -0.1794371 -0.0221198 -2.5111  0.01203 *
+Tau2_2     0.0037965  0.0027210 -0.0015367  0.0091297  1.3952  0.16295  
+Tau2_3     0.0141352  0.0091445 -0.0037877  0.0320580  1.5458  0.12216  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 221.2809
+Degrees of freedom of the Q statistic: 65
+P value of the Q statistic: 0
+
+Heterogeneity indices (based on the estimated Tau2):
+                              Estimate
+I2_2 (Typical v: Q statistic)   0.1568
+I2_3 (Typical v: Q statistic)   0.5839
+
+Number of studies (or clusters): 21
+Number of observed statistics: 66
+Number of estimated parameters: 3
+Degrees of freedom: 63
+-2 log likelihood: 25.80256 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\begin{enumerate}
+\item Testing \(H_0: \tau^2_3 = 0\)
+\label{sec:org6b09d03}
+We may test whether the three-level model is necessary by testing \(H_0: \tau^2_{(3)} = 0\). The likelihood ratio statistic was 10.2202 (\emph{df} = 1), \emph{p} < .01. Thus, the three-level model is statistically better than the two-level model.
+\begin{verbatim}
+## Testing tau^2_3 = 0
+Model0a <- meta3L(logOR, v, cluster=Cluster, data=Bornmann07, 
+                  RE3.constraints=0, model.name="2 level model")
+anova(Model0, Model0a)
+\end{verbatim}
+
+\begin{verbatim}
+           base    comparison ep minus2LL df      AIC   diffLL diffdf           p
+1 3 level model          <NA>  3 25.80256 63 31.80256       NA     NA          NA
+2 3 level model 2 level model  2 36.02279 64 40.02279 10.22024      1 0.001389081
+\end{verbatim}
+
+\item Testing \(H_0: \tau^2_2 = \tau^2_3\)
+\label{sec:orged1887c}
+The likelihood-ratio statistic in testing \(H_0: \tau^2_{(2)} = \tau^2_{(3)}\) was 1.3591 (\emph{df} = 1), \emph{p} = 0.2437. Thus, there is no evidence to reject the null hypothesis.
+\begin{verbatim}
+## Testing tau^2_2 = tau^2_3
+Model0b <- meta3L(logOR, v, cluster=Cluster, data=Bornmann07, 
+                  RE2.constraints="0.1*Eq_tau2", RE3.constraints="0.1*Eq_tau2", 
+                  model.name="tau2_2 equals tau2_3")
+anova(Model0, Model0b)
+\end{verbatim}
+
+\begin{verbatim}
+           base           comparison ep minus2LL df      AIC   diffLL diffdf        p
+1 3 level model                 <NA>  3 25.80256 63 31.80256       NA     NA       NA
+2 3 level model tau2_2 equals tau2_3  2 27.16166 64 31.16166 1.359103      1 0.243693
+\end{verbatim}
+\end{enumerate}
+
+\subsection{Model 1: \texttt{Type} as a covariate}
+\label{sec:org925ed55}
+\begin{itemize}
+\item Conventionally, one level (e.g., \texttt{Grants}) is used as the reference group. The estimated intercept (labeled \texttt{Intercept} in the output) represents the estimated effect size for \texttt{Grants} and the regression coefficient (labeled \texttt{Slope\_1} in the output) is the difference between \texttt{Fellowship} and \texttt{Grants}.
+\item The estimated slope on \texttt{Type} (and its 95\% Wald CI) was -0.1956 (-0.3018, -0.0894) which is statistically significant at \(\alpha=.05\). This is the difference between \texttt{Fellowship} and \texttt{Grants}. The \(R^2_{(2)}\) and \(R^2_{(3)}\) were 0.0693 and 0.7943, respectively.
+\end{itemize}
+
+\begin{verbatim}
+## Model 1: Type as a covariate  
+## Convert characters into a dummy variable
+## Type2=0 (Grants); Type2=1 (Fellowship)    
+Type2 <- ifelse(Bornmann07$Type=="Fellowship", yes=1, no=0)
+summary( Model1 <- meta3L(logOR, v, x=Type2, cluster=Cluster, data=Bornmann07)) 
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3L(y = logOR, v = v, cluster = Cluster, x = Type2, data = Bornmann07)
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+            Estimate  Std.Error     lbound     ubound z value  Pr(>|z|)    
+Intercept -0.0066071  0.0371125 -0.0793462  0.0661320 -0.1780 0.8587001    
+Slope_1   -0.1955869  0.0541649 -0.3017483 -0.0894256 -3.6110 0.0003051 ***
+Tau2_2     0.0035335  0.0024306 -0.0012303  0.0082974  1.4538 0.1460058    
+Tau2_3     0.0029079  0.0031183 -0.0032039  0.0090197  0.9325 0.3510704    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 221.2809
+Degrees of freedom of the Q statistic: 65
+P value of the Q statistic: 0
+
+Explained variances (R2):
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0037965  0.0141
+Tau2 (with predictors) 0.0035335  0.0029
+R2                     0.0692595  0.7943
+
+Number of studies (or clusters): 21
+Number of observed statistics: 66
+Number of estimated parameters: 4
+Degrees of freedom: 62
+-2 log likelihood: 17.62569 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\begin{enumerate}
+\item Alternative model: \texttt{Grants} and \texttt{Fellowship} as indicator variables
+\label{sec:orgec06dae}
+If we want to estimate the effects for both \texttt{Grants} and \texttt{Fellowship}, we may create two indicator variables to represent them. Since we cannot estimate the intercept and these coefficients at the same time, we need to fix the intercept at 0 by specifying the \texttt{intercept.constraints=0} argument in \texttt{meta3()}. We are now able to include both \texttt{Grants} and \texttt{Fellowship} in the analysis. The estimated effects (and their 95\% CIs) for \texttt{Grants} and \texttt{Fellowship} were -0.0066 (-0.0793, 0.0661) and -0.2022 (-0.2805, -0.1239), respectively.
+
+\begin{verbatim}
+## Alternative model: Grants and Fellowship as indicators  
+## Indicator variables
+Grants <- ifelse(Bornmann07$Type=="Grants", yes=1, no=0)
+Fellowship <- ifelse(Bornmann07$Type=="Fellowship", yes=1, no=0)
+
+Model1b <- meta3L(logOR, v, x=cbind(Grants, Fellowship), cluster=Cluster, data=Bornmann07,
+                  intercept.constraints=0, model.name="Model 1")
+Model1b <- rerun(Model1b)
+summary(Model1b)
+\end{verbatim}
+
+\begin{verbatim}
+Beginning initial fit attemptFit attempt 0, fit=17.6581443921403, new current best! (was 17.6581443921403)Beginning fit attempt 1 of at maximum 10 extra tries                         Fit attempt 1, fit=17.6581443921403, new current best! (was 17.6581443921403)Beginning fit attempt 2 of at maximum 10 extra tries                         Beginning fit attempt 3 of at maximum 10 extra triesBeginning fit attempt 4 of at maximum 10 extra triesBeginning fit attempt 5 of at maximum 10 extra triesBeginning fit attempt 6 of at maximum 10 extra triesBeginning fit attempt 7 of at maximum 10 extra triesBeginning fit attempt 8 of at maximum 10 extra triesBeginning fit attempt 9 of at maximum 10 extra triesBeginning fit attempt 10 of at maximum 10 extra tries                                                     
+ Retry limit reached; Best fit=17.658144 (started at 17.658144)  (11 attempt(s): 11 valid, 0 errors)
+
+Call:
+meta3L(y = logOR, v = v, cluster = Cluster, x = cbind(Grants, 
+    Fellowship), data = Bornmann07, intercept.constraints = 0, 
+    model.name = "Model 1")
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+           Estimate   Std.Error      lbound      ubound z value Pr(>|z|)
+Slope_1  1.0000e-01          NA          NA          NA      NA       NA
+Slope_2 -2.0209e-01  5.0874e+01 -9.9914e+01  9.9509e+01  -0.004   0.9968
+Tau2_2   3.5752e-03  8.4161e+02 -1.6495e+03  1.6495e+03   0.000   1.0000
+Tau2_3   2.7139e-03  7.2320e+02 -1.4174e+03  1.4174e+03   0.000   1.0000
+
+Q statistic on the homogeneity of effect sizes: 221.2809
+Degrees of freedom of the Q statistic: 65
+P value of the Q statistic: 0
+
+Explained variances (R2):
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0037965  0.0141
+Tau2 (with predictors) 0.0035752  0.0027
+R2                     0.0582930  0.8080
+
+Number of studies (or clusters): 21
+Number of observed statistics: 66
+Number of estimated parameters: 4
+Degrees of freedom: 62
+-2 log likelihood: 17.65814 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+\end{enumerate}
+
+\subsection{Model 2: \texttt{Year} and \texttt{Year\textasciicircum{}2} as covariates}
+\label{sec:org0a4954f}
+\begin{itemize}
+\item When there are several covariates, we may combine them with the \texttt{cbind()} command. For example, \texttt{cbind(Year, Year\textasciicircum{}2)} includes both \texttt{Year} and its squared as covariates. In the output, \texttt{Slope\_1} and \texttt{Slope\_2} refer to the regression coefficients for \texttt{Year} and \texttt{Year\textasciicircum{}2}, respectively. To increase the numerical stability, the covariates are usually centered before creating the quadratic terms. Since Marsh et al. (2009) standardized \texttt{Year} in their analysis, I follow this practice here.
+\item The estimated regression coefficients (and their 95\% CIs) for \texttt{Year} and \texttt{Year\textasciicircum{}2} were -0.0010 (-0.0473, 0.0454) and -0.0118 (-0.0247, 0.0012), respectively. The \(R^2_{(2)}\) and \(R^2_{(3)}\) were 0.2430 and 0.0000, respectively.
+\end{itemize}
+\begin{verbatim}
+## Model 2: Year and Year^2 as covariates
+summary( Model2 <- meta3L(logOR, v, x=cbind(scale(Year), scale(Year)^2), 
+                          cluster=Cluster, data=Bornmann07,
+                          model.name="Model 2") ) 
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3L(y = logOR, v = v, cluster = Cluster, x = cbind(scale(Year), 
+    scale(Year)^2), data = Bornmann07, model.name = "Model 2")
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+             Estimate   Std.Error      lbound      ubound z value Pr(>|z|)  
+Intercept -0.08627312  0.04125581 -0.16713302 -0.00541322 -2.0912  0.03651 *
+Slope_1   -0.00095287  0.02365224 -0.04731040  0.04540467 -0.0403  0.96786  
+Slope_2   -0.01176840  0.00659995 -0.02470407  0.00116727 -1.7831  0.07457 .
+Tau2_2     0.00287389  0.00206817 -0.00117965  0.00692744  1.3896  0.16466  
+Tau2_3     0.01479446  0.00926095 -0.00335666  0.03294558  1.5975  0.11015  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 221.2809
+Degrees of freedom of the Q statistic: 65
+P value of the Q statistic: 0
+
+Explained variances (R2):
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0037965  0.0141
+Tau2 (with predictors) 0.0028739  0.0148
+R2                     0.2430134  0.0000
+
+Number of studies (or clusters): 21
+Number of observed statistics: 66
+Number of estimated parameters: 5
+Degrees of freedom: 61
+-2 log likelihood: 22.3836 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\begin{enumerate}
+\item Testing \(H_0: \beta_{Year} = \beta_{Year^2}=0\)
+\label{sec:orgb96a81d}
+The test statistic was 3.4190 (\emph{df} = 2), \emph{p} = 0.1810. Thus, there is no evidence supporting that \texttt{Year} has a quadratic effect on the effect size.
+\begin{verbatim}
+## Testing beta_{Year} = beta_{Year^2}=0
+anova(Model2, Model0)
+\end{verbatim}
+
+\begin{verbatim}
+     base    comparison ep minus2LL df      AIC   diffLL diffdf         p
+1 Model 2          <NA>  5 22.38360 61 32.38360       NA     NA        NA
+2 Model 2 3 level model  3 25.80256 63 31.80256 3.418955      2 0.1809603
+\end{verbatim}
+\end{enumerate}
+
+\subsection{Model 3: \texttt{Discipline} as a covariate}
+\label{sec:org6bf6365}
+\begin{itemize}
+\item There are four categories in \texttt{Discipline}. \texttt{multidisciplinary} is used as the reference group in the analysis.
+\item The estimated regression coefficients (and their 95\% Wald CIs) for \texttt{DisciplinePhy}, \texttt{DisciplineLife} and \texttt{DisciplineSoc} were -0.0091 (-0.2041, 0.1859), -0.1262 (-0.2804, 0.0280) and -0.2370 (-0.4746, 0.0007), respectively. The \(R^2_2\) and \(R^2_3\) were 0.0000 and 0.4975, respectively.
+\end{itemize}
+
+\begin{verbatim}
+## Model 3: Discipline as a covariate
+## Create dummy variables using multidisciplinary as the reference group
+DisciplinePhy <- ifelse(Bornmann07$Discipline=="Physical sciences", yes=1, no=0)
+DisciplineLife <- ifelse(Bornmann07$Discipline=="Life sciences/biology", yes=1, no=0)
+DisciplineSoc <- ifelse(Bornmann07$Discipline=="Social sciences/humanities", yes=1, no=0)
+summary( Model3 <- meta3L(logOR, v, x=cbind(DisciplinePhy, DisciplineLife, DisciplineSoc), 
+                          cluster=Cluster, data=Bornmann07,
+                          model.name="Model 3") )
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3L(y = logOR, v = v, cluster = Cluster, x = cbind(DisciplinePhy, 
+    DisciplineLife, DisciplineSoc), data = Bornmann07, model.name = "Model 3")
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+             Estimate   Std.Error      lbound      ubound z value Pr(>|z|)  
+Intercept -0.01474783  0.06389945 -0.13998845  0.11049279 -0.2308  0.81747  
+Slope_1   -0.00913064  0.09949198 -0.20413134  0.18587006 -0.0918  0.92688  
+Slope_2   -0.12617957  0.07866274 -0.28035571  0.02799656 -1.6041  0.10870  
+Slope_3   -0.23695698  0.12123091 -0.47456520  0.00065124 -1.9546  0.05063 .
+Tau2_2     0.00390942  0.00283949 -0.00165587  0.00947471  1.3768  0.16857  
+Tau2_3     0.00710338  0.00643210 -0.00550331  0.01971006  1.1044  0.26944  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 221.2809
+Degrees of freedom of the Q statistic: 65
+P value of the Q statistic: 0
+
+Explained variances (R2):
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0037965  0.0141
+Tau2 (with predictors) 0.0039094  0.0071
+R2                     0.0000000  0.4975
+
+Number of studies (or clusters): 21
+Number of observed statistics: 66
+Number of estimated parameters: 6
+Degrees of freedom: 60
+-2 log likelihood: 20.07571 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\begin{enumerate}
+\item Testing whether \texttt{Discipline} is significant
+\label{sec:orgb08a846}
+The test statistic was 5.7268 (\emph{df} = 3), \emph{p} = 0.1257 which is not significant. Therefore, there is no evidence supporting that \texttt{Discipline} explains the variation of the effect sizes.
+\begin{verbatim}
+## Testing whether Discipline is significant
+anova(Model3, Model0)
+\end{verbatim}
+
+\begin{verbatim}
+     base    comparison ep minus2LL df      AIC   diffLL diffdf         p
+1 Model 3          <NA>  6 20.07571 60 32.07571       NA     NA        NA
+2 Model 3 3 level model  3 25.80256 63 31.80256 5.726842      3 0.1256832
+\end{verbatim}
+\end{enumerate}
+
+\subsection{Model 4: \texttt{Country} as a covariate}
+\label{sec:orgb28720f}
+\begin{itemize}
+\item There are five categories in \texttt{Country}. \texttt{United States} is used as the reference group in the analysis.
+\item The estimated regression coefficients (and their 95\% Wald CIs) for \texttt{CountryAus}, \texttt{CountryCan} and \texttt{CountryEur} \texttt{CountryUK} are -0.0240 (-0.2405, 0.1924), -0.1341 (-0.3674, 0.0993), -0.2211 (-0.3660, -0.0762) and 0.0537 (-0.1413, 0.2487), respectively. The \(R^2_2\) and \(R^2_3\) were 0.1209 and 0.6606, respectively.
+\end{itemize}
+\begin{verbatim}
+## Model 4: Country as a covariate
+## Create dummy variables using the United States as the reference group
+CountryAus <- ifelse(Bornmann07$Country=="Australia", yes=1, no=0)
+CountryCan <- ifelse(Bornmann07$Country=="Canada", yes=1, no=0)
+CountryEur <- ifelse(Bornmann07$Country=="Europe", yes=1, no=0)
+CountryUK <- ifelse(Bornmann07$Country=="United Kingdom", yes=1, no=0)
+
+summary( Model4 <- meta3L(logOR, v, x=cbind(CountryAus, CountryCan, CountryEur, 
+                          CountryUK), cluster=Cluster, data=Bornmann07,
+                          model.name="Model 4") )  
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3L(y = logOR, v = v, cluster = Cluster, x = cbind(CountryAus, 
+    CountryCan, CountryEur, CountryUK), data = Bornmann07, model.name = "Model 4")
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+            Estimate  Std.Error     lbound     ubound z value Pr(>|z|)   
+Intercept  0.0025681  0.0597768 -0.1145923  0.1197285  0.0430 0.965732   
+Slope_1   -0.0240109  0.1104328 -0.2404552  0.1924333 -0.2174 0.827876   
+Slope_2   -0.1340800  0.1190667 -0.3674465  0.0992865 -1.1261 0.260127   
+Slope_3   -0.2210801  0.0739174 -0.3659556 -0.0762046 -2.9909 0.002782 **
+Slope_4    0.0537251  0.0994803 -0.1412527  0.2487030  0.5401 0.589157   
+Tau2_2     0.0033376  0.0023492 -0.0012667  0.0079420  1.4208 0.155383   
+Tau2_3     0.0047979  0.0044818 -0.0039862  0.0135820  1.0705 0.284379   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 221.2809
+Degrees of freedom of the Q statistic: 65
+P value of the Q statistic: 0
+
+Explained variances (R2):
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0037965  0.0141
+Tau2 (with predictors) 0.0033376  0.0048
+R2                     0.1208598  0.6606
+
+Number of studies (or clusters): 21
+Number of observed statistics: 66
+Number of estimated parameters: 7
+Degrees of freedom: 59
+-2 log likelihood: 14.18259 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\begin{enumerate}
+\item Testing whether \texttt{Discipline} is significant
+\label{sec:org9839d1a}
+The test statistic was 11.6200 (\emph{df} = 4), \emph{p} = 0.0204 which is statistically significant.
+\begin{verbatim}
+## Testing whether Discipline is significant
+anova(Model4, Model0)
+\end{verbatim}
+
+\begin{verbatim}
+     base    comparison ep minus2LL df      AIC   diffLL diffdf          p
+1 Model 4          <NA>  7 14.18259 59 28.18259       NA     NA         NA
+2 Model 4 3 level model  3 25.80256 63 31.80256 11.61996      4 0.02041284
+\end{verbatim}
+\end{enumerate}
+
+\subsection{Model 5: \texttt{Type} and \texttt{Discipline} as covariates}
+\label{sec:org488821a}
+The \(R^2_{(2)}\) and \(R^2_{(3)}\) were 0.3925 and 1.0000, respectively. The \(\hat{\tau}^2_{(3)}\) was near 0 after controlling for the covariates.
+
+\begin{verbatim}
+## Model 5: Type and Discipline as covariates
+summary( Model5 <- meta3L(logOR, v, x=cbind(Type2, DisciplinePhy, DisciplineLife, 
+                         DisciplineSoc), cluster=Cluster, data=Bornmann07,
+                         model.name="Model 5") )
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3L(y = logOR, v = v, cluster = Cluster, x = cbind(Type2, 
+    DisciplinePhy, DisciplineLife, DisciplineSoc), data = Bornmann07, 
+    model.name = "Model 5")
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+             Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)    
+Intercept  6.7036e-02  1.8555e-02  3.0669e-02  1.0340e-01  3.6129 0.0003028 ***
+Slope_1   -1.9004e-01  4.0234e-02 -2.6890e-01 -1.1118e-01 -4.7233  2.32e-06 ***
+Slope_2    1.9511e-02  6.5942e-02 -1.0973e-01  1.4876e-01  0.2959 0.7673216    
+Slope_3   -1.2779e-01  3.5915e-02 -1.9818e-01 -5.7398e-02 -3.5581 0.0003735 ***
+Slope_4   -2.3950e-01  9.4054e-02 -4.2384e-01 -5.5154e-02 -2.5464 0.0108850 *  
+Tau2_2     2.3062e-03  1.4271e-03 -4.9083e-04  5.1032e-03  1.6160 0.1060889    
+Tau2_3     1.0000e-10          NA          NA          NA      NA        NA    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 221.2809
+Degrees of freedom of the Q statistic: 65
+P value of the Q statistic: 0
+
+Explained variances (R2):
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0037965  0.0141
+Tau2 (with predictors) 0.0023062  0.0000
+R2                     0.3925434  1.0000
+
+Number of studies (or clusters): 21
+Number of observed statistics: 66
+Number of estimated parameters: 7
+Degrees of freedom: 59
+-2 log likelihood: 4.66727 
+OpenMx status1: 5 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+Warning message:
+In print.summary.meta(x) :
+  OpenMx status1 is neither 0 or 1. You are advised to 'rerun' it again.
+\end{verbatim}
+
+\begin{enumerate}
+\item Testing whether \texttt{Discipline} is significant after controlling for \texttt{Type}
+\label{sec:org17b35c9}
+The test statistic was 12.9584 (\emph{df} = 3), \emph{p} = 0.0047 which is significant. Therefore, \texttt{Discipline} is still significant after controlling for \texttt{Type}.
+\begin{verbatim}
+## Testing whether Discipline is significant after controlling for Type
+anova(Model5, Model1)
+\end{verbatim}
+
+\begin{verbatim}
+     base            comparison ep minus2LL df      AIC   diffLL diffdf           p
+1 Model 5                  <NA>  7  4.66727 59 18.66727       NA     NA          NA
+2 Model 5 Meta analysis with ML  4 17.62569 62 25.62569 12.95842      3 0.004727388
+\end{verbatim}
+\end{enumerate}
+
+\subsection{Model 6: \texttt{Type} and \texttt{Country} as covariates}
+\label{sec:orga15eabc}
+The \(R^2_{(2)}\) and \(R^2_{(3)}\) were 0.3948 and 1.0000, respectively. The \(\hat{\tau}^2_{(3)}\) was near 0 after controlling for the covariates.
+
+\begin{verbatim}
+## Model 6: Type and Country as covariates
+Model6 <- meta3L(logOR, v, x=cbind(Type2, CountryAus, CountryCan, CountryEur, CountryUK), cluster=Cluster, data=Bornmann07,
+                 model.name="Model 6")
+Model6 <- rerun(Model6)
+summary(Model6)
+\end{verbatim}
+
+\begin{verbatim}
+Beginning initial fit attemptBeginning fit attempt 1 of at maximum 10 extra triesFit attempt 1, fit=5.07659215676516, new current best! (was 5.07659215676544)Beginning fit attempt 2 of at maximum 10 extra tries                         Beginning fit attempt 3 of at maximum 10 extra triesBeginning fit attempt 4 of at maximum 10 extra triesBeginning fit attempt 5 of at maximum 10 extra triesBeginning fit attempt 6 of at maximum 10 extra triesFit attempt 6, fit=5.07659215676514, new current best! (was 5.07659215676516)Beginning fit attempt 7 of at maximum 10 extra tries                         MxComputeNumericDeriv 29/36                           Beginning fit attempt 8 of at maximum 10 extra triesBeginning fit attempt 9 of at maximum 10 extra triesBeginning fit attempt 10 of at maximum 10 extra tries                                                     
+ Retry limit reached; Best fit=5.0765922 (started at 5.0765922)  (11 attempt(s): 11 valid, 0 errors)
+
+Call:
+meta3L(y = logOR, v = v, cluster = Cluster, x = cbind(Type2, 
+    CountryAus, CountryCan, CountryEur, CountryUK), data = Bornmann07, 
+    model.name = "Model 6")
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+             Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)    
+Intercept  6.7507e-02  1.8933e-02  3.0399e-02  1.0461e-01  3.5656 0.0003631 ***
+Slope_1   -1.5167e-01  4.1113e-02 -2.3225e-01 -7.1092e-02 -3.6892 0.0002250 ***
+Slope_2   -6.9580e-02  8.5164e-02 -2.3650e-01  9.7339e-02 -0.8170 0.4139267    
+Slope_3   -1.4231e-01  7.5204e-02 -2.8970e-01  5.0879e-03 -1.8923 0.0584498 .  
+Slope_4   -1.6116e-01  4.0203e-02 -2.3995e-01 -8.2361e-02 -4.0086 6.108e-05 ***
+Slope_5    9.0419e-03  7.0074e-02 -1.2830e-01  1.4639e-01  0.1290 0.8973315    
+Tau2_2     2.2976e-03  1.4407e-03 -5.2618e-04  5.1213e-03  1.5947 0.1107693    
+Tau2_3     1.0000e-10          NA          NA          NA      NA        NA    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 221.2809
+Degrees of freedom of the Q statistic: 65
+P value of the Q statistic: 0
+
+Explained variances (R2):
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0037965  0.0141
+Tau2 (with predictors) 0.0022976  0.0000
+R2                     0.3948192  1.0000
+
+Number of studies (or clusters): 21
+Number of observed statistics: 66
+Number of estimated parameters: 8
+Degrees of freedom: 58
+-2 log likelihood: 5.076592 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\begin{enumerate}
+\item Testing whether \texttt{Country} is significant after controlling for \texttt{Type}
+\label{sec:org662cf11}
+The test statistic was 12.5491 (\emph{df} = 4), \emph{p} = 0.0137. Thus, \texttt{Country} is significant after controlling for \texttt{Type}.
+\begin{verbatim}
+## Testing whether Country is significant after controlling for Type
+anova(Model6, Model1)
+\end{verbatim}
+
+\begin{verbatim}
+     base            comparison ep  minus2LL df      AIC  diffLL diffdf          p
+1 Model 6                  <NA>  8  5.076592 58 21.07659      NA     NA         NA
+2 Model 6 Meta analysis with ML  4 17.625692 62 25.62569 12.5491      4 0.01370262
+\end{verbatim}
+\end{enumerate}
+
+\subsection{Model 7: \texttt{Discipline} and \texttt{Country} as covariates}
+\label{sec:org78287ee}
+The \(R^2_{(2)}\) and \(R^2_{(3)}\) were 0.1397 and 0.7126, respectively.
+
+\begin{verbatim}
+## Model 7: Discipline and Country as covariates
+summary( meta3L(logOR, v, x=cbind(DisciplinePhy, DisciplineLife, DisciplineSoc,
+                          CountryAus, CountryCan, CountryEur, CountryUK), 
+                           cluster=Cluster, data=Bornmann07,
+                          model.name="Model 7") )
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3L(y = logOR, v = v, cluster = Cluster, x = cbind(DisciplinePhy, 
+    DisciplineLife, DisciplineSoc, CountryAus, CountryCan, CountryEur, 
+    CountryUK), data = Bornmann07, model.name = "Model 7")
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+            Estimate  Std.Error     lbound     ubound z value Pr(>|z|)  
+Intercept  0.0029305  0.0576743 -0.1101090  0.1159700  0.0508  0.95948  
+Slope_1    0.1742169  0.1702554 -0.1594776  0.5079114  1.0233  0.30618  
+Slope_2    0.0826806  0.1599802 -0.2308749  0.3962360  0.5168  0.60528  
+Slope_3   -0.0462265  0.1715774 -0.3825119  0.2900590 -0.2694  0.78761  
+Slope_4   -0.0486321  0.1306918 -0.3047835  0.2075192 -0.3721  0.70981  
+Slope_5   -0.2169132  0.1915703 -0.5923842  0.1585577 -1.1323  0.25751  
+Slope_6   -0.3036578  0.1670721 -0.6311130  0.0237975 -1.8175  0.06914 .
+Slope_7   -0.0605272  0.1809419 -0.4151669  0.2941125 -0.3345  0.73799  
+Tau2_2     0.0032661  0.0022784 -0.0011994  0.0077317  1.4335  0.15171  
+Tau2_3     0.0040618  0.0038459 -0.0034759  0.0115996  1.0562  0.29090  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 221.2809
+Degrees of freedom of the Q statistic: 65
+P value of the Q statistic: 0
+
+Explained variances (R2):
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0037965  0.0141
+Tau2 (with predictors) 0.0032661  0.0041
+R2                     0.1396974  0.7126
+
+Number of studies (or clusters): 21
+Number of observed statistics: 66
+Number of estimated parameters: 10
+Degrees of freedom: 56
+-2 log likelihood: 10.31105 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\subsection{Model 8: \texttt{Type}, \texttt{Discipline} and \texttt{Country} as covariates}
+\label{sec:org0f15ece}
+The \(R^2_{(2)}\) and \(R^2_{(3)}\) were 0.4466 and 1.0000, respectively. The \(\hat{\tau}^2_{(3)}\) was near 0 after controlling for the covariates. 
+
+\begin{verbatim}
+## Model 8: Type, Discipline and Country as covariates
+Model8 <- meta3L(logOR, v, x=cbind(Type2, DisciplinePhy, DisciplineLife, DisciplineSoc,
+                            CountryAus, CountryCan, CountryEur, CountryUK), 
+                            cluster=Cluster, data=Bornmann07,
+                            model.name="Model 8") 
+## There was an estimation error. The model was rerun again.
+summary(rerun(Model8))
+\end{verbatim}
+
+\begin{verbatim}
+Beginning initial fit attemptBeginning fit attempt 1 of at maximum 10 extra triesBeginning fit attempt 2 of at maximum 10 extra triesMxComputeGradientDescent(SLSQP) evaluations 1306 fit 11.6137 change -1.272                                                                          Beginning fit attempt 3 of at maximum 10 extra triesBeginning fit attempt 4 of at maximum 10 extra triesBeginning fit attempt 5 of at maximum 10 extra triesBeginning fit attempt 6 of at maximum 10 extra triesBeginning fit attempt 7 of at maximum 10 extra triesMxComputeGradientDescent(SLSQP) evaluations 1538 fit -1.64515 change -1.108e-05                                                                               Fit attempt 7, fit=-1.645174199955, worse than previous best (-1.64521086697435)Beginning fit attempt 8 of at maximum 10 extra tries                            Beginning fit attempt 9 of at maximum 10 extra triesBeginning fit attempt 10 of at maximum 10 extra tries                                                     
+ All fit attempts resulted in errors - check starting values or model specification
+
+
+Call:
+meta3L(y = logOR, v = v, cluster = Cluster, x = cbind(Type2, 
+    DisciplinePhy, DisciplineLife, DisciplineSoc, CountryAus, 
+    CountryCan, CountryEur, CountryUK), data = Bornmann07, model.name = "Model 8")
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+             Estimate   Std.Error      lbound      ubound z value  Pr(>|z|)    
+Intercept  6.8563e-02  1.8630e-02  3.2049e-02  1.0508e-01  3.6802  0.000233 ***
+Slope_1   -1.6885e-01  4.1545e-02 -2.5028e-01 -8.7425e-02 -4.0643 4.818e-05 ***
+Slope_2    2.5329e-01  1.5814e-01 -5.6670e-02  5.6324e-01  1.6016  0.109239    
+Slope_3    1.2689e-01  1.4774e-01 -1.6268e-01  4.1646e-01  0.8589  0.390410    
+Slope_4   -8.3548e-03  1.5796e-01 -3.1795e-01  3.0124e-01 -0.0529  0.957818    
+Slope_5   -1.1530e-01  1.1147e-01 -3.3377e-01  1.0317e-01 -1.0344  0.300948    
+Slope_6   -2.6412e-01  1.6402e-01 -5.8559e-01  5.7343e-02 -1.6103  0.107323    
+Slope_7   -2.9029e-01  1.4859e-01 -5.8152e-01  9.5189e-04 -1.9536  0.050754 .  
+Slope_8   -1.5975e-01  1.6285e-01 -4.7893e-01  1.5943e-01 -0.9810  0.326609    
+Tau2_2     2.1010e-03  1.2925e-03 -4.3226e-04  4.6342e-03  1.6255  0.104051    
+Tau2_3     1.0000e-10          NA          NA          NA      NA        NA    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 221.2809
+Degrees of freedom of the Q statistic: 65
+P value of the Q statistic: 0
+
+Explained variances (R2):
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0037965  0.0141
+Tau2 (with predictors) 0.0021010  0.0000
+R2                     0.4466073  1.0000
+
+Number of studies (or clusters): 21
+Number of observed statistics: 66
+Number of estimated parameters: 11
+Degrees of freedom: 55
+-2 log likelihood: -1.645211 
+OpenMx status1: 6 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+Warning message:
+In print.summary.meta(x) :
+  OpenMx status1 is neither 0 or 1. You are advised to 'rerun' it again.
+\end{verbatim}
+
+\subsection{Handling missing covariates with FIML}
+\label{sec:orge7b84aa}
+When there are missing data in the covariates, data with missing values are excluded before the analysis in \texttt{meta3()}. The missing covariates can be handled by the use of FIML in \texttt{meta3X()}. We illustrate two examples on how to analyze data with missing covariates with missing completely at random (MCAR) and missing at random (MAR) data.
+
+\begin{enumerate}
+\item MCAR
+\label{sec:org86f3a8c}
+About 25\% of the level-2 covariate \texttt{Type} was introduced by the MCAR mechanism. 
+\begin{verbatim}
+#### Handling missing covariates with FIML
+
+## MCAR
+## Set seed for replication
+set.seed(1000000)
+
+## Copy Bornmann07 to my.df
+my.df <- Bornmann07
+## "Fellowship": 1; "Grant": 0
+my.df$Type_MCAR <- ifelse(Bornmann07$Type=="Fellowship", yes=1, no=0)
+
+## Create 17 out of 66 missingness with MCAR
+my.df$Type_MCAR[sample(1:66, 17)] <- NA
+
+summary(meta3L(y=logOR, v=v, cluster=Cluster, x=Type_MCAR, data=my.df))
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3L(y = logOR, v = v, cluster = Cluster, x = Type_MCAR, data = my.df)
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+            Estimate  Std.Error     lbound     ubound z value  Pr(>|z|)    
+Intercept  0.0044909  0.0362672 -0.0665916  0.0755733  0.1238    0.9015    
+Slope_1   -0.2182446  0.0554287 -0.3268829 -0.1096063 -3.9374 8.237e-05 ***
+Tau2_2     0.0014063  0.0021623 -0.0028317  0.0056443  0.6504    0.5155    
+Tau2_3     0.0031148  0.0035202 -0.0037846  0.0100143  0.8848    0.3762    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 154.2762
+Degrees of freedom of the Q statistic: 48
+P value of the Q statistic: 4.410916e-13
+
+Explained variances (R2):
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0011603  0.0185
+Tau2 (with predictors) 0.0014063  0.0031
+R2                     0.0000000  0.8318
+
+Number of studies (or clusters): 20
+Number of observed statistics: 49
+Number of estimated parameters: 4
+Degrees of freedom: 45
+-2 log likelihood: 10.56012 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+There is no need to specify whether the covariates are level 2 or level 3 in \texttt{meta3()} because the covariates are treated as a design matrix. When \texttt{meta3X()} is used, users need to specify whether the covariates are at level 2 (\texttt{x2}) or level 3 (\texttt{x3}).
+\begin{verbatim}
+summary( meta3LFIML(y=logOR, v=v, cluster=Cluster, x2=Type_MCAR, data=my.df) )
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3LFIML(y = logOR, v = v, cluster = Cluster, x2 = Type_MCAR, 
+    data = my.df)
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+            Estimate  Std.Error     lbound     ubound z value  Pr(>|z|)    
+Intercept -0.0024343  0.0360701 -0.0731303  0.0682618 -0.0675 0.9461939    
+SlopeX2_1 -0.2086677  0.0545138 -0.3155128 -0.1018226 -3.8278 0.0001293 ***
+Tau2_2     0.0016732  0.0022114 -0.0026610  0.0060075  0.7567 0.4492584    
+Tau2_3     0.0035540  0.0035810 -0.0034646  0.0105726  0.9925 0.3209675    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Explained variances (R2):
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0037965  0.0141
+Tau2 (with predictors) 0.0016732  0.0036
+R2                     0.5592669  0.7486
+
+Number of studies (or clusters): 21
+Number of observed statistics: 115
+Number of estimated parameters: 7
+Degrees of freedom: 108
+-2 log likelihood: 56.64328 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+\item MAR
+\label{sec:orgdaa0287}
+For the case for missing covariates with MAR, the missingness in \texttt{Type} depends on the values of \texttt{Year}. \texttt{Type} is missing when \texttt{Year} is smaller than 1996. 
+\begin{verbatim}
+## MAR
+Type_MAR <- ifelse(Bornmann07$Type=="Fellowship", yes=1, no=0)
+
+## Create 27 out of 66 missingness with MAR for cases Year<1996
+index_MAR <- ifelse(Bornmann07$Year<1996, yes=TRUE, no=FALSE)
+Type_MAR[index_MAR] <- NA
+
+summary( meta3LFIML(y=logOR, v=v, cluster=Cluster, x2=Type_MAR, data=Bornmann07) ) 
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3LFIML(y = logOR, v = v, cluster = Cluster, x2 = Type_MAR, 
+    data = Bornmann07)
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+            Estimate  Std.Error     lbound     ubound z value  Pr(>|z|)    
+Intercept -0.0069090  0.0380752 -0.0815349  0.0677170 -0.1815 0.8560095    
+SlopeX2_1 -0.2097833  0.0579021 -0.3232693 -0.0962974 -3.6231 0.0002911 ***
+Tau2_2     0.0030127  0.0020868 -0.0010773  0.0071026  1.4437 0.1488207    
+Tau2_3     0.0028560  0.0030132 -0.0030498  0.0087618  0.9478 0.3432216    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Explained variances (R2):
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0037965  0.0141
+Tau2 (with predictors) 0.0030127  0.0029
+R2                     0.2064617  0.7980
+
+Number of studies (or clusters): 21
+Number of observed statistics: 105
+Number of estimated parameters: 7
+Degrees of freedom: 98
+-2 log likelihood: 51.31797 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+\end{verbatim}
+
+It is possible to include level 2 (\texttt{av2}) and level 3 (\texttt{av3}) auxiliary variables. Auxiliary variables are those that predict the missing values or are correlated with the variables that contain missing values. The inclusion of auxiliary variables can improve the efficiency of the estimation and the parameter estimates. 
+\begin{verbatim}
+## Include auxiliary variable
+summary( meta3LFIML(y=logOR, v=v, cluster=Cluster, x2=Type_MAR, av2=Year, data=my.df) )
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+meta3LFIML(y = logOR, v = v, cluster = Cluster, x2 = Type_MAR, 
+    av2 = Year, data = my.df)
+
+95% confidence intervals: z statistic approximation (robust=FALSE)
+Coefficients:
+             Estimate   Std.Error      lbound      ubound z value Pr(>|z|)
+Intercept -1.3856e-02  1.2424e+03 -2.4352e+03  2.4351e+03  0.0000   1.0000
+SlopeX2_1 -1.5681e-01  5.5284e+01 -1.0851e+02  1.0820e+02 -0.0028   0.9977
+Tau2_2     7.5441e-03          NA          NA          NA      NA       NA
+Tau2_3     9.3066e-04          NA          NA          NA      NA       NA
+
+Explained variances (R2):
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0049237  0.0088
+Tau2 (with predictors) 0.0075441  0.0009
+R2                     0.0000000  0.8944
+
+Number of studies (or clusters): 21
+Number of observed statistics: 171
+Number of estimated parameters: 14
+Degrees of freedom: 157
+-2 log likelihood: 393.993 
+OpenMx status1: 5 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)
+Warning message:
+In print.summary.meta3LFIML(x) :
+  OpenMx status1 is neither 0 or 1. You are advised to 'rerun' it again.
+\end{verbatim}
+\end{enumerate}
+
+
+\section{Implementing Three-Level Meta-Analyses as Structural Equation Models in \texttt{OpenMx}}
+\label{sec:org909d457}
+This section illustrates how to formulate three-level meta-analyses as structural equation models using the \texttt{OpenMx} package. The steps outline how to create the model-implied mean vector and the model-implied covariance matrix to fit the three-level meta-analyses. \texttt{y} is the effect size (standardized mean difference on the modified school calendars) and \texttt{v} is its sampling variance. \texttt{District} is the variable for the cluster effect, whereas \texttt{Year} is the year of publication. 
+
+\subsection{Preparing data}
+\label{sec:org5b841e5}
+\begin{itemize}
+\item Data in a three-level meta-analysis are usually stored in the \href{http://wiki.stdout.org/rcookbook/Manipulating\%20data/Converting\%20data\%20between\%20wide\%20and\%20long\%20format/}{long format}, e.g., \texttt{Cooper03} in this example, whereas the SEM approach uses the wide format.
+\item Suppose the maximum number of effect sizes in the level-2 unit is \(k\) (\(k=11\) in this example). Each cluster is represented by one row with \(k=11\) variables representing the outcome effect size, say \emph{y\textsubscript{1}} to \emph{y\textsubscript{11}} in this example. The incomplete data are represented by \texttt{NA} (missing value).
+\item Similarly, \(k=11\) variables are required to represent the known sampling variances, say \emph{v\textsubscript{1}} to \emph{v\textsubscript{11}} in this example.
+\item If the covariates are at level 2, \(k=11\) variables are also required to represent each of them. For example, \texttt{Year} is a level-2 covariate, \emph{Year\textsubscript{1}} to \emph{Year\textsubscript{11}} are required to represent it.
+\item Several extra steps are required to handle missing values. Missing values (represented by \texttt{NA} in \texttt{R}) are not allowed in \emph{v\textsubscript{1}} to \emph{v\textsubscript{11}} as they are definition variables. The missing data are converted into some arbitrary values, say \texttt{1e10} in this example. The actual value does not matter because the missing values will be removed before the analysis. It is because missing values in \emph{y\textsubscript{1}} to \emph{y\textsubscript{11}} (and \emph{v\textsubscript{1}} to \emph{v\textsubscript{11}}) will be filtered out automatically by the use of FIML.
+\end{itemize}
+\begin{verbatim}
+#### Steps in Analyzing Three-level Meta-analysis in OpenMx
+
+#### Preparing data
+## Load the library
+library(OpenMx)
+
+## Get the dataset from the metaSEM library
+data(Cooper03, package="metaSEM")
+
+## Make a copy of the original data
+my.long <- Cooper03
+
+## Show the first few cases in my.long
+head(my.long)
+\end{verbatim}
+
+\begin{verbatim}
+  District Study     y     v Year
+1       11     1 -0.18 0.118 1976
+2       11     2 -0.22 0.118 1976
+3       11     3  0.23 0.144 1976
+4       11     4 -0.30 0.144 1976
+5       12     5  0.13 0.014 1989
+6       12     6 -0.26 0.014 1989
+\end{verbatim}
+
+
+\begin{verbatim}
+## Center the Year to increase numerical stability
+my.long$Year <- scale(my.long$Year, scale=FALSE)
+
+## maximum no. of effect sizes in level-2
+k <- 11
+
+## Create a variable called "time" to store: 1, 2, 3, ... k
+my.long$time <- c(unlist(sapply(split(my.long$y, my.long$District), 
+                                function(x) 1:length(x))))
+
+## Convert long format to wide format by "District"
+my.wide <- reshape(my.long, timevar="time", idvar=c("District"), 
+                   sep="_", direction="wide")
+
+## NA in v is due to NA in y in wide format
+## Replace NA with 1e10 in "v"
+temp <- my.wide[, paste("v_", 1:k, sep="")]
+temp[is.na(temp)] <- 1e10
+my.wide[, paste("v_", 1:k, sep="")] <- temp
+
+## Replace NA with 0 in "Year"
+temp <- my.wide[, paste("Year_", 1:k, sep="")]
+temp[is.na(temp)] <- 0
+my.wide[, paste("Year_", 1:k, sep="")] <- temp
+
+## Show the first few cases in my.wide
+head(my.wide)
+\end{verbatim}
+
+\begin{verbatim}
+   District Study_1   y_1   v_1      Year_1 Study_2   y_2   v_2      Year_2 Study_3  y_3
+1        11       1 -0.18 0.118 -13.5535714       2 -0.22 0.118 -13.5535714       3 0.23
+5        12       5  0.13 0.014  -0.5535714       6 -0.26 0.014  -0.5535714       7 0.19
+9        18       9  0.45 0.023   4.4464286      10  0.38 0.043   4.4464286      11 0.29
+12       27      12  0.16 0.020 -13.5535714      13  0.65 0.004 -13.5535714      14 0.36
+16       56      16  0.08 0.019   7.4464286      17  0.04 0.007   7.4464286      18 0.19
+20       58      20 -0.18 0.020 -13.5535714      21  0.00 0.018 -13.5535714      22 0.00
+     v_3      Year_3 Study_4   y_4      v_4      Year_4 Study_5   y_5   v_5    Year_5
+1  0.144 -13.5535714       4 -0.30 1.44e-01 -13.5535714      NA    NA 1e+10   0.00000
+5  0.015  -0.5535714       8  0.32 2.40e-02  -0.5535714      NA    NA 1e+10   0.00000
+9  0.012   4.4464286      NA    NA 1.00e+10   0.0000000      NA    NA 1e+10   0.00000
+12 0.004 -13.5535714      15  0.60 7.00e-03 -13.5535714      NA    NA 1e+10   0.00000
+16 0.005   7.4464286      19 -0.06 4.00e-03   7.4464286      NA    NA 1e+10   0.00000
+20 0.019 -13.5535714      23 -0.28 2.20e-02 -13.5535714      24 -0.04 2e-02 -13.55357
+   Study_6  y_6     v_6    Year_6 Study_7  y_7   v_7    Year_7 Study_8 y_8   v_8
+1       NA   NA 1.0e+10   0.00000      NA   NA 1e+10   0.00000      NA  NA 1e+10
+5       NA   NA 1.0e+10   0.00000      NA   NA 1e+10   0.00000      NA  NA 1e+10
+9       NA   NA 1.0e+10   0.00000      NA   NA 1e+10   0.00000      NA  NA 1e+10
+12      NA   NA 1.0e+10   0.00000      NA   NA 1e+10   0.00000      NA  NA 1e+10
+16      NA   NA 1.0e+10   0.00000      NA   NA 1e+10   0.00000      NA  NA 1e+10
+20      25 -0.3 2.1e-02 -13.55357      26 0.07 6e-03 -13.55357      27   0 7e-03
+      Year_8 Study_9  y_9   v_9    Year_9 Study_10  y_10  v_10   Year_10 Study_11  y_11
+1    0.00000      NA   NA 1e+10   0.00000       NA    NA 1e+10   0.00000       NA    NA
+5    0.00000      NA   NA 1e+10   0.00000       NA    NA 1e+10   0.00000       NA    NA
+9    0.00000      NA   NA 1e+10   0.00000       NA    NA 1e+10   0.00000       NA    NA
+12   0.00000      NA   NA 1e+10   0.00000       NA    NA 1e+10   0.00000       NA    NA
+16   0.00000      NA   NA 1e+10   0.00000       NA    NA 1e+10   0.00000       NA    NA
+20 -13.55357      28 0.05 7e-03 -13.55357       29 -0.08 7e-03 -13.55357       30 -0.09
+    v_11   Year_11
+1  1e+10   0.00000
+5  1e+10   0.00000
+9  1e+10   0.00000
+12 1e+10   0.00000
+16 1e+10   0.00000
+20 7e-03 -13.55357
+\end{verbatim}
+
+\subsection{Random-effects model}
+\label{sec:orgedc7d87}
+\begin{itemize}
+\item To implement a three-level meta-analysis as a structural equation model, we need to specify both the model-implied mean vector \(\mu(\theta)\), say \texttt{expMean}, and the model-implied covariance matrix \(\Sigma(\theta)\), say \texttt{expCov}.
+\item When there is no covariate, the expected mean is a \(k \times 1\) vector with all elements of \texttt{beta0} (the intercept), i.e., \(\mu(\theta) = \left[ \begin{array}{c} 1 \\ \vdots \\ 1 \end{array} \right]\beta_0\). Since \texttt{OpenMx} expects a row vector rather than a column vector in the model-implied means, we need to transpose the \texttt{expMean} in the analysis.
+\item \texttt{Tau2} (\(T^2_{(2)}\)) and \texttt{Tau3} (\(T^2_{(3)}\)) are the level 2 and level 3 matrices of heterogeneity, respectively. \texttt{Tau2} is a diagonal matrix with elements of \(\tau^2_{(2)}\), whereas \texttt{Tau3} is a full matrix with elements of \(\tau^2_{(3)}\). \texttt{V} is a diagonal matrix of the known sampling variances \(v_{ij}\).
+\item The model-implied covariance matrix is \(\Sigma(\theta) = T^2_{(3)} + T^2_{(2)} + V\).
+\item All of these matrices are stored into a model called \texttt{random.model}.
+\end{itemize}
+\begin{verbatim}
+#### Random-effects model  
+## Intercept
+Beta0 <- mxMatrix("Full", ncol=1, nrow=1, free=TRUE, labels="beta0", 
+                  name="Beta0")
+## 1 by k row vector of ones
+Ones <- mxMatrix("Unit", nrow=k, ncol=1, name="Ones")
+
+## Model implied mean vector 
+## OpenMx expects a row vector rather than a column vector.
+expMean <- mxAlgebra( t(Ones %*% Beta0), name="expMean")
+
+## Tau2_2
+Tau2 <- mxMatrix("Symm", ncol=1, nrow=1, values=0.01, free=TRUE, labels="tau2_2", 
+                 name="Tau2")
+Tau3 <- mxMatrix("Symm", ncol=1, nrow=1, values=0.01, free=TRUE, labels="tau2_3", 
+                 name="Tau3")
+
+## k by k identity matrix
+Iden <- mxMatrix("Iden", nrow=k, ncol=k, name="Iden")
+
+## Conditional sampling variances
+## data.v_1, data.v_2, ... data.v_k represent values for definition variables
+V <- mxMatrix("Diag", nrow=k, ncol=k, free=FALSE, 
+              labels=paste("data.v", 1:k, sep="_"), name="V")
+
+## Model implied covariance matrix
+expCov <- mxAlgebra( Ones%*% Tau3 %*% t(Ones) + Iden %x% Tau2 + V, name="expCov")
+
+## Model stores everthing together
+random.model <- mxModel(model="Random effects model", 
+                        mxData(observed=my.wide, type="raw"), 
+                        Iden, Ones, Beta0, Tau2, Tau3, V, expMean, expCov,
+                        mxFIMLObjective("expCov","expMean", 
+                        dimnames=paste("y", 1:k, sep="_")))
+\end{verbatim}
+
+\begin{itemize}
+\item We perform a random-effects three-level meta-analysis by running the model with the \texttt{mxRun()} command. The parameter estimates (and their \emph{SEs}) for \(\beta_0\), \(\tau^2_{(2)}\) and \(\tau^2_{(3)}\) were 0.1845 (0.0805), 0.0329 (0.0111) and 0.0577 (0.0307), respectively.
+\end{itemize}
+\begin{verbatim}
+summary( mxRun(random.model) )
+\end{verbatim}
+
+\begin{verbatim}
+Running Random effects model with 3 parameters
+Summary of Random effects model 
+ 
+free parameters:
+    name matrix row col   Estimate  Std.Error A
+1  beta0  Beta0   1   1 0.18445538 0.08054111  
+2 tau2_2   Tau2   1   1 0.03286479 0.01113968  
+3 tau2_3   Tau3   1   1 0.05773836 0.03074229  
+
+Model Statistics: 
+               |  Parameters  |  Degrees of Freedom  |  Fit (-2lnL units)
+       Model:              3                     53              16.78987
+   Saturated:             77                    -21                    NA
+Independence:             22                     34                    NA
+Number of observations/statistics: 11/56
+
+Information Criteria: 
+      |  df Penalty  |  Parameters Penalty  |  Sample-Size Adjusted
+AIC:      -89.21013               22.78987                 26.21844
+BIC:     -110.29858               23.98356                 14.95056
+To get additional fit indices, see help(mxRefModels)
+timestamp: 2024-04-29 09:20:10 
+Wall clock time: 0.06778407 secs 
+optimizer:  SLSQP 
+OpenMx version number: 2.21.11 
+Need help?  See help(mxSummary)
+\end{verbatim}
+
+\subsection{Mixed-effects model}
+\label{sec:orgf47a922}
+\begin{itemize}
+\item We may extend a random-effects model to a mixed-effects model by including a covariate (\texttt{Year} in this example).
+\item \texttt{beta1} is the regression coefficient, whereas \texttt{X} stores the value of \texttt{Year} via definition variables.
+\item The conditional model-implied mean vector is \(\mu(\theta|Year_{ij}) = \left[ \begin{array}{c} 1 \\ \vdots \\ 1 \end{array} \right]\beta_0 + \left[ \begin{array}{c} Year_{1j} \\ \vdots \\ Year_{kj} \end{array} \right]\beta_1\).
+\item The conditional model-implied covariance matrix is the same as that in the random-effects model, i.e., \(\Sigma(\theta|Year_{ij}) = T^2_{(3)} + T^2_{(2)} + V\).
+\end{itemize}
+\begin{verbatim}
+#### Mixed-effects model
+
+## Design matrix via definition variable
+X <- mxMatrix("Full", nrow=k, ncol=1, free=FALSE, 
+              labels=paste("data.Year_", 1:k, sep=""), name="X")
+
+## Regression coefficient
+Beta1 <- mxMatrix("Full", nrow=1, ncol=1, free=TRUE, values=0,
+                  labels="beta1", name="Beta1")
+
+## Model implied mean vector
+expMean <- mxAlgebra( t(Ones%*%Beta0 + X%*%Beta1), name="expMean")
+
+mixed.model <- mxModel(model="Mixed effects model", 
+                       mxData(observed=my.wide, type="raw"), 
+                       Iden, Ones, Beta0, Beta1, Tau2, Tau3, V, expMean, expCov, 
+                       X, mxFIMLObjective("expCov","expMean", 
+                       dimnames=paste("y", 1:k, sep="_")))
+\end{verbatim}
+
+\begin{itemize}
+\item The parameter estimates (and their \emph{SEs}) for \(\beta_0\), \(\beta_1\), \(\tau^2_2\) and \(\tau^2_3\) were 0.1780 (0.0805), 0.0051 (0.0085), 0.0329 (0.0112) and 0.0565 (0.0300), respectively.
+\end{itemize}
+\begin{verbatim}
+summary ( mxRun(mixed.model) )
+
+sessionInfo()
+\end{verbatim}
+
+\begin{verbatim}
+Running Mixed effects model with 4 parameters
+Summary of Mixed effects model 
+ 
+free parameters:
+    name matrix row col   Estimate   Std.Error A
+1  beta0  Beta0   1   1 0.17802679 0.080521933  
+2  beta1  Beta1   1   1 0.00507372 0.008526627  
+3 tau2_2   Tau2   1   1 0.03293902 0.011162044  
+4 tau2_3   Tau3   1   1 0.05646285 0.030032973  
+
+Model Statistics: 
+               |  Parameters  |  Degrees of Freedom  |  Fit (-2lnL units)
+       Model:              4                     52              16.43629
+   Saturated:             77                    -21                    NA
+Independence:             22                     34                    NA
+Number of observations/statistics: 11/56
+
+Information Criteria: 
+      |  df Penalty  |  Parameters Penalty  |  Sample-Size Adjusted
+AIC:      -87.56371               24.43629                 31.10295
+BIC:     -108.25427               26.02787                 13.98387
+To get additional fit indices, see help(mxRefModels)
+timestamp: 2024-04-29 09:20:10 
+Wall clock time: 0.09209394 secs 
+optimizer:  SLSQP 
+OpenMx version number: 2.21.11 
+Need help?  See help(mxSummary)
+R version 4.3.3 (2024-02-29)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 22.04.4 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.10.0 
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.10.0
+
+locale:
+ [1] LC_CTYPE=en_SG.UTF-8       LC_NUMERIC=C               LC_TIME=en_SG.UTF-8       
+ [4] LC_COLLATE=en_SG.UTF-8     LC_MONETARY=en_SG.UTF-8    LC_MESSAGES=en_SG.UTF-8   
+ [7] LC_PAPER=en_SG.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
+[10] LC_TELEPHONE=C             LC_MEASUREMENT=en_SG.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Asia/Singapore
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] metaSEM_1.4.0  OpenMx_2.21.11
+
+loaded via a namespace (and not attached):
+ [1] digest_0.6.35      Matrix_1.6-5       lattice_0.22-5     glue_1.7.0        
+ [5] parallel_4.3.3     pbivnorm_0.6.0     RcppParallel_5.1.7 stats4_4.3.3      
+ [9] lifecycle_1.0.4    mvtnorm_1.2-4      cli_3.6.2          grid_4.3.3        
+[13] lavaan_0.6-17      mnormt_2.1.1       compiler_4.3.3     tools_4.3.3       
+[17] ellipse_0.5.0      Rcpp_1.0.12        quadprog_1.5-8     rlang_1.1.3       
+[21] MASS_7.3-60
+\end{verbatim}
+
+\begin{center}
+References
+\end{center}
+
+Bornmann, L., Mutz, R., \& Daniel, H.-D. (2007). Gender differences in grant peer review: A meta-analysis. \emph{Journal of Informetrics}, \emph{1(3)}, 226–238. 
+
+Cheung, M. W. L. (2009). Constructing approximate confidence intervals for parameters with structural equation models. \emph{Structural Equation Modeling}, \emph{16(2)}, 267-294. 
+
+Cheung, M. W.-L. (2014). Modeling dependent effect sizes with three-level meta-analyses: A structural equation modeling approach. \emph{Psychological Methods}, \emph{19(2)}, 211–229. \url{https://doi.org/10.1037/a0032968}
+
+Cheung, M. W.-L. (2015). metaSEM: An R package for meta-analysis using structural equation modeling. \emph{Frontiers in Psychology}, \emph{5(1521)}. \url{https://doi.org/10.3389/fpsyg.2014.01521}
+
+Cooper, H., Valentine, J. C., Charlton, K., \& Melson, A. (2003). The effects of modified school calendars on student achievement and on school and community attitudes. \emph{Review of Educational Research}, \emph{73(1)}, 1 –52. 
+
+Konstantopoulos, S. (2011). Fixed effects and variance components estimation in three-level meta-analysis. \emph{Research Synthesis Methods}, \emph{2(1)}, 61–76. 
+
+Marsh, H. W., Bornmann, L., Mutz, R., Daniel, H.-D., \& O’Mara, A. (2009). Gender effects in the peer reviews of grant proposals: A comprehensive meta-analysis comparing traditional and multilevel approaches. \emph{Review of Educational Research}, \emph{79(3)}, 1290–1326. 
+
+Neale, M. C., \& Miller, M. B. (1997). The use of likelihood-based confidence intervals in genetic models. \emph{Behavior Genetics}, \emph{27(2)}, 113–120. 
+\end{document}

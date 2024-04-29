@@ -1,0 +1,555 @@
+#+STARTUP: showall
+#+OPTIONS: H:2
+#+TITLE: Conducting Three-level Meta-analyses using the =metaSEM= Package
+#+AUTHOR: Mike W.-L. Cheung
+#+BABEL: :session *R* :results output :exports both :tangle yes
+#+LATEX_HEADER: \usepackage[a4paper,margin=2.5cm]{geometry}
+#+LaTeX_HEADER: \usepackage{framed}
+#+LaTeX_HEADER: \usepackage{xcolor}
+#+LaTeX_HEADER: \definecolor{shadecolor}{gray}{.9}
+#+LaTeX_HEADER: \newenvironment{results}{\begin{shaded}}{\end{shaded}}
+
+* Introduction
+This file illustrates how to conduct three-level meta-analyses using the [[https://cran.r-project.org/package=metaSEM][metaSEM]] and [[https://openmx.ssri.psu.edu][OpenMx]] packages available in the [[https://www.r-project.org/][R]] environment. The =metaSEM= package was written to simplify the procedures to conduct meta-analysis. Most readers may only need to use the =metaSEM= package to conduct the analysis. The next section shows how to conduct two- and three-level meta-analyses with the =meta()= and =meta3L()= functions. The third section demonstrates more complicated three-level meta-analyses using a dataset with more predictors. The final section shows how to implement three-level meta-analyses as structural equation models using the =OpenMx= package. It provides detailed steps on how three-level meta-analyses can be formulated as structural equation models.
+
+This file also demonstrates the advantages of using the SEM approach to conduct three-level meta-analyses. These include flexibility on imposing constraints for model comparisons and construction of likelihood-based confidence interval (LBCI). I also demonstrate how to conduct three-level meta-analysis with restricted (or residual) maximum likelihood (REML) using the =reml3L()= function and handling missing covariates with full information maximum likelihood (FIML) using the =meta3LFIML()= function. Readers may refer to Cheung (2015) for the design and implementation of the =metaSEM= package and Cheung (2014) for the theory and issues on how to formulate three-level meta-analyses as structural equation models. 
+
+Two datasets from published meta-analyses were used in the illustrations. The first dataset was based on Cooper et al. (2003) and Konstantopoulos (2011). Konstantopoulos (2011) selected part of the dataset to illustrate how to conduct three-level meta-analysis. The second dataset was reported by Bornmann et al. (2007) and Marsh et al. (2009). They conducted a three-level meta-analysis on gender effects in peer reviews of grant proposals. 
+
+* Comparisons between Two- and Three-Level Models with Cooper et al.'s (2003) Dataset
+As an illustration, I first conduct the tradition (two-level) meta-analysis using the =meta()= function. Then I conduct a three-level meta-analysis using the =meta3()= function. We may compare the similarities and differences between these two sets of results. 
+
+** Inspecting the data
+Before running the analyses, we need to load the =metaSEM= library. The datasets are stored in the library. It is always a good idea to inspect the data before the analyses. We may display the first few cases of the dataset by using the =head()= command. 
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  #### Cooper et al. (2003)
+  
+  library("metaSEM")
+  head(Cooper03)
+#+END_SRC
+
+#+RESULTS:
+: Loading required package: OpenMx
+:   District Study     y     v Year
+: 1       11     1 -0.18 0.118 1976
+: 2       11     2 -0.22 0.118 1976
+: 3       11     3  0.23 0.144 1976
+: 4       11     4 -0.30 0.144 1976
+: 5       12     5  0.13 0.014 1989
+: 6       12     6 -0.26 0.014 1989
+
+** Two-level meta-analysis
+Similar to other =R= packages, we may use =summary()= to extract the results after running the analyses. I first conduct a random-effects meta-analysis and then a fixed- and mixed-effects meta-analyses.
+
+*** Random-effects model
+The /Q/ statistic on testing the homogeneity of effect sizes was 578.86, /df/ = 55, /p/ < .001. The estimated heterogeneity $\tau^2$ (labeled =Tau2_1_1= in the output) and $I^2$ were 0.0866 and 0.9459, respectively. This indicates that the between-study effect explains about 95% of the total variation. The average population effect (labeled =Intercept1= in the output; and its 95% Wald CI) was 0.1280 (0.0428, 0.2132).
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  #### Two-level meta-analysis
+
+  ## Random-effects model  
+  summary( meta(y=y, v=v, data=Cooper03) )
+#+END_SRC
+
+*** Fixed-effects model
+A fixed-effects meta-analysis can be conducted by fixing the heterogeneity of the random effects at 0 with the =RE.constraints= argument (random-effects constraints). The estimated common effect (and its 95% Wald CI) was 0.0464 (0.0284, 0.0644).
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Fixed-effects model
+  summary( meta(y=y, v=v, data=Cooper03, RE.constraints=0) )
+#+END_SRC
+
+*** Mixed-effects model
+=Year= was used as a covariate. It is easier to interpret the intercept by centering the =Year= with =scale(Year, scale=FALSE)=. The =scale=FALSE= argument means that it is centered, but not standardized. The estimated regression coefficient (labeled =Slope1_1= in the output; and its 95% Wald CI) was 0.0051 (-0.0033, 0.0136) which is not significant at $\alpha=.05$. The $R^2$ is 0.0164. 
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Mixed-effects model
+  summary( meta(y=y, v=v, x=scale(Year, scale=FALSE), data=Cooper03) )
+#+END_SRC
+
+** Three-level meta-analysis
+*** Random-effects model
+The /Q/ statistic on testing the homogeneity of effect sizes was the same as that under the two-level meta-analysis. The estimated heterogeneity at level 2 $\tau^2_{(2)}$ (labeled =Tau2_2= in the output) and at level 3 $\tau^2_{(3)}$ (labeled =Tau2_3= in the output) were 0.0329 and 0.0577, respectively. The level 2 $I^2_{(2)}$ (labeled =I2_2= in the output) and the level 3 $I^2_{(3)}$ (labeled =I2_3= in the output) were 0.3440 and 0.6043, respectively. Schools (level 2) and districts (level 3) explain about 34% and 60% of the total variation, respectively. The average population effect (and its 95% Wald CI) was 0.1845 (0.0266, 0.3423).
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  #### Three-level meta-analysis
+
+  ## Random-effects model
+  summary( meta3L(y=y, v=v, cluster=District, data=Cooper03) )
+#+END_SRC
+
+*** Mixed-effects model
+=Year= was used as a covariate. The estimated regression coefficient (labeled =Slope_1= in the output; and its 95% Wald CI) was 0.0051 (-0.0116, 0.0218) which is not significant at $\alpha=.05$. The estimated level 2 $R^2_{(2)}$ and level 3 $R^2_{(3)}$ were 0.0000 and 0.0221, respectively.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Mixed-effects model
+  summary( meta3L(y=y, v=v, cluster=District, x=scale(Year, scale=FALSE), data=Cooper03) )
+#+END_SRC
+
+** Model comparisons
+Many research hypotheses involve model comparisons among nested models. =anova()=, a generic function to comparing nested models, may be used to conduct a likelihood ratio test which is also known as a chi-square difference test.
+
+*** Testing $H_0: \tau^2_{(3)} = 0$
+- Based on the data structure, it is clear that a 3-level meta-analysis is preferred to a traditional 2-level meta-analysis. It is still of interest to test whether the 3-level model is statistically better than the 2-level model by testing $H_0: \tau^2_{(3)}=0$. Since the models with $\tau^2_{(3)}$ being freely estimated and with $\tau^2_{(3)}=0$ are nested, we may compare them by the use of a likelihood ratio test. 
+- It should be noted, however, that $H_0: \tau^2_{(3)}=0$ is tested on the boundary. The likelihood ratio test is not distributed as a chi-square variate with 1 /df/. A simple strategy to correct this bias is to reject the null hypothesis when the observed /p/ value is larger than .10 for $\alpha=.05$.
+
+- The likelihood-ratio test was 16.5020 (/df/ =1), /p/ < .001. This clearly demonstrates that the three-level model is statistically better than the two-level model.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Model comparisons
+  
+  model2 <- meta(y=y, v=v, data=Cooper03, model.name="2 level model", silent=TRUE) 
+  #### An equivalent model by fixing tau2 at level 3=0 in meta3()
+  ## model2 <- meta3L(y=y, v=v, cluster=District, data=Cooper03, 
+  ##                  model.name="2 level model", RE3.constraints=0) 
+  model3 <- meta3L(y=y, v=v, cluster=District, data=Cooper03, 
+                  model.name="3 level model", silent=TRUE) 
+  anova(model3, model2)
+#+END_SRC
+
+*** Testing $H_0: \tau^2_{(2)} = \tau^2_{(3)}$
+- From the results of the 3-level random-effects meta-analysis, it appears the level 3 heterogeneity is much larger than that at level 2. 
+- We may test the null hypothesis $H_0: \tau^2_{(2)} = \tau^2_{(3)}$ by the use of a likelihood-ratio test.
+- We may impose an equality constraint on $\tau^2_{(2)} = \tau^2_{(3)}$ by using the same label in =meta3()=. For example, =Eq_tau2= is used as the label in =RE2.constraints= and =RE3.constraints= meaning that both the level 2 and level 3 random effects heterogeneity variances are constrained equally. The value of =0.1= was used as the starting value in the constraints. 
+- The likelihood-ratio test was 0.6871 (/df/ = 1), /p/ = 0.4072. This indicates that there is not enough evidence to reject $H_0: \tau^2_2=\tau^2_3$.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Testing \tau^2_2 = \tau^2_3
+  modelEqTau2 <- meta3L(y=y, v=v, cluster=District, data=Cooper03, 
+                        model.name="Equal tau2 at both levels",
+                        RE2.constraints="0.1*Eq_tau2", RE3.constraints="0.1*Eq_tau2") 
+  anova(model3, modelEqTau2)
+#+END_SRC
+
+** Likelihood-based confidence interval
+- A Wald CI is constructed by $\hat{\theta} \pm 1.96 SE$ where $\hat{\theta}$ and $SE$ are the parameter estimate and its estimated standard error. 
+- A LBCI can be constructed by the use of the likelihood ratio statistic (e.g., Cheung, 2009; Neal & Miller, 1997).  
+- It is well known that the performance of Wald CI on variance components is very poor. For example, the 95% Wald CI on $\hat{\tau}^2_{(3)}$ in the three-level random-effects meta-analysis was (-0.0025, 0.1180). The lower bound falls outside 0. 
+- A LBCI on the heterogeneity variance is preferred. Since $I^2_{(2)}$ and $I^2_{(3)}$ are functions of $\tau^2_{(2)}$ and $\tau^2_{(3)}$, LBCI on these indices may also be requested and used to indicate the precision of these indices. 
+- LBCI may be requested by specifying =LB= in the =intervals.type= argument. 
+- The 95% LBCI on $\hat{\tau}^2_{(3)}$ is (0.0198, 0.1763) that stay inside the meaningful boundaries. Regarding the $I^2$, the 95% LBCIs on $I^2_{(2)}$ and $I^2_{(3)}$ were (0.1274, 0.6573) and (0.2794, 0.8454), respectively.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Likelihood-based CI
+  summary( meta3L(y=y, v=v, cluster=District, data=Cooper03, 
+                  I2=c("I2q", "ICC"), intervals.type="LB") ) 
+#+END_SRC
+
+- A LBCI may also be requested in mixed-effects meta-analysis.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  summary( meta3L(y=y, v=v, cluster=District, x=scale(Year, scale=FALSE), 
+                  data=Cooper03, intervals.type="LB") ) 
+#+END_SRC
+
+** Restricted maximum likelihood estimation
+- REML may also be used in three-level meta-analysis. The parameter estimates for $\tau^2_{(2)}$ and $\tau^2_{(3)}$ were 0.0327 and 0.0651, respectively.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## REML
+  summary( reml1 <- reml3L(y=y, v=v, cluster=District, data=Cooper03) )
+#+END_SRC
+
+- We may impose an equality constraint on $\tau^2_{(2)}$ and $\tau^2_{(3)}$ and test whether this constraint is statistically significant. The estimated value for $\tau^2_{(2)}=\tau^2_{(3)}$ was 0.0404. When this model is compared against the unconstrained model, the test statistic was 1.0033 (/df/ = 1), /p/ = .3165, which is not significant.  
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  summary( reml0 <- reml3L(y=y, v=v, cluster=District, data=Cooper03,
+                           RE.equal=TRUE, model.name="Equal Tau2") )
+  anova(reml1, reml0)
+#+END_SRC
+
+- We may also estimate the residual heterogeneity after controlling for the covariate. The estimated residual heterogeneity for $\tau^2_{(2)}$ and $\tau^2_{(3)}$ were 0.0327 and 0.0723, respectively.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  summary( reml3L(y=y, v=v, cluster=District, x=scale(Year, scale=FALSE), data=Cooper03) )
+#+END_SRC
+
+* More Complex 3-Level Meta-Analyses with Bornmann et al.'s (2007) Dataset
+This section replicates the findings in Table 3 of Marsh et al. (2009). Several additional analyses on model comparisons were conducted. Missing data were artificially introduced to illustrate how missing data might be handled with FIML.
+
+** Inspecting the data
+The effect size and its sampling variance are =logOR= (log of the odds ratio) and =v=, respectively. =Cluster= is the variable representing the cluster effect, whereas the potential covariates are =Year= (year of publication), =Type= (=Grants= vs. =Fellowship=), =Discipline= (=Physical sciences=, =Life sciences/biology=, =Social sciences/humanities= and =Multidisciplinary=) and =Country= (=United States=, =Canada=, =Australia=, =United Kingdom= and =Europe=).
+
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  #### Bornmann et al. (2007)
+  library(metaSEM)
+  head(Bornmann07)
+#+END_SRC
+
+** Model 0: Intercept
+The /Q/ statistic was 221.2809 (/df/ = 65), /p/ < .001. The estimated average effect (and its 95% Wald CI) was -0.1008 (-0.1794, -0.0221). The $\hat{\tau}^2_{(2)}$ and $\hat{\tau}^3_{(3)}$ were 0.0038 and 0.0141, respectively. The $I^2_{(2)}$ and $I^2_{(3)}$ were 0.1568 and 0.5839, respectively. 
+
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes 
+  ## Model 0: Intercept  
+  summary( Model0 <- meta3L(y=logOR, v=v, cluster=Cluster, data=Bornmann07, 
+                           model.name="3 level model") )
+#+END_SRC
+
+*** Testing $H_0: \tau^2_3 = 0$
+We may test whether the three-level model is necessary by testing $H_0: \tau^2_{(3)} = 0$. The likelihood ratio statistic was 10.2202 (/df/ = 1), /p/ < .01. Thus, the three-level model is statistically better than the two-level model.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Testing tau^2_3 = 0
+  Model0a <- meta3L(logOR, v, cluster=Cluster, data=Bornmann07, 
+                    RE3.constraints=0, model.name="2 level model")
+  anova(Model0, Model0a)
+#+END_SRC
+
+*** Testing $H_0: \tau^2_2 = \tau^2_3$
+The likelihood-ratio statistic in testing $H_0: \tau^2_{(2)} = \tau^2_{(3)}$ was 1.3591 (/df/ = 1), /p/ = 0.2437. Thus, there is no evidence to reject the null hypothesis.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Testing tau^2_2 = tau^2_3
+  Model0b <- meta3L(logOR, v, cluster=Cluster, data=Bornmann07, 
+                    RE2.constraints="0.1*Eq_tau2", RE3.constraints="0.1*Eq_tau2", 
+                    model.name="tau2_2 equals tau2_3")
+  anova(Model0, Model0b)
+#+END_SRC
+
+** Model 1: =Type= as a covariate
+- Conventionally, one level (e.g., =Grants=) is used as the reference group. The estimated intercept (labeled =Intercept= in the output) represents the estimated effect size for =Grants= and the regression coefficient (labeled =Slope_1= in the output) is the difference between =Fellowship= and =Grants=. 
+- The estimated slope on =Type= (and its 95% Wald CI) was -0.1956 (-0.3018, -0.0894) which is statistically significant at $\alpha=.05$. This is the difference between =Fellowship= and =Grants=. The $R^2_{(2)}$ and $R^2_{(3)}$ were 0.0693 and 0.7943, respectively.
+
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Model 1: Type as a covariate  
+  ## Convert characters into a dummy variable
+  ## Type2=0 (Grants); Type2=1 (Fellowship)    
+  Type2 <- ifelse(Bornmann07$Type=="Fellowship", yes=1, no=0)
+  summary( Model1 <- meta3L(logOR, v, x=Type2, cluster=Cluster, data=Bornmann07)) 
+#+END_SRC
+
+*** Alternative model: =Grants= and =Fellowship= as indicator variables
+If we want to estimate the effects for both =Grants= and =Fellowship=, we may create two indicator variables to represent them. Since we cannot estimate the intercept and these coefficients at the same time, we need to fix the intercept at 0 by specifying the =intercept.constraints=0= argument in =meta3()=. We are now able to include both =Grants= and =Fellowship= in the analysis. The estimated effects (and their 95% CIs) for =Grants= and =Fellowship= were -0.0066 (-0.0793, 0.0661) and -0.2022 (-0.2805, -0.1239), respectively.
+
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Alternative model: Grants and Fellowship as indicators  
+  ## Indicator variables
+  Grants <- ifelse(Bornmann07$Type=="Grants", yes=1, no=0)
+  Fellowship <- ifelse(Bornmann07$Type=="Fellowship", yes=1, no=0)
+
+  Model1b <- meta3L(logOR, v, x=cbind(Grants, Fellowship), cluster=Cluster, data=Bornmann07,
+		    intercept.constraints=0, model.name="Model 1")
+  Model1b <- rerun(Model1b)
+  summary(Model1b)
+#+END_SRC
+
+** Model 2: =Year= and =Year^2= as covariates
+- When there are several covariates, we may combine them with the =cbind()= command. For example, =cbind(Year, Year^2)= includes both =Year= and its squared as covariates. In the output, =Slope_1= and =Slope_2= refer to the regression coefficients for =Year= and =Year^2=, respectively. To increase the numerical stability, the covariates are usually centered before creating the quadratic terms. Since Marsh et al. (2009) standardized =Year= in their analysis, I follow this practice here.
+- The estimated regression coefficients (and their 95% CIs) for =Year= and =Year^2= were -0.0010 (-0.0473, 0.0454) and -0.0118 (-0.0247, 0.0012), respectively. The $R^2_{(2)}$ and $R^2_{(3)}$ were 0.2430 and 0.0000, respectively.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Model 2: Year and Year^2 as covariates
+  summary( Model2 <- meta3L(logOR, v, x=cbind(scale(Year), scale(Year)^2), 
+                            cluster=Cluster, data=Bornmann07,
+                            model.name="Model 2") ) 
+#+END_SRC
+
+*** Testing $H_0: \beta_{Year} = \beta_{Year^2}=0$
+The test statistic was 3.4190 (/df/ = 2), /p/ = 0.1810. Thus, there is no evidence supporting that =Year= has a quadratic effect on the effect size.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Testing beta_{Year} = beta_{Year^2}=0
+  anova(Model2, Model0)
+#+END_SRC
+
+** Model 3: =Discipline= as a covariate
+- There are four categories in =Discipline=. =multidisciplinary= is used as the reference group in the analysis.
+- The estimated regression coefficients (and their 95% Wald CIs) for =DisciplinePhy=, =DisciplineLife= and =DisciplineSoc= were -0.0091 (-0.2041, 0.1859), -0.1262 (-0.2804, 0.0280) and -0.2370 (-0.4746, 0.0007), respectively. The $R^2_2$ and $R^2_3$ were 0.0000 and 0.4975, respectively.
+  
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Model 3: Discipline as a covariate
+  ## Create dummy variables using multidisciplinary as the reference group
+  DisciplinePhy <- ifelse(Bornmann07$Discipline=="Physical sciences", yes=1, no=0)
+  DisciplineLife <- ifelse(Bornmann07$Discipline=="Life sciences/biology", yes=1, no=0)
+  DisciplineSoc <- ifelse(Bornmann07$Discipline=="Social sciences/humanities", yes=1, no=0)
+  summary( Model3 <- meta3L(logOR, v, x=cbind(DisciplinePhy, DisciplineLife, DisciplineSoc), 
+                            cluster=Cluster, data=Bornmann07,
+                            model.name="Model 3") )
+#+END_SRC 
+
+*** Testing whether =Discipline= is significant
+The test statistic was 5.7268 (/df/ = 3), /p/ = 0.1257 which is not significant. Therefore, there is no evidence supporting that =Discipline= explains the variation of the effect sizes.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Testing whether Discipline is significant
+  anova(Model3, Model0)
+#+END_SRC
+
+** Model 4: =Country= as a covariate
+- There are five categories in =Country=. =United States= is used as the reference group in the analysis.
+- The estimated regression coefficients (and their 95% Wald CIs) for =CountryAus=, =CountryCan= and =CountryEur= =CountryUK= are -0.0240 (-0.2405, 0.1924), -0.1341 (-0.3674, 0.0993), -0.2211 (-0.3660, -0.0762) and 0.0537 (-0.1413, 0.2487), respectively. The $R^2_2$ and $R^2_3$ were 0.1209 and 0.6606, respectively.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Model 4: Country as a covariate
+  ## Create dummy variables using the United States as the reference group
+  CountryAus <- ifelse(Bornmann07$Country=="Australia", yes=1, no=0)
+  CountryCan <- ifelse(Bornmann07$Country=="Canada", yes=1, no=0)
+  CountryEur <- ifelse(Bornmann07$Country=="Europe", yes=1, no=0)
+  CountryUK <- ifelse(Bornmann07$Country=="United Kingdom", yes=1, no=0)
+  
+  summary( Model4 <- meta3L(logOR, v, x=cbind(CountryAus, CountryCan, CountryEur, 
+                            CountryUK), cluster=Cluster, data=Bornmann07,
+                            model.name="Model 4") )  
+#+END_SRC 
+
+*** Testing whether =Discipline= is significant
+The test statistic was 11.6200 (/df/ = 4), /p/ = 0.0204 which is statistically significant.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Testing whether Discipline is significant
+  anova(Model4, Model0)
+#+END_SRC
+
+** Model 5: =Type= and =Discipline= as covariates
+The $R^2_{(2)}$ and $R^2_{(3)}$ were 0.3925 and 1.0000, respectively. The $\hat{\tau}^2_{(3)}$ was near 0 after controlling for the covariates.
+  
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Model 5: Type and Discipline as covariates
+  summary( Model5 <- meta3L(logOR, v, x=cbind(Type2, DisciplinePhy, DisciplineLife, 
+                           DisciplineSoc), cluster=Cluster, data=Bornmann07,
+                           model.name="Model 5") )
+#+END_SRC
+
+*** Testing whether =Discipline= is significant after controlling for =Type=
+The test statistic was 12.9584 (/df/ = 3), /p/ = 0.0047 which is significant. Therefore, =Discipline= is still significant after controlling for =Type=.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Testing whether Discipline is significant after controlling for Type
+  anova(Model5, Model1)
+#+END_SRC
+
+** Model 6: =Type= and =Country= as covariates  
+The $R^2_{(2)}$ and $R^2_{(3)}$ were 0.3948 and 1.0000, respectively. The $\hat{\tau}^2_{(3)}$ was near 0 after controlling for the covariates.
+
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes  
+  ## Model 6: Type and Country as covariates
+  Model6 <- meta3L(logOR, v, x=cbind(Type2, CountryAus, CountryCan, CountryEur, CountryUK), cluster=Cluster, data=Bornmann07,
+		   model.name="Model 6")
+  Model6 <- rerun(Model6)
+  summary(Model6)
+#+END_SRC
+
+*** Testing whether =Country= is significant after controlling for =Type=
+The test statistic was 12.5491 (/df/ = 4), /p/ = 0.0137. Thus, =Country= is significant after controlling for =Type=.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Testing whether Country is significant after controlling for Type
+  anova(Model6, Model1)
+#+END_SRC
+
+** Model 7: =Discipline= and =Country= as covariates
+The $R^2_{(2)}$ and $R^2_{(3)}$ were 0.1397 and 0.7126, respectively.
+  
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Model 7: Discipline and Country as covariates
+  summary( meta3L(logOR, v, x=cbind(DisciplinePhy, DisciplineLife, DisciplineSoc,
+                            CountryAus, CountryCan, CountryEur, CountryUK), 
+                             cluster=Cluster, data=Bornmann07,
+                            model.name="Model 7") )
+#+END_SRC
+
+** Model 8: =Type=, =Discipline= and =Country= as covariates
+The $R^2_{(2)}$ and $R^2_{(3)}$ were 0.4466 and 1.0000, respectively. The $\hat{\tau}^2_{(3)}$ was near 0 after controlling for the covariates. 
+
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Model 8: Type, Discipline and Country as covariates
+  Model8 <- meta3L(logOR, v, x=cbind(Type2, DisciplinePhy, DisciplineLife, DisciplineSoc,
+                              CountryAus, CountryCan, CountryEur, CountryUK), 
+                              cluster=Cluster, data=Bornmann07,
+                              model.name="Model 8") 
+  ## There was an estimation error. The model was rerun again.
+  summary(rerun(Model8))
+#+END_SRC
+
+** Handling missing covariates with FIML
+When there are missing data in the covariates, data with missing values are excluded before the analysis in =meta3()=. The missing covariates can be handled by the use of FIML in =meta3X()=. We illustrate two examples on how to analyze data with missing covariates with missing completely at random (MCAR) and missing at random (MAR) data.
+ 
+*** MCAR
+About 25% of the level-2 covariate =Type= was introduced by the MCAR mechanism. 
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  #### Handling missing covariates with FIML
+  
+  ## MCAR
+  ## Set seed for replication
+  set.seed(1000000)
+  
+  ## Copy Bornmann07 to my.df
+  my.df <- Bornmann07
+  ## "Fellowship": 1; "Grant": 0
+  my.df$Type_MCAR <- ifelse(Bornmann07$Type=="Fellowship", yes=1, no=0)
+  
+  ## Create 17 out of 66 missingness with MCAR
+  my.df$Type_MCAR[sample(1:66, 17)] <- NA
+  
+  summary(meta3L(y=logOR, v=v, cluster=Cluster, x=Type_MCAR, data=my.df))
+#+END_SRC  
+
+There is no need to specify whether the covariates are level 2 or level 3 in =meta3()= because the covariates are treated as a design matrix. When =meta3X()= is used, users need to specify whether the covariates are at level 2 (=x2=) or level 3 (=x3=).
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes  
+  summary( meta3LFIML(y=logOR, v=v, cluster=Cluster, x2=Type_MCAR, data=my.df) )
+#+END_SRC
+
+*** MAR
+For the case for missing covariates with MAR, the missingness in =Type= depends on the values of =Year=. =Type= is missing when =Year= is smaller than 1996. 
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## MAR
+  Type_MAR <- ifelse(Bornmann07$Type=="Fellowship", yes=1, no=0)
+  
+  ## Create 27 out of 66 missingness with MAR for cases Year<1996
+  index_MAR <- ifelse(Bornmann07$Year<1996, yes=TRUE, no=FALSE)
+  Type_MAR[index_MAR] <- NA
+  
+  summary( meta3LFIML(y=logOR, v=v, cluster=Cluster, x2=Type_MAR, data=Bornmann07) ) 
+#+END_SRC
+
+It is possible to include level 2 (=av2=) and level 3 (=av3=) auxiliary variables. Auxiliary variables are those that predict the missing values or are correlated with the variables that contain missing values. The inclusion of auxiliary variables can improve the efficiency of the estimation and the parameter estimates. 
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  ## Include auxiliary variable
+  summary( meta3LFIML(y=logOR, v=v, cluster=Cluster, x2=Type_MAR, av2=Year, data=my.df) )
+#+END_SRC
+
+
+* Implementing Three-Level Meta-Analyses as Structural Equation Models in =OpenMx=
+This section illustrates how to formulate three-level meta-analyses as structural equation models using the =OpenMx= package. The steps outline how to create the model-implied mean vector and the model-implied covariance matrix to fit the three-level meta-analyses. =y= is the effect size (standardized mean difference on the modified school calendars) and =v= is its sampling variance. =District= is the variable for the cluster effect, whereas =Year= is the year of publication. 
+
+** Preparing data
+- Data in a three-level meta-analysis are usually stored in the [[http://wiki.stdout.org/rcookbook/Manipulating%20data/Converting%20data%20between%20wide%20and%20long%20format/][long format]], e.g., =Cooper03= in this example, whereas the SEM approach uses the wide format. 
+- Suppose the maximum number of effect sizes in the level-2 unit is $k$ ($k=11$ in this example). Each cluster is represented by one row with $k=11$ variables representing the outcome effect size, say /y_1/ to /y_11/ in this example. The incomplete data are represented by =NA= (missing value). 
+- Similarly, $k=11$ variables are required to represent the known sampling variances, say /v_1/ to /v_11/ in this example.
+- If the covariates are at level 2, $k=11$ variables are also required to represent each of them. For example, =Year= is a level-2 covariate, /Year_1/ to /Year_11/ are required to represent it.
+- Several extra steps are required to handle missing values. Missing values (represented by =NA= in =R=) are not allowed in /v_1/ to /v_11/ as they are definition variables. The missing data are converted into some arbitrary values, say =1e10= in this example. The actual value does not matter because the missing values will be removed before the analysis. It is because missing values in /y_1/ to /y_11/ (and /v_1/ to /v_11/) will be filtered out automatically by the use of FIML. 
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  #### Steps in Analyzing Three-level Meta-analysis in OpenMx
+
+  #### Preparing data
+  ## Load the library
+  library(OpenMx)
+  
+  ## Get the dataset from the metaSEM library
+  data(Cooper03, package="metaSEM")
+  
+  ## Make a copy of the original data
+  my.long <- Cooper03
+
+  ## Show the first few cases in my.long
+  head(my.long)
+#+END_SRC
+
+#+RESULTS:
+:   District Study     y     v Year
+: 1       11     1 -0.18 0.118 1976
+: 2       11     2 -0.22 0.118 1976
+: 3       11     3  0.23 0.144 1976
+: 4       11     4 -0.30 0.144 1976
+: 5       12     5  0.13 0.014 1989
+: 6       12     6 -0.26 0.014 1989
+
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes  
+  ## Center the Year to increase numerical stability
+  my.long$Year <- scale(my.long$Year, scale=FALSE)
+  
+  ## maximum no. of effect sizes in level-2
+  k <- 11
+  
+  ## Create a variable called "time" to store: 1, 2, 3, ... k
+  my.long$time <- c(unlist(sapply(split(my.long$y, my.long$District), 
+                                  function(x) 1:length(x))))
+  
+  ## Convert long format to wide format by "District"
+  my.wide <- reshape(my.long, timevar="time", idvar=c("District"), 
+                     sep="_", direction="wide")
+
+  ## NA in v is due to NA in y in wide format
+  ## Replace NA with 1e10 in "v"
+  temp <- my.wide[, paste("v_", 1:k, sep="")]
+  temp[is.na(temp)] <- 1e10
+  my.wide[, paste("v_", 1:k, sep="")] <- temp
+  
+  ## Replace NA with 0 in "Year"
+  temp <- my.wide[, paste("Year_", 1:k, sep="")]
+  temp[is.na(temp)] <- 0
+  my.wide[, paste("Year_", 1:k, sep="")] <- temp
+
+  ## Show the first few cases in my.wide
+  head(my.wide)
+#+END_SRC
+
+** Random-effects model
+- To implement a three-level meta-analysis as a structural equation model, we need to specify both the model-implied mean vector $\mu(\theta)$, say =expMean=, and the model-implied covariance matrix $\Sigma(\theta)$, say =expCov=. 
+- When there is no covariate, the expected mean is a $k \times 1$ vector with all elements of =beta0= (the intercept), i.e., \( \mu(\theta) = \left[ \begin{array}{c} 1 \\ \vdots \\ 1 \end{array} \right]\beta_0 \). Since =OpenMx= expects a row vector rather than a column vector in the model-implied means, we need to transpose the =expMean= in the analysis.
+- =Tau2= ($T^2_{(2)}$) and =Tau3= ($T^2_{(3)}$) are the level 2 and level 3 matrices of heterogeneity, respectively. =Tau2= is a diagonal matrix with elements of $\tau^2_{(2)}$, whereas =Tau3= is a full matrix with elements of $\tau^2_{(3)}$. =V= is a diagonal matrix of the known sampling variances $v_{ij}$.
+- The model-implied covariance matrix is \( \Sigma(\theta) = T^2_{(3)} + T^2_{(2)} + V \).
+- All of these matrices are stored into a model called =random.model=.
+#+BEGIN_SRC R :session *R* :tangle yes
+  #### Random-effects model  
+  ## Intercept
+  Beta0 <- mxMatrix("Full", ncol=1, nrow=1, free=TRUE, labels="beta0", 
+                    name="Beta0")
+  ## 1 by k row vector of ones
+  Ones <- mxMatrix("Unit", nrow=k, ncol=1, name="Ones")
+  
+  ## Model implied mean vector 
+  ## OpenMx expects a row vector rather than a column vector.
+  expMean <- mxAlgebra( t(Ones %*% Beta0), name="expMean")
+  
+  ## Tau2_2
+  Tau2 <- mxMatrix("Symm", ncol=1, nrow=1, values=0.01, free=TRUE, labels="tau2_2", 
+                   name="Tau2")
+  Tau3 <- mxMatrix("Symm", ncol=1, nrow=1, values=0.01, free=TRUE, labels="tau2_3", 
+                   name="Tau3")
+  
+  ## k by k identity matrix
+  Iden <- mxMatrix("Iden", nrow=k, ncol=k, name="Iden")
+  
+  ## Conditional sampling variances
+  ## data.v_1, data.v_2, ... data.v_k represent values for definition variables
+  V <- mxMatrix("Diag", nrow=k, ncol=k, free=FALSE, 
+                labels=paste("data.v", 1:k, sep="_"), name="V")
+  
+  ## Model implied covariance matrix
+  expCov <- mxAlgebra( Ones%*% Tau3 %*% t(Ones) + Iden %x% Tau2 + V, name="expCov")
+  
+  ## Model stores everthing together
+  random.model <- mxModel(model="Random effects model", 
+                          mxData(observed=my.wide, type="raw"), 
+                          Iden, Ones, Beta0, Tau2, Tau3, V, expMean, expCov,
+                          mxFIMLObjective("expCov","expMean", 
+                          dimnames=paste("y", 1:k, sep="_")))
+#+END_SRC
+
+- We perform a random-effects three-level meta-analysis by running the model with the =mxRun()= command. The parameter estimates (and their /SEs/) for $\beta_0$, $\tau^2_{(2)}$ and $\tau^2_{(3)}$ were 0.1845 (0.0805), 0.0329 (0.0111) and 0.0577 (0.0307), respectively.
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+summary( mxRun(random.model) )
+#+END_SRC
+
+** Mixed-effects model
+- We may extend a random-effects model to a mixed-effects model by including a covariate (=Year= in this example).
+- =beta1= is the regression coefficient, whereas =X= stores the value of =Year= via definition variables.
+- The conditional model-implied mean vector is \( \mu(\theta|Year_{ij}) = \left[ \begin{array}{c} 1 \\ \vdots \\ 1 \end{array} \right]\beta_0 + \left[ \begin{array}{c} Year_{1j} \\ \vdots \\ Year_{kj} \end{array} \right]\beta_1 \).
+- The conditional model-implied covariance matrix is the same as that in the random-effects model, i.e., \( \Sigma(\theta|Year_{ij}) = T^2_{(3)} + T^2_{(2)} + V \). 
+#+BEGIN_SRC R :session *R* :tangle yes
+  #### Mixed-effects model
+  
+  ## Design matrix via definition variable
+  X <- mxMatrix("Full", nrow=k, ncol=1, free=FALSE, 
+                labels=paste("data.Year_", 1:k, sep=""), name="X")
+  
+  ## Regression coefficient
+  Beta1 <- mxMatrix("Full", nrow=1, ncol=1, free=TRUE, values=0,
+                    labels="beta1", name="Beta1")
+  
+  ## Model implied mean vector
+  expMean <- mxAlgebra( t(Ones%*%Beta0 + X%*%Beta1), name="expMean")
+  
+  mixed.model <- mxModel(model="Mixed effects model", 
+                         mxData(observed=my.wide, type="raw"), 
+                         Iden, Ones, Beta0, Beta1, Tau2, Tau3, V, expMean, expCov, 
+                         X, mxFIMLObjective("expCov","expMean", 
+                         dimnames=paste("y", 1:k, sep="_")))
+#+END_SRC
+
+- The parameter estimates (and their /SEs/) for $\beta_0$, $\beta_1$, $\tau^2_2$ and $\tau^2_3$ were 0.1780 (0.0805), 0.0051 (0.0085), 0.0329 (0.0112) and 0.0565 (0.0300), respectively. 
+#+BEGIN_SRC R :session *R* :results output :exports both :tangle yes
+  summary ( mxRun(mixed.model) )
+
+  sessionInfo()
+#+END_SRC
+
+#+BEGIN_CENTER
+References
+#+END_CENTER
+
+Bornmann, L., Mutz, R., & Daniel, H.-D. (2007). Gender differences in grant peer review: A meta-analysis. /Journal of Informetrics/, /1(3)/, 226–238. 
+
+Cheung, M. W. L. (2009). Constructing approximate confidence intervals for parameters with structural equation models. /Structural Equation Modeling/, /16(2)/, 267-294. 
+
+Cheung, M. W.-L. (2014). Modeling dependent effect sizes with three-level meta-analyses: A structural equation modeling approach. /Psychological Methods/, /19(2)/, 211–229. https://doi.org/10.1037/a0032968
+
+Cheung, M. W.-L. (2015). metaSEM: An R package for meta-analysis using structural equation modeling. /Frontiers in Psychology/, /5(1521)/. https://doi.org/10.3389/fpsyg.2014.01521
+
+Cooper, H., Valentine, J. C., Charlton, K., & Melson, A. (2003). The effects of modified school calendars on student achievement and on school and community attitudes. /Review of Educational Research/, /73(1)/, 1 –52. 
+
+Konstantopoulos, S. (2011). Fixed effects and variance components estimation in three-level meta-analysis. /Research Synthesis Methods/, /2(1)/, 61–76. 
+
+Marsh, H. W., Bornmann, L., Mutz, R., Daniel, H.-D., & O’Mara, A. (2009). Gender effects in the peer reviews of grant proposals: A comprehensive meta-analysis comparing traditional and multilevel approaches. /Review of Educational Research/, /79(3)/, 1290–1326. 
+
+Neale, M. C., & Miller, M. B. (1997). The use of likelihood-based confidence intervals in genetic models. /Behavior Genetics/, /27(2)/, 113–120. 

@@ -10,7 +10,9 @@ http://dx.doi.org/10.1080/10705510709336745.
 
 [Cheung, M. W.-L. (2010)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202010). Fixed-effects meta-analyses as multiple-group structural equation models. *Structural Equation Modeling: A Multidisciplinary Journal*, *17*(3), 481-509. http://dx.doi.org/10.1080/10705511.2010.489367.
 
-[Cheung, M. W.-L. (2013a)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202013a). Multivariate meta-analysis as structural equation models. *Structural Equation Modeling: A Multidisciplinary Journal*, *20*(3),  429-454. http://dx.doi.org/10.1080/10705511.2013.797827.
+[Cheung, M. W.-L. (2013)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202013). Multivariate meta-analysis as structural equation models. *Structural Equation Modeling: A Multidisciplinary Journal*, *20*(3),  429-454. http://dx.doi.org/10.1080/10705511.2013.797827.
+
+[Cheung, M. W.-L. (2014)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202014). Modeling dependent effect sizes with three-level meta-analyses: A structural equation modeling approach. *Psychological Methods*, *19*(2), 211–229. https://doi.org/10.1037/a0032968
 
 [Cheung, M. W.-L. (2018a)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202018a). [Computing multivariate effect sizes and their sampling covariance matrices with structural equation modeling: Theory, examples, and computer simulations](https://doi.org/10.3389/fpsyg.2018.01387). *Frontiers in Psychology*, *9*(1387).
 
