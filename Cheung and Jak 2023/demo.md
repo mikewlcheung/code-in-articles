@@ -1,7 +1,7 @@
 ---
 title: 'Advanced Meta-Analytic Techniques'
 author: "Mike W.-L. Cheung and Suzanne Jak"
-date: 'December 13, 2023'
+date: 'juli 02, 2024'
 output:
   html_document:
     keep_md: yes
@@ -14,10 +14,10 @@ output:
   word_document: default
 ---
 
-
 # Multivariate meta-analysis
 
 ```r
+## Load the library
 library(metaSEM)
 
 ## Dataset
@@ -125,8 +125,7 @@ cov2cor(VarCorr(fit.MES))
 ```
 
 ```r
-plot(fit.MES, axis.labels=c("Math effect", "Verbal effect"),
-     univariate.polygon.width = 0.1)
+plot(fit.MES, axis.labels=c("Math effect", "Verbal effect"), univariate.polygon.width = 0.1)
 ```
 
 ![](demo_files/figure-html/unnamed-chunk-1-1.png)<!-- -->
@@ -134,9 +133,28 @@ plot(fit.MES, axis.labels=c("Math effect", "Verbal effect"),
 # Three-level meta-analysis
 
 ```r
-## Dataset
-data(Bornmann07)
+## Show the first few cases of the dataset
+head(Bornmann07)
+```
 
+```
+##   Id                       Study Cluster    logOR          v Year       Type
+## 1  1 Ackers (2000a; Marie Curie)       1 -0.40108 0.01391692 1996 Fellowship
+## 2  2 Ackers (2000b; Marie Curie)       1 -0.05727 0.03428793 1996 Fellowship
+## 3  3 Ackers (2000c; Marie Curie)       1 -0.29852 0.03391122 1996 Fellowship
+## 4  4 Ackers (2000d; Marie Curie)       1  0.36094 0.03404025 1996 Fellowship
+## 5  5 Ackers (2000e; Marie Curie)       1 -0.33336 0.01282103 1996 Fellowship
+## 6  6 Ackers (2000f; Marie Curie)       1 -0.07173 0.01361189 1996 Fellowship
+##                   Discipline Country
+## 1          Physical sciences  Europe
+## 2          Physical sciences  Europe
+## 3          Physical sciences  Europe
+## 4          Physical sciences  Europe
+## 5 Social sciences/humanities  Europe
+## 6          Physical sciences  Europe
+```
+
+```r
 ## No. of effect sizes per cluster
 table(table(Bornmann07$Cluster))
 ```
@@ -189,8 +207,7 @@ summary( meta3L(y=logOR, v=v, cluster=Cluster, data=Bornmann07) )
 ## Type as a predictor
 ## Grant: 0
 ## Fellowship: 1
-summary( meta3L(y=logOR, v=v, x=(as.numeric(Type)-1),
-                cluster=Cluster, data=Bornmann07) )
+summary( meta3L(y=logOR, v=v, x=(as.numeric(Type)-1), cluster=Cluster, data=Bornmann07) )
 ```
 
 ```
@@ -230,6 +247,8 @@ summary( meta3L(y=logOR, v=v, x=(as.numeric(Type)-1),
 
 # Meta-analytic structural equation modeling (MASEM)
 
+## Model specification
+
 ```r
 ## Dataset
 pattern.na(Scalco17$data, show.na=FALSE)
@@ -267,8 +286,7 @@ plot(modelH)
 
 ```r
 ## Model in RAM speciification
-RAM1 <- lavaan2RAM(modelH, obs.variables = varnames,
-                    A.notation="on", S.notation="with")
+RAM1 <- lavaan2RAM(modelH, obs.variables = varnames, A.notation="on", S.notation="with")
 
 RAM1
 ```
@@ -391,7 +409,7 @@ data_scalco <- Cor2DataFrame(x = Scalco17$data, n = Scalco17$n)
 
 ## Model without any moderator
 osmasemOut <- osmasem(RAM = RAM1, data = data_scalco)
-summary(osmasemOut)
+summary(osmasemOut, fitIndices = TRUE)
 ```
 
 ```
@@ -400,42 +418,46 @@ summary(osmasemOut)
 ## free parameters:
 ##       name  matrix row col   Estimate  Std.Error A    z value     Pr(>|z|)
 ## 1      a41      A0  BI ATT  0.4548365 0.03958523    11.490056 0.000000e+00
-## 2      a42      A0  BI  SN  0.2781751 0.04707428     5.909279 3.436080e-09
-## 3      a43      A0  BI PBC  0.1369546 0.03334842     4.106777 4.012177e-05
-## 4      a53      A0 BEH PBC  0.1305298 0.07190048     1.815423 6.945898e-02
-## 5      a54      A0 BEH  BI  0.5825793 0.07659637     7.605834 2.819966e-14
+## 2      a42      A0  BI  SN  0.2781751 0.04707428     5.909279 3.436076e-09
+## 3      a43      A0  BI PBC  0.1369546 0.03334842     4.106777 4.012176e-05
+## 4      a53      A0 BEH PBC  0.1305298 0.07190046     1.815423 6.945892e-02
+## 5      a54      A0 BEH  BI  0.5825793 0.07659635     7.605836 2.819966e-14
 ## 6      s21      S0  SN ATT  0.4127350 0.04003477    10.309412 0.000000e+00
 ## 7      s31      S0 PBC ATT  0.2549528 0.03031157     8.411074 0.000000e+00
 ## 8      s32      S0 PBC  SN  0.2367971 0.02308960    10.255576 0.000000e+00
-## 9   Tau1_1 vecTau1   1   1 -3.4174846 0.32640835   -10.469967 0.000000e+00
-## 10  Tau1_2 vecTau1   2   1 -4.0475548 0.34541632   -11.717903 0.000000e+00
-## 11  Tau1_3 vecTau1   3   1 -3.9631221 0.31649625   -12.521861 0.000000e+00
-## 12  Tau1_4 vecTau1   4   1 -4.3571400 0.65215608    -6.681131 2.371059e-11
-## 13  Tau1_5 vecTau1   5   1 -4.7251577 0.40835075   -11.571321 0.000000e+00
-## 14  Tau1_6 vecTau1   6   1 -3.6019191 0.31551988   -11.415823 0.000000e+00
-## 15  Tau1_7 vecTau1   7   1 -4.1704613 0.65208186    -6.395610 1.599076e-10
-## 16  Tau1_8 vecTau1   8   1 -4.2846713 0.34785959   -12.317243 0.000000e+00
-## 17  Tau1_9 vecTau1   9   1 -3.9774805 0.59091393    -6.731066 1.684253e-11
-## 18 Tau1_10 vecTau1  10   1 -3.4394344 0.70132347    -4.904205 9.380625e-07
+## 9   Tau1_1 vecTau1   1   1 -3.4174846 0.32640832   -10.469968 0.000000e+00
+## 10  Tau1_2 vecTau1   2   1 -4.0475548 0.34541631   -11.717903 0.000000e+00
+## 11  Tau1_3 vecTau1   3   1 -3.9631221 0.31649622   -12.521862 0.000000e+00
+## 12  Tau1_4 vecTau1   4   1 -4.3571400 0.65215592    -6.681132 2.371037e-11
+## 13  Tau1_5 vecTau1   5   1 -4.7251577 0.40835076   -11.571321 0.000000e+00
+## 14  Tau1_6 vecTau1   6   1 -3.6019191 0.31551989   -11.415823 0.000000e+00
+## 15  Tau1_7 vecTau1   7   1 -4.1704613 0.65208184    -6.395610 1.599074e-10
+## 16  Tau1_8 vecTau1   8   1 -4.2846713 0.34785958   -12.317244 0.000000e+00
+## 17  Tau1_9 vecTau1   9   1 -3.9774805 0.59091385    -6.731067 1.684231e-11
+## 18 Tau1_10 vecTau1  10   1 -3.4394344 0.70132327    -4.904207 9.380559e-07
 ## 
 ## To obtain confidence intervals re-run with intervals=TRUE
 ## 
 ## Model Statistics: 
 ##                |  Parameters  |  Degrees of Freedom  |  Fit (-2lnL units)
 ##        Model:             18                    141             -153.2011
-##    Saturated:             65                     94                    NA
-## Independence:             20                    139                    NA
+##    Saturated:             20                    139             -156.9808
+## Independence:             10                    149              159.8486
 ## Number of observations/statistics: 11349/159
 ## 
+## chi-square:  χ² ( df=2 ) = 3.779661,  p = 0.1510974
 ## Information Criteria: 
 ##       |  df Penalty  |  Parameters Penalty  |  Sample-Size Adjusted
 ## AIC:      -435.2011              -117.2011                -117.1408
 ## BIC:     -1469.7019                14.8628                 -42.3390
-## To get additional fit indices, see help(mxRefModels)
-## timestamp: 2023-12-13 09:54:31 
-## Wall clock time: 0.2319508 secs 
+## CFI: 0.9941998 
+## TLI: 0.9709992   (also known as NNFI) 
+## RMSEA:  0.008854721  [95% CI (0, 0.02466774)]
+## Prob(RMSEA <= 0.05): 1
+## timestamp: 2024-07-02 13:50:32 
+## Wall clock time: 0.5184071 secs 
 ## optimizer:  SLSQP 
-## OpenMx version number: 2.21.11 
+## OpenMx version number: 2.21.8 
 ## Need help?  See help(mxSummary)
 ```
 
@@ -492,24 +514,24 @@ summary(osmasem_modOut)
 ## free parameters:
 ##       name  matrix row col    Estimate  Std.Error A    z value     Pr(>|z|)
 ## 1      a41      A0  BI ATT  0.48676642 0.04153192    11.720297 0.000000e+00
-## 2      a42      A0  BI  SN  0.29348533 0.06076015     4.830227 1.363774e-06
-## 3      a43      A0  BI PBC  0.10109519 0.03716504     2.720169 6.524856e-03
+## 2      a42      A0  BI  SN  0.29348533 0.06076016     4.830227 1.363776e-06
+## 3      a43      A0  BI PBC  0.10109519 0.03716504     2.720169 6.524858e-03
 ## 4      a53      A0 BEH PBC  0.18505970 0.09285832     1.992925 4.626961e-02
-## 5      a54      A0 BEH  BI  0.50999243 0.09935073     5.133253 2.847766e-07
+## 5      a54      A0 BEH  BI  0.50999243 0.09935072     5.133254 2.847759e-07
 ## 6      s21      S0  SN ATT  0.43621087 0.04513545     9.664484 0.000000e+00
 ## 7      s31      S0 PBC ATT  0.25433728 0.03278637     7.757409 8.659740e-15
 ## 8      s32      S0 PBC  SN  0.24532418 0.02683890     9.140620 0.000000e+00
 ## 9    a54_1      A1 BEH  BI  0.01805342 0.01415641     1.275282 2.022094e-01
-## 10  Tau1_1 vecTau1   1   1 -3.37695510 0.35822318    -9.426959 0.000000e+00
-## 11  Tau1_2 vecTau1   2   1 -4.09332650 0.38451978   -10.645295 0.000000e+00
-## 12  Tau1_3 vecTau1   3   1 -4.27915599 0.35081328   -12.197816 0.000000e+00
-## 13  Tau1_4 vecTau1   4   1 -4.98700192 0.83114052    -6.000191 1.970854e-09
+## 10  Tau1_1 vecTau1   1   1 -3.37695510 0.35822319    -9.426958 0.000000e+00
+## 11  Tau1_2 vecTau1   2   1 -4.09332650 0.38451981   -10.645294 0.000000e+00
+## 12  Tau1_3 vecTau1   3   1 -4.27915599 0.35081329   -12.197816 0.000000e+00
+## 13  Tau1_4 vecTau1   4   1 -4.98700192 0.83114050    -6.000191 1.970853e-09
 ## 14  Tau1_5 vecTau1   5   1 -4.61026052 0.43952344   -10.489226 0.000000e+00
-## 15  Tau1_6 vecTau1   6   1 -3.43442146 0.35202131    -9.756289 0.000000e+00
-## 16  Tau1_7 vecTau1   7   1 -4.64860350 0.95910042    -4.846837 1.254453e-06
+## 15  Tau1_6 vecTau1   6   1 -3.43442146 0.35202135    -9.756287 0.000000e+00
+## 16  Tau1_7 vecTau1   7   1 -4.64860350 0.95910039    -4.846837 1.254452e-06
 ## 17  Tau1_8 vecTau1   8   1 -4.32112754 0.38651694   -11.179659 0.000000e+00
-## 18  Tau1_9 vecTau1   9   1 -3.72118072 0.73612673    -5.055082 4.302066e-07
-## 19 Tau1_10 vecTau1  10   1 -5.26557956 0.97253821    -5.414265 6.154099e-08
+## 18  Tau1_9 vecTau1   9   1 -3.72118072 0.73612672    -5.055082 4.302065e-07
+## 19 Tau1_10 vecTau1  10   1 -5.26557956 0.97253820    -5.414265 6.154096e-08
 ## 
 ## To obtain confidence intervals re-run with intervals=TRUE
 ## 
@@ -525,10 +547,10 @@ summary(osmasem_modOut)
 ## AIC:      -349.2417              -95.24175                -95.16164
 ## BIC:     -1122.4984               40.79414                -19.58488
 ## To get additional fit indices, see help(mxRefModels)
-## timestamp: 2023-12-13 09:54:31 
-## Wall clock time: 0.3578622 secs 
+## timestamp: 2024-07-02 13:50:34 
+## Wall clock time: 0.8066709 secs 
 ## optimizer:  SLSQP 
-## OpenMx version number: 2.21.11 
+## OpenMx version number: 2.21.8 
 ## Need help?  See help(mxSummary)
 ```
 
@@ -544,3 +566,258 @@ anova(osmasem_modOut, osmasemOut)
 ## 1 moderator       <NA> 19 -133.2417 108 -95.24175      NA     NA        NA
 ## 2 moderator    osmasem 18 -131.9769 109 -95.97692 1.26483      1 0.2607389
 ```
+
+## full SEM using OSMASEM
+
+```r
+load('Bresin2019.Rdat')
+
+## number of studies per bivariate relation
+pattern.na(Bresin2019$data, show.na=FALSE)
+```
+
+```
+##     NU SS PRE PER GEN PHY VER
+## NU  50 14  28  16  33  20  13
+## SS  14 29  14  12  14  14   9
+## PRE 28 14  86  16  61  27  19
+## PER 16 12  16  29  18   9   4
+## GEN 33 14  61  18  75  18   6
+## PHY 20 14  27   9  18  35  20
+## VER 13  9  19   4   6  20  27
+```
+
+```r
+## total sample size per bivariate relation
+pattern.n(Bresin2019$data, Bresin2019$n)
+```
+
+```
+##        NU   SS   PRE   PER   GEN  PHY  VER
+## NU  16512 6117 10964  6903  9995 5324 3729
+## SS   6117 9062  4023  3540  3195 3083 2049
+## PRE 10964 4023 29099  5765 21124 6787 5288
+## PER  6903 3540  5765 10876  5440 2460 1122
+## GEN  9995 3195 21124  5440 24281 4452 2196
+## PHY  5324 3083  6787  2460  4452 8556 4864
+## VER  3729 2049  5288  1122  2196 4864 7057
+```
+
+```r
+varnames <- colnames(Bresin2019$data[[1]])
+
+model1 <- '
+## Factor loadings
+AGG =~ GEN + PHY+ VER
+
+#Regressions
+AGG ~ NU + SS + PRE +PER
+
+##variances
+NU~~1*NU
+SS~~1*SS
+PRE~~1*PRE
+PER~~1*PER
+AGG ~~ AGG
+GEN~~GEN
+PHY~~PHY
+VER~~VER
+
+# covariances
+NU~~SS
+NU~~PER
+NU~~PRE
+SS~~PRE
+SS~~PER
+PRE~~PER'
+
+RAM1 <- lavaan2RAM(model1, obs.variables = varnames,
+                    A.notation="on", S.notation="with")
+
+# The A, S and F matrices
+RAM1
+```
+
+```
+## $A
+##     NU            SS            PRE            PER            GEN PHY VER
+## NU  "0"           "0"           "0"            "0"            "0" "0" "0"
+## SS  "0"           "0"           "0"            "0"            "0" "0" "0"
+## PRE "0"           "0"           "0"            "0"            "0" "0" "0"
+## PER "0"           "0"           "0"            "0"            "0" "0" "0"
+## GEN "0"           "0"           "0"            "0"            "0" "0" "0"
+## PHY "0"           "0"           "0"            "0"            "0" "0" "0"
+## VER "0"           "0"           "0"            "0"            "0" "0" "0"
+## AGG "0.1*AGGonNU" "0.1*AGGonSS" "0.1*AGGonPRE" "0.1*AGGonPER" "0" "0" "0"
+##     AGG           
+## NU  "0"           
+## SS  "0"           
+## PRE "0"           
+## PER "0"           
+## GEN "0.1*GENonAGG"
+## PHY "0.1*PHYonAGG"
+## VER "0.1*VERonAGG"
+## AGG "0"           
+## 
+## $S
+##     NU            SS            PRE            PER            GEN             
+## NU  "1"           "0*NUwithSS"  "0*NUwithPRE"  "0*NUwithPER"  "0"             
+## SS  "0*NUwithSS"  "1"           "0*SSwithPRE"  "0*SSwithPER"  "0"             
+## PRE "0*NUwithPRE" "0*SSwithPRE" "1"            "0*PREwithPER" "0"             
+## PER "0*NUwithPER" "0*SSwithPER" "0*PREwithPER" "1"            "0"             
+## GEN "0"           "0"           "0"            "0"            "0.5*GENwithGEN"
+## PHY "0"           "0"           "0"            "0"            "0"             
+## VER "0"           "0"           "0"            "0"            "0"             
+## AGG "0"           "0"           "0"            "0"            "0"             
+##     PHY              VER              AGG
+## NU  "0"              "0"              "0"
+## SS  "0"              "0"              "0"
+## PRE "0"              "0"              "0"
+## PER "0"              "0"              "0"
+## GEN "0"              "0"              "0"
+## PHY "0.5*PHYwithPHY" "0"              "0"
+## VER "0"              "0.5*VERwithVER" "0"
+## AGG "0"              "0"              "1"
+## 
+## $F
+##     NU SS PRE PER GEN PHY VER AGG
+## NU   1  0   0   0   0   0   0   0
+## SS   0  1   0   0   0   0   0   0
+## PRE  0  0   1   0   0   0   0   0
+## PER  0  0   0   1   0   0   0   0
+## GEN  0  0   0   0   1   0   0   0
+## PHY  0  0   0   0   0   1   0   0
+## VER  0  0   0   0   0   0   1   0
+## 
+## $M
+##   NU SS PRE PER GEN PHY VER AGG
+## 1  0  0   0   0   0   0   0   0
+```
+
+```r
+## one-stage MASEM
+
+## prepare data
+
+data_bresin <- Cor2DataFrame(x = Bresin2019$data, n = Bresin2019$n)
+
+## run MASEM (ignore warning message 'The variances of the dependent variables in 'Smatrix' should be free')
+osmasemOut <- osmasem(RAM = RAM1, data = data_bresin)
+
+## Need to rerun for convergence
+osmasemOut <- rerun(osmasemOut)
+```
+
+
+
+
+
+```r
+summary(osmasemOut, fitIndices = TRUE)
+```
+
+```
+## Summary of osmasem 
+##  
+## free parameters:
+##          name  matrix row col     Estimate    Std.Error A      z value
+## 1     AGGonNU      A0 AGG  NU   0.25465937 3.485304e-02     7.30666069
+## 2     AGGonSS      A0 AGG  SS   0.09122791 3.966902e-02     2.29972702
+## 3    AGGonPRE      A0 AGG PRE   0.23149548 3.276429e-02     7.06548055
+## 4    AGGonPER      A0 AGG PER   0.02182880 4.142363e-02     0.52696494
+## 5    GENonAGG      A0 GEN AGG   0.65325719 3.271940e-02    19.96543871
+## 6    PHYonAGG      A0 PHY AGG   0.65874642 3.007324e-02    21.90474062
+## 7    VERonAGG      A0 VER AGG   0.59726183 3.664183e-02    16.29999873
+## 8    NUwithSS      S0  SS  NU   0.14370465 1.918858e-02     7.48907345
+## 9   NUwithPRE      S0 PRE  NU   0.38126834 3.058422e-02    12.46617711
+## 10  NUwithPER      S0 PER  NU   0.28188760 4.549603e-02     6.19587275
+## 11  SSwithPRE      S0 PRE  SS   0.16478128 4.286204e-02     3.84445722
+## 12  SSwithPER      S0 PER  SS  -0.00720883 4.255402e-02    -0.16940420
+## 13 PREwithPER      S0 PER PRE   0.45771870 4.184718e-02    10.93786192
+## 14     Tau1_1 vecTau1   1   1  -6.23729275 9.196089e-01    -6.78254909
+## 15     Tau1_2 vecTau1   2   1  -3.81094537 3.126431e-01   -12.18944369
+## 16     Tau1_3 vecTau1   3   1  -3.53275547 3.742867e-01    -9.43863500
+## 17     Tau1_4 vecTau1   4   1  -3.75437995 2.947193e-01   -12.73883289
+## 18     Tau1_5 vecTau1   5   1  -4.53591045 4.072894e-01   -11.13682356
+## 19     Tau1_6 vecTau1   6   1  -4.82433395 5.266375e-01    -9.16063548
+## 20     Tau1_7 vecTau1   7   1  -3.86209372 4.548218e-01    -8.49144453
+## 21     Tau1_8 vecTau1   8   1  -4.06743886 4.927956e-01    -8.25380482
+## 22     Tau1_9 vecTau1   9   1  -4.54368953 5.514212e-01    -8.23996091
+## 23    Tau1_10 vecTau1  10   1  -4.71368419 5.742612e-01    -8.20825873
+## 24    Tau1_11 vecTau1  11   1  -6.76003589 2.446099e+00    -2.76359864
+## 25    Tau1_12 vecTau1  12   1  -3.66301735 3.860736e-01    -9.48787424
+## 26    Tau1_13 vecTau1  13   1  -4.59729774 2.644441e-01   -17.38476249
+## 27    Tau1_14 vecTau1  14   1  -5.30174751 4.901533e-01   -10.81650967
+## 28    Tau1_15 vecTau1  15   1  -5.57284832 6.197656e-01    -8.99186472
+## 29    Tau1_16 vecTau1  16   1  -4.34085408 4.594779e-01    -9.44736239
+## 30    Tau1_17 vecTau1  17   1 -24.04597963 1.093998e+03    -0.02197992
+## 31    Tau1_18 vecTau1  18   1  -5.18964406 1.093744e+00    -4.74484478
+## 32    Tau1_19 vecTau1  19   1  -5.01979027 6.486440e-01    -7.73889899
+## 33    Tau1_20 vecTau1  20   1  -4.41106178 8.406411e-01    -5.24725898
+## 34    Tau1_21 vecTau1  21   1  -4.40086297 4.297362e-01   -10.24084837
+##        Pr(>|z|)
+## 1  2.737810e-13
+## 2  2.146369e-02
+## 3  1.600720e-12
+## 4  5.982179e-01
+## 5  0.000000e+00
+## 6  0.000000e+00
+## 7  0.000000e+00
+## 8  6.927792e-14
+## 9  0.000000e+00
+## 10 5.796295e-10
+## 11 1.208196e-04
+## 12 8.654787e-01
+## 13 0.000000e+00
+## 14 1.180744e-11
+## 15 0.000000e+00
+## 16 0.000000e+00
+## 17 0.000000e+00
+## 18 0.000000e+00
+## 19 0.000000e+00
+## 20 0.000000e+00
+## 21 2.220446e-16
+## 22 2.220446e-16
+## 23 2.220446e-16
+## 24 5.716781e-03
+## 25 0.000000e+00
+## 26 0.000000e+00
+## 27 0.000000e+00
+## 28 0.000000e+00
+## 29 0.000000e+00
+## 30 9.824640e-01
+## 31 2.086663e-06
+## 32 9.992007e-15
+## 33 1.543788e-07
+## 34 0.000000e+00
+## 
+## To obtain confidence intervals re-run with intervals=TRUE
+## 
+## Model Statistics: 
+##                |  Parameters  |  Degrees of Freedom  |  Fit (-2lnL units)
+##        Model:             34                    351            -485.82352
+##    Saturated:             42                    343            -499.91014
+## Independence:             21                    364              53.21347
+## Number of observations/statistics: 33741/385
+## 
+## chi-square:  χ² ( df=8 ) = 14.08662,  p = 0.07953543
+## Information Criteria: 
+##       |  df Penalty  |  Parameters Penalty  |  Sample-Size Adjusted
+## AIC:      -1187.824              -417.8235                -417.7529
+## BIC:      -4145.514              -131.3236                -239.3754
+## CFI: 0.9885616 
+## TLI: 0.9699743   (also known as NNFI) 
+## RMSEA:  0.004748584  [95% CI (0, 0.009413186)]
+## Prob(RMSEA <= 0.05): 1
+## timestamp: 2024-07-02 13:51:05 
+## Wall clock time: 7.97465 secs 
+## optimizer:  SLSQP 
+## OpenMx version number: 2.21.8 
+## Need help?  See help(mxSummary)
+```
+
+```r
+plot(osmasemOut, col="pink")
+```
+
+![](demo_files/figure-html/unnamed-chunk-6-1.png)<!-- -->

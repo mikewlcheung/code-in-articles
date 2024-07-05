@@ -14,9 +14,9 @@ output:
   word_document: default
 ---
 
-
 # Multivariate meta-analysis
 ```{r, message=FALSE}
+## Load the library
 library(metaSEM)
 
 ## Dataset
@@ -53,14 +53,13 @@ summary(fit.MES)
 ## Correlation between the random effects
 cov2cor(VarCorr(fit.MES))
 
-plot(fit.MES, axis.labels=c("Math effect", "Verbal effect"),
-     univariate.polygon.width = 0.1)
+plot(fit.MES, axis.labels=c("Math effect", "Verbal effect"), univariate.polygon.width = 0.1)
 ```
 
 # Three-level meta-analysis
 ```{r}
-## Dataset
-data(Bornmann07)
+## Show the first few cases of the dataset
+head(Bornmann07)
 
 ## No. of effect sizes per cluster
 table(table(Bornmann07$Cluster))
@@ -72,11 +71,12 @@ summary( meta3L(y=logOR, v=v, cluster=Cluster, data=Bornmann07) )
 ## Type as a predictor
 ## Grant: 0
 ## Fellowship: 1
-summary( meta3L(y=logOR, v=v, x=(as.numeric(Type)-1),
-                cluster=Cluster, data=Bornmann07) )
+summary( meta3L(y=logOR, v=v, x=(as.numeric(Type)-1), cluster=Cluster, data=Bornmann07) )
 ```
 
 # Meta-analytic structural equation modeling (MASEM)
+
+## Model specification
 ```{r}
 ## Dataset
 pattern.na(Scalco17$data, show.na=FALSE)
@@ -99,8 +99,7 @@ modelH <-'BI ~ a41*ATT + a42*SN + a43*PBC
 plot(modelH)
 
 ## Model in RAM speciification
-RAM1 <- lavaan2RAM(modelH, obs.variables = varnames,
-                    A.notation="on", S.notation="with")
+RAM1 <- lavaan2RAM(modelH, obs.variables = varnames, A.notation="on", S.notation="with")
 
 RAM1
 ```
@@ -129,7 +128,7 @@ data_scalco <- Cor2DataFrame(x = Scalco17$data, n = Scalco17$n)
 
 ## Model without any moderator
 osmasemOut <- osmasem(RAM = RAM1, data = data_scalco)
-summary(osmasemOut)
+summary(osmasemOut, fitIndices = TRUE)
 
 plot(osmasemOut, col="green")
 
@@ -165,4 +164,65 @@ summary(osmasem_modOut)
 osmasemOut <- osmasem(RAM = RAM1, data = data_scalco, subset.rows = present_age)
 
 anova(osmasem_modOut, osmasemOut)
+```
+
+## full SEM using OSMASEM
+```{r, message=FALSE, warning=FALSE}
+load('Bresin2019.Rdat')
+
+## number of studies per bivariate relation
+pattern.na(Bresin2019$data, show.na=FALSE)
+
+## total sample size per bivariate relation
+pattern.n(Bresin2019$data, Bresin2019$n)
+
+varnames <- colnames(Bresin2019$data[[1]])
+
+model1 <- '
+## Factor loadings
+AGG =~ GEN + PHY+ VER
+
+#Regressions
+AGG ~ NU + SS + PRE +PER
+
+##variances
+NU~~1*NU
+SS~~1*SS
+PRE~~1*PRE
+PER~~1*PER
+AGG ~~ AGG
+GEN~~GEN
+PHY~~PHY
+VER~~VER
+
+# covariances
+NU~~SS
+NU~~PER
+NU~~PRE
+SS~~PRE
+SS~~PER
+PRE~~PER'
+
+RAM1 <- lavaan2RAM(model1, obs.variables = varnames,
+                    A.notation="on", S.notation="with")
+
+# The A, S and F matrices
+RAM1
+
+## one-stage MASEM
+
+## prepare data
+
+data_bresin <- Cor2DataFrame(x = Bresin2019$data, n = Bresin2019$n)
+
+## run MASEM (ignore warning message 'The variances of the dependent variables in 'Smatrix' should be free')
+osmasemOut <- osmasem(RAM = RAM1, data = data_bresin)
+
+## Need to rerun for convergence
+osmasemOut <- rerun(osmasemOut)
+
+summary(osmasemOut, fitIndices = TRUE)
+
+plot(osmasemOut, col="pink")
+
 ```
