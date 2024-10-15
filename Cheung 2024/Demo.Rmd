@@ -1,0 +1,838 @@
+---
+title: 'Supplemental materials of "A Tutorial on Fitting Flexible Meta-Analytic Models with Structural Equation Modeling in R"'
+author: "Mike Cheung"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document:
+    keep_md: yes
+    self_contained: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+# Univariate Meta-Analyses
+
+## Data preparation
+```{r, message=FALSE}
+## Load the required libraries
+library(metaSEM)
+library(symSEM)
+
+## Prepare a sample data
+dat1 <- data.frame(yi=Jaramillo05$r, 
+                   vi=Jaramillo05$r_v,
+                   xi=scale(Jaramillo05$IDV, scale=FALSE),
+                   zi=scale(Jaramillo05$Citations, scale=TRUE))
+```
+
+## Models without any external variables
+### Fixed-effect model
+```{r}
+## Fixed-effect model with a latent variable ei
+m1a <- "ei =~ 1*yi           ## e as a latent variable and yi is its indicator
+        yi ~ mu*1            ## Mean(yi) = mu
+        yi ~~ 0*yi           ## Set the error variance of yi at 0
+        ei ~~ data.vi*ei     ## Var(yi) = vi, which is assigned from data
+"
+
+## Fixed-effects model without specifying ei
+m1b <- "yi ~ mu*1            ## Mean(yi) = mu
+        yi ~~ data.vi*yi     ## Var(yi) = vi, which is assigned from data
+"
+
+## Display the conceptual model using the semPlot package
+## sizeInt=6: Set 6 as the size of the intercept, see help(semPaths) in R
+plot(m1a, color = "yellow", sizeInt = 7)
+
+## Convert the lavaan model to RAM specification
+## obs.variables = "yi": "yi" is the observed variable
+ram1 <- lavaan2RAM(m1a, obs.variables = "yi", std.lv = FALSE)
+
+## Display the RAM model
+ram1
+
+## Get the model-implied mean and variance structures
+impliedS(ram1)
+
+## Fit the model to the data
+fit1 <- sem("Fixed", RAM = ram1, data = dat1)
+summary(fit1)
+
+## Display the model with results using the semPlot package
+## nDigits=4: Display 4 digits
+plot(fit1, color = "green", sizeInt = 7, nDigits = 4)
+```
+
+### Random-effects model
+```{r}
+## Random-effects model
+m2 <- "ui =~ 1*yi          ## ui is the random effect
+       ui ~~ tau2*ui       ## Var(ui) = tau2
+       yi ~ mu*1           ## Mean(yi) = mu
+       yi ~~ data.vi*yi    ## Var(yi) = vi, which is assigned from data
+"
+
+## Display the conceptual model
+plot(m2, color="yellow", sizeInt = 7)
+
+## Convert the lavaan model to RAM specification
+## std.lv = FALSE: Ensure the latent variable is not standardized
+ram2 <- lavaan2RAM(m2, obs.variables = "yi", std.lv = FALSE)
+
+## Get the model-implied mean and variance structures
+impliedS(ram2)
+
+## intervals.type = "LB": Request likelihood-based CI
+fit2 <- sem("Random", RAM = ram2, data = dat1, intervals.type = "LB")
+summary(fit2)
+
+## Display the model with results
+plot(fit2, color="green", sizeInt = 7, nDigits = 4)
+```
+
+### Multiplicative-error model
+```{r}
+## Multiplicative error, same as UWLS model
+m3 <- "ei =~ phi_sqrt*yi   ## phi (phi_sqrt^2) is the heterogeneity scaling factor
+       ei ~~ data.vi*ei    ## Var(ei) = vi
+       yi ~ mu*1
+       yi ~~ 0*yi          ## Set the default error variance of yi at 0
+       phi := phi_sqrt^2   ## Define phi as a function of phi_sqrt
+"
+
+plot(m3, color = "yellow", sizeInt = 7)
+
+ram3 <- lavaan2RAM(m3, obs.variables = "yi", std.lv = FALSE)
+
+impliedS(ram3)
+
+fit3 <- sem("Multiplicative", RAM = ram3, data = dat1, intervals.type = "LB")
+summary(fit3)
+plot(fit3, color="green", sizeInt=6, nDigits=4)
+```
+
+### Hybrid models of additive and multiplicative errors
+```{r}
+## Hybrid model 1: multiplicative and addictive error
+m4 <- "yi ~ mu*1
+       yi ~~ 0*yi
+       ## additive error
+       ui =~ 1*yi
+       ui ~~ tau2*ui      ## Var(ui) = tau2
+       ## mulitplicative error
+       ei =~ phi_sqrt*yi  ## phi is a scaling factor
+       ei ~~ data.vi*ei   ## Var(ei) = vi
+       phi := phi_sqrt^2  ## Define phi as a function of phi_sqrt
+"
+plot(m4, color="yellow", sizeInt=6)
+
+ram4 <- lavaan2RAM(m4, obs.variables = "yi", std.lv = FALSE)
+
+impliedS(ram4)
+
+fit4 <- sem("Hybrid1", RAM = ram4, data = dat1, intervals.type = "LB")
+summary(fit4)
+
+plot(fit4, color="green", sizeInt=6, nDigits=4)
+
+
+## Hybrid model 2: multiplicative and addictive error
+m5 <- "yi ~ mu*1         ## Mean(yi) = mu
+       yi ~~ Vary*yi     ## Var(yi) = vary
+       ## Define Vary as a function of vi, tau2, and omega
+       Vary == data.vi + tau2*data.vi^omega
+"
+
+ram5 <- lavaan2RAM(m5, obs.variables = "yi", std.lv = FALSE)
+
+impliedS(ram5, replace.constraints = TRUE)
+
+fit5 <- sem("Hybrid2", RAM = ram5, data = dat1, intervals.type = "LB", 
+            replace.constraints = TRUE)
+summary(fit5)
+
+## Hybrid model 3: Hartung-Knapp-Sidik-Jonkman method
+m6 <- "yi ~ mu*1
+       yi ~~ 0*yi
+       ## additive error
+       ui =~ phi_sqrt*yi    ## phi is a scaling factor
+       ui ~~ 0.01703407*ui  ## tau2 obtained from the random-effects model
+       ## mulitplicative error
+       ei =~ phi_sqrt*yi    ## phi is a scaling factor
+       ei ~~ data.vi*ei     ## Var(ei) = vi
+       phi := phi_sqrt^2    ## Define phi as a function of phi_sqrt
+"
+plot(m6, color="yellow", sizeInt=6)
+
+ram6 <- lavaan2RAM(m6, obs.variables = "yi", std.lv = FALSE)
+
+impliedS(ram6)
+
+fit6 <- sem("Hybrid3", RAM = ram6, data = dat1, intervals.type = "LB")
+summary(fit6)
+
+plot(fit6, color="green", sizeInt=6, nDigits=4)
+```
+
+### Comparison of the six models
+```{r}
+## Refit some models to get SEs rather than LBCIs for comparisons
+fit2 <- sem("Random", RAM = ram2, data = dat1)
+fit3 <- sem("Multiplicative", RAM = ram3, data = dat1)
+fit4 <- sem("Hybrid1", RAM = ram4, data = dat1)
+fit5 <- sem("Hybrid2", RAM = ram5, data = dat1, replace.constraints = TRUE)
+fit6 <- sem("Hybrid3", RAM = ram6, data = dat1)
+
+extractResults <- function(x) {
+  out <- summary(x)
+  para <- out$coefficients[c("mu", "tau2", "phi_sqrt", "omega"), 
+                           c("Estimate", "Std.Error")]
+  out <- c(unlist(para), out$estPara, out$Minus2LL, 
+           out$informationCriteria["AIC:", "Parameters Penalty"],
+           out$informationCriteria["BIC:", "Parameters Penalty"])
+  names(out) <- c("mu", "tau2", "phi_sqrt", "omega",
+                  "mu_SE", "tau2_SE", "phi_sqrt_SE", "omega_SE",
+                  "No_parameters",  "-2LL", "AIC", "BIC")
+  out
+}
+
+table1 <- sapply(list(fit1, fit2, fit3, fit4, fit5, fit6), extractResults)
+table1 <- data.frame(Name=rownames(table1), table1)
+rownames(table1) <- NULL
+colnames(table1) <- c("Name", "Fixed", "Random", "Multiplicative", "Hybrid1", 
+                      "Hybrid2", "Hybrid3")
+## Add the estimated tau2 and tau2_SE from the random-effects model to
+## the table in an ad-hoc manner
+table1[table1$Name=="tau2", "Hybrid3"] <- table1[table1$Name=="tau2", "Random"]
+table1[table1$Name=="tau2_SE", "Hybrid3"] <- table1[table1$Name=="tau2_SE", "Random"]
+knitr::kable(table1, digits=4, caption="Results of the Six Meta-Analytic Models")
+```
+
+## Models with external variables
+### A fixed-x meta-regression
+```{r, message=FALSE}
+## Mixed-effects model with the covariate as a design matrix
+m7 <- "yi ~ b0*1         ## Intercept of yi: b0
+       yi ~~ data.vi*yi  ## Known sampling variance vi
+       ui =~ 1*yi
+       ui ~~ tau2*ui     ## Heterogeneity variance tau2
+       ## etai: a phantom latent variable to represent the covariate x
+       etai =~ b1*yi     ## yi = b1*etai
+       etai ~ data.xi*1  ## etai = xi
+       etai ~~ 0*etai    ## Var(etai) = 0
+"
+
+plot(m7, color = "yellow", layout = "spring")
+
+## Only yi is an observed variable
+ram7 <- lavaan2RAM(m7, obs.variables = "yi", std.lv = FALSE)
+
+impliedS(ram7)
+
+fit7 <- sem("Covariate_design", RAM=ram7, data=dat1, intervals.type = "LB")
+summary(fit7)
+plot(fit7, color = "green", sizeInt=6,  nDigits = 4)
+```
+
+### A random-x meta-regression
+```{r}
+## Mixed-effects model with the covariate as a variable
+m8 <- "yi ~ b0*1 + b1*xi ## Intercept (b0) and slope (b1)
+       yi ~~ data.vi*yi  ## Known sampling variance vi
+       ui =~ 1*yi
+       ui ~~ tau2*ui     ## Heterogeneity variance tau2
+       xi ~ Meanx*1      ## Mean(xi) = Meanx
+       xi ~~ Varx*xi     ## Var(xi) = Varx
+       ## Define R2: explained variance/total variance
+       R2 := b1^2*Varx/(b1^2*Varx + tau2)
+"
+
+plot(m8, color = "yellow", layout = "spring", sizeInt=6)
+
+## Both yi and xi are observed variables
+ram8 <- lavaan2RAM(m8, obs.variables = c("yi", "xi"), std.lv = FALSE)
+
+impliedS(ram8)
+
+## Request LBCIs on the R2
+fit8 <- sem("Covariate_variable", RAM=ram8, data=dat1, intervals.type = "LB")
+summary(fit8)
+
+plot(fit8, color="green", sizeInt=6, nDigits = 4, layout = "spring")
+```
+
+### Regressing a covariate on the true effect size
+```{r}
+## Regressing a covariate on the true effect size
+m9 <- "fyi =~ 1*yi         ## fi: true effect size
+       fyi ~~ tau2*fyi     ## Var(fi) = tau2
+       fyi ~ Meany*1       ## Mean(fi) = Meany
+       yi ~ 0*1         
+       yi ~~ data.vi*yi    ## Var(ei) = vi
+       zi ~ b0*1 + b1*fyi  ## Intercept (b0) and slope (b1)
+       zi ~~ ErrVarz*zi    ## Error variance of zi
+       ## Define an R2
+       R2 := b1^2*tau2/(b1^2*tau2 + ErrVarz)
+"
+
+plot(m9, color = "yellow", sizeInt=6, layout = "spring")
+
+## Both yi and xi are observed variables
+ram9 <- lavaan2RAM(m9, obs.variables = c("yi", "zi"), std.lv = FALSE)
+
+impliedS(ram9)
+
+fit9 <- sem("Regress_covariate", RAM=ram9, data=dat1, intervals.type = "LB")
+summary(fit9)
+
+plot(fit9, color = "green", sizeInt=6, nDigits = 4)
+```
+
+### Correlating a covariate with a true effect size
+```{r}
+## Correlation between fyi and fxi
+m10 <- "yi ~ 0*1
+        yi ~~ data.vi*yi
+        ## fyi: Standardized true effect size of yi
+        fyi =~ tauy*yi     ## tauy: sd of fyi
+        fyi ~~ 1*fyi       ## Var(fyi) = 1
+        fyi ~ y_mean_div_tauy*1
+        ## fxi: Standardized score of xi
+        fxi =~ sigma*xi    ## sigma: sd of xi
+        fxi ~~ 1*fxi       ## Var(fxi) = 1
+        fxi ~~ Cor*fyi
+        fxi ~ x_mean_div_sigmax*1
+        xi ~ 0*1
+        xi ~~ 0*xi       
+"
+
+plot(m10, color = "yellow", sizeInt=6)
+
+## Both yi and xi are observed variables
+ram10 <- lavaan2RAM(m10, obs.variables = c("yi", "xi"), std.lv = TRUE)
+
+impliedS(ram10)
+
+fit10 <- sem("Correlation", RAM=ram10, data=dat1)
+summary(fit10)
+plot(fit10, color = "green", sizeInt=6, nDigits = 4)
+```
+
+### Meta-regression with completely and partially standardized variables
+```{r}
+## Completely standardized fyi and xi
+m11 <- "yi ~ 0*1
+        yi ~~ data.vi*yi
+        ## fyi: Standardized true effect size of yi
+        fyi =~ tauy*yi       ## tauy: sd of fyi
+        fyi ~~ tau2_res*fyi  ## tau2_res: residual heterogeneity
+        fyi ~ b0*1 + b1*fxi
+        ## fxi: Standardized score of xi
+        fxi =~ sigma*xi      ## sigma: sd of xi
+        fxi ~~ 1*fxi         ## Var(fxi) =1
+        fxi ~ mu_x_sd*1
+        xi ~ 0*1
+        xi ~~ 0*xi
+        ## Nonlinear constraint to ensure Var(fyi) = 1
+        tau2_res == 1 - b1^2
+        ## Define R2
+        R2 := b1^2
+"
+
+plot(m11, color="yellow", layout="spring", sizeInt=6)
+
+## Both yi and xi are observed variables
+ram11 <- lavaan2RAM(m11, obs.variables = c("yi", "xi"), std.lv = FALSE)
+
+impliedS(ram11, replace.constraints = TRUE)
+
+fit11 <- sem("Complete_standardize", RAM=ram11, data=dat1, intervals.type = "LB",
+             lbound = list(tauy=0))
+summary(fit11)
+plot(fit11, color="green", sizeInt=6, nDigits=4)
+
+## Partial standardized xi but not yi
+m12 <- "yi ~ 0*1
+        yi ~~ data.vi*yi
+        ## fyi: Unstandardized true effect size of yi
+        fyi =~ 1*yi
+        fyi ~~ tau2_res*fyi   ## tau2_res: residual heterogeneity
+        fyi ~ b0*1 + b1*fxi
+        ## fxi: Standardized score of xi
+        fxi =~ sigma*xi       ## sigma: sd of xi
+        fxi ~~ 1*fxi          ## Var(fxi) =1
+        fxi ~ mu_x_sd*1
+        xi ~ 0*1
+        xi ~~ 0*xi
+        ## Define R2
+        R2 := b1^2/(b1^2 + tau2_res)
+"
+
+plot(m12, color="yellow", layout="spring", sizeInt=6)
+
+## Both yi and xi are observed variables
+ram12 <- lavaan2RAM(m12, obs.variables = c("yi", "xi"), std.lv = FALSE)
+ram12
+impliedS(ram12)
+
+fit12 <- sem("Partial_standardize", RAM=ram12, data=dat1, intervals.type = "LB")
+summary(fit12)
+plot(fit12, color="green", sizeInt=6, nDigits=4)
+```
+
+### Location-scale and nonlinear models
+```{r}
+## Location-scale model with an additive heterogeneity variance
+m13 <- "yi ~ mu*1          ## Mean(yi) = mu
+        yi ~~ data.vi*yi   ## Var(ei) = vi 
+        ## ui is the latent variable of the random effect
+        ui =~ 1*yi         ## yi = 1*ui
+        ui ~~ tau2*ui      ## Var(ui) = tau2
+        ## Specify nonlinear on mean and tau2
+        mu == b0 + b1*data.xi
+        tau2 == exp(a0 + a1*data.xi)
+"
+
+ram13 <- lavaan2RAM(m13, obs.variables="yi", std.lv = FALSE)
+
+## Get the model implied structures
+## We need to replace the constraints with the new parameters
+impliedS(ram13, replace.constraints=TRUE)
+
+fit13 <- sem("Location_additive", RAM=ram13, data=dat1,
+             replace.constraints=TRUE)
+summary(fit13)
+
+
+## Location-scale model with a multiplicative heterogeneity variance
+m14 <- "yi ~ mu*1          ## Mean(yi) = mu
+        yi ~~ sigma2*yi    ## Var(yi) = sigma2 
+        ## Specify nonlinear on mean and sigma2
+        mu == b0 + b1*data.xi
+        sigma2 == exp(a0 + a1*data.xi)*data.vi
+"
+
+ram14 <- lavaan2RAM(m14, obs.variables="yi", std.lv = FALSE)
+
+impliedS(ram14, replace.constraints = TRUE)
+
+fit14 <- sem("Location_multiplicative", RAM=ram14, data=dat1,
+             replace.constraints=TRUE)
+summary(fit14)
+```
+
+# Multivariate Meta-Analyses
+## Data preparation
+```{r}
+## Replace missing values with 0 as NA is not allowed in definition variables
+Chan17$v_misinfo[is.na(Chan17$v_misinfo)] <-0 
+Chan17$c_mis_deb[is.na(Chan17$c_mis_deb)] <-0
+Chan17$v_debunk[is.na(Chan17$v_debunk)] <-0
+
+dat2 <- data.frame(y1i=Chan17$g_misinfo,
+                   y2i=Chan17$g_debunk,
+                   V11i=Chan17$v_misinfo,
+                   V21i=Chan17$c_mis_deb,
+                   V22i=Chan17$v_debunk,
+                   se11i=sqrt(Chan17$v_misinfo),
+                   se22i=sqrt(Chan17$v_debunk),
+                   xi=scale(Chan17$PublicationYear))
+```
+
+## Models without any external variables
+### Bivariate random-effects model with known sampling covariance
+```{r}
+## Multivariate random-effects model
+m15 <- "## Means of y1 and y2
+        y1i ~ mu_y1*1
+        y2i ~ mu_y2*1
+        ## Known sampling variances
+        y1i ~~ data.V11i*y1i
+        y2i ~~ data.V22i*y2i
+        ## Known sampling covariance
+        y1i ~~ data.V21i*y2i
+        ## Random effects
+        f1i =~ 1*y1i
+        f2i =~ 1*y2i
+        ## Heterogeneity variance-covariance matrix
+        f1i ~~ T_11*f1i
+        f1i ~~ T_21*f2i        
+        f2i ~~ T_22*f2i
+        ## Define the correlation of the random effects
+        cor := T_21/sqrt(T_11*T_22)
+"
+plot(m15, color="yellow")
+
+ram15 <- lavaan2RAM(m15, obs.variables = c("y1i", "y2i"), std.lv = FALSE)
+
+impliedS(ram15)
+
+fit15 <- sem("Mul_MA", RAM=ram15, data=dat2, intervals.type = "LB")
+summary(fit15)
+
+plot(fit15, color="green", nDigits=4)
+
+
+## Multivariate random-effects model with equal means
+m15b <- "## Means of y1 and y2
+         y1i ~ mu_y*1
+         y2i ~ mu_y*1
+         ## Known sampling variances
+         y1i ~~ data.V11i*y1i
+         y2i ~~ data.V22i*y2i
+         ## Known sampling covariance
+         y1i ~~ data.V21i*y2i
+         ## Random effects
+         f1i =~ 1*y1i
+         f2i =~ 1*y2i
+         ## Heterogeneity variance-covariance matrix
+         f1i ~~ T_11*f1i
+         f1i ~~ T_21*f2i        
+         f2i ~~ T_22*f2i
+         ## Define the correlation of the random effects
+         cor := T_21/sqrt(T_11*T_22)
+"
+plot(m15b, color="yellow")
+
+ram15b <- lavaan2RAM(m15b, obs.variables = c("y1i", "y2i"), std.lv = FALSE)
+
+impliedS(ram15b)
+
+fit15b <- sem("Mul_MA_eq", RAM=ram15b, data=dat2, intervals.type = "LB")
+summary(fit15b)
+
+## Compare the two models
+anova(fit15, fit15b)
+```
+
+### Bivariate random-effects model with a common between- and within-correlation
+```{r}
+## Multivariate random-effects model with a common between- and within-correlation
+m16 <- "## Means of y1 and y2
+        y1i ~ mu_y1*1
+        y2i ~ mu_y2*1
+        ## Error variances of y1i and y2i are set at 0 because e1i and e2i 
+        ## are used to represent the sampling errors.
+        y1i ~~ 0*y1i
+        y2i ~~ 0*y2i
+        ## e1i and e2i: sampling errors
+        ## Known sampling sds
+        e1i =~ data.se11i*y1i
+        e2i =~ data.se22i*y2i
+        ## Common correlation (within)
+        e1i ~~ cor*e2i
+        ## e1i and e2i variances are set at 1
+        e1i ~~ 1*e1i
+        e2i ~~ 1*e2i
+        ## Random effect taus (SDs)
+        f1i =~ sd_11*y1i
+        f2i =~ sd_22*y2i
+        ## Common correlation (between)
+        f1i ~~ cor*f2i
+        ## f1i and f2i variances are set at 1
+        f1i ~~ 1*f1i
+        f2i ~~ 1*f2i
+        ## Compute the original T
+        T_11 := sd_11^2
+        T_21 := cor*sd_11*sd_22
+        T_22 := sd_22^2
+"
+plot(m16, color="yellow")
+
+ram16 <- lavaan2RAM(m16, obs.variables = c("y1i", "y2i"), std.lv = TRUE)
+
+impliedS(ram16)
+
+fit16 <- sem("Mul_no_cor", RAM=ram16, data=dat2, intervals.type = "LB")
+summary(fit16)
+
+plot(fit16, color="green", nDigits=4)
+```
+
+### Bivariate random-effects model by regressing a true effect on another true effect
+```{r}
+## Multivariate meta-regression: regressing f2i on f1i
+m17 <- "## Means of y1 and y2
+        y1i + y2i ~ 0*1
+        ## Known sampling variances and covariance
+        y1i ~~ data.V11i*y1i
+        y2i ~~ data.V22i*y2i
+        y1i ~~ data.V21i*y2i
+        ## f1i and f2i: True effect sizes
+        f1i =~ 1*y1i
+        f2i =~ 1*y2i
+        ## Heterogeneity variances
+        f1i ~~ T_11*f1i
+        f2i ~~ T_22*f2i
+        ## Regressing f2i on f1i
+        f2i ~ b0*1+ b1*f1i
+        f1i ~ mu_1*1
+        ## Define R2 on f2i
+        R2 := b1^2*T_11/(b1^2*T_11 + T_22)
+"
+plot(m17, color="yellow", layout="spring")
+
+ram17 <- lavaan2RAM(m17, obs.variables = c("y1i", "y2i"), std.lv = FALSE)
+
+impliedS(ram17)
+
+fit17 <- sem("Mul_meta_reg", RAM=ram17, data=dat2, intervals.type = "LB")
+summary(fit17)
+
+plot(fit17, color="green", nDigits=4, layout="spring")
+```
+
+## Models with external variables
+
+### Bivariate meta-regression
+```{r}
+## Multivariate meta-regression: regressing f2i and f1i on xi
+## Treating xi as a variable
+# m18 <- "## Means of y1 and y2
+#         y1i + y2i ~ 0*1
+#         ## Known sampling variances
+#         y1i ~~ data.V11i*y1i
+#         y2i ~~ data.V22i*y2i
+#         y1i ~~ data.V21i*y2i
+#         ## f1i and f2i: True effect sizes
+#         f1i =~ 1*y1i
+#         f2i =~ 1*y2i
+#         ## Heterogeneity variances and covariance
+#         f1i ~~ T_11*f1i
+#         f1i ~~ T_21*f2i
+#         f2i ~~ T_22*f2i
+#         ## Regressing f2i on f1i
+#         f1i ~ b0_1*1 + b1_1*xi
+#         f2i ~ b0_2*1 + b1_2*xi
+#         xi ~ meanx*1
+#         xi ~~ varx*xi
+#         # Define R2s
+#         R2_1 := b1_1^2*varx/(b1_1^2*varx + T_11)
+#         R2_2 := b1_2^2*varx/(b1_2^2*varx + T_22)
+# "
+
+## Multivariate meta-regression: regressing f2i and f1i on xi
+## Treating xi as a design matrix
+m18 <- "## Means of y1 and y2
+        y1i + y2i ~ 0*1
+        ## Known sampling variances
+        y1i ~~ data.V11i*y1i
+        y2i ~~ data.V22i*y2i
+        y1i ~~ data.V21i*y2i
+        ## f1i and f2i: True effect sizes
+        f1i =~ 1*y1i
+        f2i =~ 1*y2i
+        ## Heterogeneity variances and covariance
+        f1i ~~ T_11*f1i 
+        f1i ~~ T_21*f2i        
+        f2i ~~ T_22*f2i
+        ## etai: a phantom latent variable to represent the covariate x
+        etai =~ 0*y1i        ## Arbitarily loaded on either y1i or y2i
+        etai ~ data.xi*1     ## etai = xi
+        etai ~~ 0*etai       ## Var(etai) = 0
+        ## Regressing f2i on f1i
+        f1i ~ b0_1*1 + b1_1*etai
+        f2i ~ b0_2*1 + b1_2*etai
+"
+
+plot(m18, color="yellow", layout="tree")
+
+ram18 <- lavaan2RAM(m18, obs.variables = c("y1i", "y2i"), std.lv = FALSE)
+
+impliedS(ram18)
+
+fit18 <- sem("Mul_covariate", RAM=ram18, data=dat2, intervals.type = "z")
+summary(fit18)
+
+plot(fit18, color="green", nDigits=4, layout="tree")
+
+
+## Multivariate meta-regression: regressing f2i and f1i on xi
+## The regression coefficients are assumed the same
+m18b <- "## Means of y1 and y2
+         y1i + y2i ~ 0*1
+         ## Known sampling variances
+         y1i ~~ data.V11i*y1i
+         y2i ~~ data.V22i*y2i
+         y1i ~~ data.V21i*y2i
+         ## f1i and f2i: True effect sizes
+         f1i =~ 1*y1i
+         f2i =~ 1*y2i
+         ## Heterogeneity variances and covariance
+         f1i ~~ T_11*f1i 
+         f1i ~~ T_21*f2i        
+         f2i ~~ T_22*f2i
+         ## etai: a phantom latent variable to represent the covariate x
+         etai =~ 0*y1i        ## Arbitarily loading on either y1i or y2i
+         etai ~ data.xi*1     ## etai = xi
+         etai ~~ 0*etai       ## Var(etai) = 0
+         ## Regressing f2i on f1i with the same regression coefficients
+         f1i ~ b0_1*1 + b1*etai
+         f2i ~ b0_2*1 + b1*etai
+"
+
+plot(m18b, color="yellow", layout="tree")
+
+ram18b <- lavaan2RAM(m18b, obs.variables = c("y1i", "y2i"), std.lv = FALSE)
+
+impliedS(ram18b)
+
+fit18b <- sem("Mul_covariate_eq_beta", RAM=ram18b, data=dat2, intervals.type = "z")
+summary(fit18b)
+
+plot(fit18b, color="green", nDigits=4, layout="tree")
+
+## Compare the two models
+anova(fit18, fit18b)
+```
+
+### Mediation model with a true effect size as a mediator
+```{r}
+## Multivariate random-effects model: a mediation model
+## Treating xi as a variable
+# m19 <- "## Means of y1 and y2
+#         y1i + y2i ~ 0*1
+#         ## Known sampling variances
+#         y1i ~~ data.V11i*y1i
+#         y2i ~~ data.V22i*y2i
+#         y1i ~~ data.V21i*y2i
+#         ## f1i and f2i: True effect sizes
+#         f1i =~ 1*y1i
+#         f2i =~ 1*y2i
+#         ## Heterogeneity variances
+#         f1i ~~ T_11*f1i
+#         f2i ~~ T_22*f2i
+#         ## Regressing f2i on f1i
+#         f2i ~ b*f1i + cp*xi
+#         f1i ~ a*xi
+#         xi ~ meanx*1
+#         xi ~~ varx*xi
+#         f1i ~ interceptf1*1
+#         f2i ~ interceptf2*1
+#         ## Define the direct, indirect, and total effects
+#         direct := cp
+#         indirect := a*b
+#         total := a*b + cp
+# "
+
+## Multivariate random-effects model: a mediation model
+## Treating xi as a design matrix
+m19 <- "## Means of y1 and y2 are 0
+        y1i + y2i ~ 0*1
+        ## Known sampling variances
+        y1i ~~ data.V11i*y1i
+        y2i ~~ data.V22i*y2i
+        y1i ~~ data.V21i*y2i
+        ## f1i and f2i: True effect sizes
+        f1i =~ 1*y1i
+        f2i =~ 1*y2i
+        ## Heterogeneity variances
+        f1i ~~ T_11*f1i
+        f2i ~~ T_22*f2i
+        ## etai: a phantom latent variable to represent the covariate x
+        etai =~ 0*y1i        ## Arbitarily loading on either y1i or y2i
+        etai ~ data.xi*1     ## etai = xi
+        etai ~~ 0*etai       ## Var(etai) = 0     
+        ## Mediation model
+        f1i ~ interceptf1*1 + a*etai
+        f2i ~ interceptf2*1 + b*f1i + cp*etai
+        ## Define the direct, indirect, and total effects
+        direct := cp
+        indirect := a*b
+        total := a*b + cp
+"
+plot(m19, color="yellow", layout="tree")
+
+ram19 <- lavaan2RAM(m19, obs.variables = c("y1i", "y2i"), std.lv = FALSE)
+
+impliedS(ram19, replace.constraints = TRUE)
+
+fit19 <- sem("Mul_mediation", RAM=ram19, data=dat2, intervals.type = "LB")
+summary(fit19)
+
+plot(fit19, color="green", nDigits=4, layout="tree")
+```
+
+## One-stage meta-analytic structural equation modeling (OSMASEM)
+
+### OSMASEM using the osmasem() function
+```{r}
+#### Data preparation
+dat_osmasem <- Cor2DataFrame(Becker92)
+
+#### Specify the model to fit
+m20 <- "Math ~ s2m*Spatial + v2m*Verbal
+        Spatial ~~ r_sv*Verbal
+        Spatial ~~ 1*Spatial
+        Verbal ~~ 1*Verbal
+"
+plot(m20, col = "yellow")
+
+## std.lv = TRUE to standardize the latent variables
+ram20 <- lavaan2RAM(m20, obs.variables = c("Math", "Spatial", "Verbal"), std.lv = TRUE)
+
+## Fit the osmasem using m20
+fit.osmasem <- osmasem(RAM=ram20, data=dat_osmasem)
+summary(fit.osmasem)
+
+plot(fit.osmasem, col = "green")
+```
+
+### OSMASEM using the sem() function
+```{r}
+#### Data preparation
+## Use the correlations and sampling covariance matrices prepared by Cor2DataFrame(Becker92)
+dat3 <- dat_osmasem$data
+
+## Use better names for the correlations and sampling covariance matrices
+colnames(dat3) <- c("rS_M", "rV_M", "rV_S", 
+                    "cSM_SM", "cVM_SM", "cVS_SM", "cVM_VM", "cVS_VM", "cVS_VS")
+
+## Data set including the correlation coefficients and sampling covariance matrices
+dat3
+
+## corr = TRUE to get the model-implied correlation vector
+impliedS(ram20, corr = TRUE)
+
+#### OSMASEM using the SEM-based meta-analysis
+m21 <- "## Create true effect sizes
+        rhoS_M =~ 1*rS_M
+        rhoV_M =~ 1*rV_M                  
+        rhoV_S =~ 1*rV_S
+        ## Average effect sizes
+        rhoS_M ~ muS_M*1
+        rhoV_M ~ muV_M*1
+        rhoV_S ~ muV_S*1
+        ## Heterogeneity variances
+        ## As there are only a few studies, random effects are assumed to be independent.
+        rhoS_M ~~ tau2S_M*rhoS_M
+        rhoV_M ~~ tau2V_M*rhoV_M
+        rhoV_S ~~ tau2V_S*rhoV_S
+        ## Known sampling variances and covariances
+        rS_M ~~ data.cSM_SM*rS_M
+        rV_M ~~ data.cVM_SM*rS_M
+        rV_S ~~ data.cVS_SM*rS_M
+        rV_M ~~ data.cVM_VM*rV_M
+        rV_S ~~ data.cVS_VM*rV_M
+        rV_S ~~ data.cVS_VS*rV_S
+        ## Fit the model-implied correlation vector based on impliedS(ram20, corr=TRUE)
+        muS_M == r_sv*v2m + s2m
+        muV_M == r_sv*s2m + v2m
+        muV_S == r_sv
+"
+
+## std.lv = FALSE to keep the true effect sizes unstandardized
+ram21 <- lavaan2RAM(m21, obs.variables = c("rS_M", "rV_M", "rV_S"), std.lv = FALSE)
+
+fit21 <- sem("OSMASEM", RAM=ram21, data=dat3, replace.constraints = TRUE)
+summary(fit21)
+
+sessionInfo()
+```
+
+

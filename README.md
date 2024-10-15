@@ -26,6 +26,8 @@ http://dx.doi.org/10.1080/10705510709336745.
 
 [Cheung, M. W.-L. (2022)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202022). [Synthesizing indirect effects in mediation models with meta-analytic methods](https://doi.org/10.31234/osf.io/df6jp). *Alcohol and Alcoholism*, *57*(1), 5-15. doi:/10.1093/alcalc/agab044
 
+[Cheung, M. W.-L. (2024)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%202024). A tutorial on fitting flexible meta-analytic models with structural equation modeling in R. https://osf.io/preprints/psyarxiv/w9pc6
+
 [Cheung, M. W.-L. & Cheung, S.-F. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Cheung%202016). Random effects models for meta-analytic structural equation modeling: Review, issues, and illustrations. *Research Synthesis Methods*, *7*(2), 140–155. http://doi.org/10.1002/jrsm.1166.
 
 [Cheung, M. W.-L. & Hafdahl, A. R. (2016)](https://github.com/mikewlcheung/code-in-articles/blob/master/Cheung%20and%20Hafdahl%202016). Special issue on meta-analytic structural equation modeling: Introduction from the Guest Editors. *Research Synthesis Methods*, *7*(2), 112–120. http://doi.org/10.1002/jrsm.1212.
