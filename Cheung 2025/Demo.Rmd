@@ -425,24 +425,6 @@ impliedS(ram14, replace.constraints = TRUE)
 fit14 <- sem("Location_multiplicative", RAM=ram14, data=dat1,
              replace.constraints=TRUE)
 summary(fit14)
-```
-
-# Multivariate Meta-Analyses
-## Data preparation
-```{r}
-## Replace missing values with 0 as NA is not allowed in definition variables
-Chan17$v_misinfo[is.na(Chan17$v_misinfo)] <-0 
-Chan17$c_mis_deb[is.na(Chan17$c_mis_deb)] <-0
-Chan17$v_debunk[is.na(Chan17$v_debunk)] <-0
-
-dat2 <- data.frame(y1i=Chan17$g_misinfo,
-                   y2i=Chan17$g_debunk,
-                   V11i=Chan17$v_misinfo,
-                   V21i=Chan17$c_mis_deb,
-                   V22i=Chan17$v_debunk,
-                   se11i=sqrt(Chan17$v_misinfo),
-                   se22i=sqrt(Chan17$v_debunk),
-                   xi=scale(Chan17$PublicationYear))
 
 sessionInfo()
 ```

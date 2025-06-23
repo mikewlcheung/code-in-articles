@@ -475,10 +475,10 @@ summary(fit5)
 ```
 ## 95% confidence intervals: Likelihood-based statistic
 ## Coefficients:
-##          Estimate Std.Error      lbound      ubound z value Pr(>|z|)
-## mu     0.18693594        NA  0.14824131  0.22553485      NA       NA
-## omega  0.12041813        NA -0.52092471  0.65732303      NA       NA
-## tau2   0.03307378        NA  0.00092958  0.66087441      NA       NA
+##         Estimate Std.Error     lbound     ubound z value Pr(>|z|)
+## mu    0.18693594        NA 0.14824131 0.22553485      NA       NA
+## omega 0.12041813        NA         NA 0.65732303      NA       NA
+## tau2  0.03307378        NA 0.00092958 0.66087441      NA       NA
 ## 
 ## Information Criteria:
 ##      df Penalty Parameters Penalty Sample-Size Adjusted
@@ -1123,7 +1123,7 @@ summary(fit11)
 ## Coefficients:
 ##             Estimate Std.Error      lbound      ubound z value Pr(>|z|)
 ## b0        1.4276e+00        NA  1.0064e+00  1.9130e+00      NA       NA
-## b1       -1.9251e-01        NA -4.4801e-01  8.9229e-02      NA       NA
+## b1       -1.9251e-01        NA -4.4766e-01          NA      NA       NA
 ## mu_x_sd   9.6296e-09        NA -2.5097e-01  2.5098e-01      NA       NA
 ## sigma     1.8978e+01        NA  1.6050e+01  2.2917e+01      NA       NA
 ## tau2_res  9.6294e-01        NA  8.0646e-01  1.0000e+00      NA       NA
@@ -1131,7 +1131,7 @@ summary(fit11)
 ## 
 ## Mxalgebras:
 ##          lbound   estimate    ubound
-## R2 1.263057e-30 0.03705907 0.1936213
+## R2 6.381239e-36 0.03705907 0.1936213
 ## 
 ## Information Criteria:
 ##      df Penalty Parameters Penalty Sample-Size Adjusted
@@ -1448,24 +1448,7 @@ summary(fit14)
 ## Other values may indicate problems.)
 ```
 
-# Multivariate Meta-Analyses
-## Data preparation
-
 ``` r
-## Replace missing values with 0 as NA is not allowed in definition variables
-Chan17$v_misinfo[is.na(Chan17$v_misinfo)] <-0 
-Chan17$c_mis_deb[is.na(Chan17$c_mis_deb)] <-0
-Chan17$v_debunk[is.na(Chan17$v_debunk)] <-0
-
-dat2 <- data.frame(y1i=Chan17$g_misinfo,
-                   y2i=Chan17$g_debunk,
-                   V11i=Chan17$v_misinfo,
-                   V21i=Chan17$c_mis_deb,
-                   V22i=Chan17$v_debunk,
-                   se11i=sqrt(Chan17$v_misinfo),
-                   se22i=sqrt(Chan17$v_debunk),
-                   xi=scale(Chan17$PublicationYear))
-
 sessionInfo()
 ```
 

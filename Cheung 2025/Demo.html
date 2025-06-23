@@ -396,11 +396,6 @@ with completely and partially standardized variables</a></li>
 nonlinear models</a></li>
 </ul></li>
 </ul></li>
-<li><a href="#multivariate-meta-analyses" id="toc-multivariate-meta-analyses">Multivariate Meta-Analyses</a>
-<ul>
-<li><a href="#data-preparation-1" id="toc-data-preparation-1">Data
-preparation</a></li>
-</ul></li>
 </ul>
 </div>
 
@@ -770,10 +765,10 @@ impliedS(ram5, replace.constraints = TRUE)</code></pre>
 summary(fit5)</code></pre>
 <pre><code>## 95% confidence intervals: Likelihood-based statistic
 ## Coefficients:
-##          Estimate Std.Error      lbound      ubound z value Pr(&gt;|z|)
-## mu     0.18693594        NA  0.14824131  0.22553485      NA       NA
-## omega  0.12041813        NA -0.52092471  0.65732303      NA       NA
-## tau2   0.03307378        NA  0.00092958  0.66087441      NA       NA
+##         Estimate Std.Error     lbound     ubound z value Pr(&gt;|z|)
+## mu    0.18693594        NA 0.14824131 0.22553485      NA       NA
+## omega 0.12041813        NA         NA 0.65732303      NA       NA
+## tau2  0.03307378        NA 0.00092958 0.66087441      NA       NA
 ## 
 ## Information Criteria:
 ##      df Penalty Parameters Penalty Sample-Size Adjusted
@@ -1422,7 +1417,7 @@ summary(fit11)</code></pre>
 ## Coefficients:
 ##             Estimate Std.Error      lbound      ubound z value Pr(&gt;|z|)
 ## b0        1.4276e+00        NA  1.0064e+00  1.9130e+00      NA       NA
-## b1       -1.9251e-01        NA -4.4801e-01  8.9229e-02      NA       NA
+## b1       -1.9251e-01        NA -4.4766e-01          NA      NA       NA
 ## mu_x_sd   9.6296e-09        NA -2.5097e-01  2.5098e-01      NA       NA
 ## sigma     1.8978e+01        NA  1.6050e+01  2.2917e+01      NA       NA
 ## tau2_res  9.6294e-01        NA  8.0646e-01  1.0000e+00      NA       NA
@@ -1430,7 +1425,7 @@ summary(fit11)</code></pre>
 ## 
 ## Mxalgebras:
 ##          lbound   estimate    ubound
-## R2 1.263057e-30 0.03705907 0.1936213
+## R2 6.381239e-36 0.03705907 0.1936213
 ## 
 ## Information Criteria:
 ##      df Penalty Parameters Penalty Sample-Size Adjusted
@@ -1692,28 +1687,7 @@ summary(fit14)</code></pre>
 ## -2 log likelihood: -52.45438 
 ## OpenMx status1: 0 (&quot;0&quot; or &quot;1&quot;: The optimization is considered fine.
 ## Other values may indicate problems.)</code></pre>
-</div>
-</div>
-</div>
-<div id="multivariate-meta-analyses" class="section level1">
-<h1>Multivariate Meta-Analyses</h1>
-<div id="data-preparation-1" class="section level2">
-<h2>Data preparation</h2>
-<pre class="r"><code>## Replace missing values with 0 as NA is not allowed in definition variables
-Chan17$v_misinfo[is.na(Chan17$v_misinfo)] &lt;-0 
-Chan17$c_mis_deb[is.na(Chan17$c_mis_deb)] &lt;-0
-Chan17$v_debunk[is.na(Chan17$v_debunk)] &lt;-0
-
-dat2 &lt;- data.frame(y1i=Chan17$g_misinfo,
-                   y2i=Chan17$g_debunk,
-                   V11i=Chan17$v_misinfo,
-                   V21i=Chan17$c_mis_deb,
-                   V22i=Chan17$v_debunk,
-                   se11i=sqrt(Chan17$v_misinfo),
-                   se22i=sqrt(Chan17$v_debunk),
-                   xi=scale(Chan17$PublicationYear))
-
-sessionInfo()</code></pre>
+<pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.5.1 (2025-06-13)
 ## Platform: x86_64-pc-linux-gnu
 ## Running under: Ubuntu 24.04.2 LTS
@@ -1774,6 +1748,7 @@ sessionInfo()</code></pre>
 ##  [94] zip_2.3.3           checkmate_2.3.2     gridExtra_2.3      
 ##  [97] coda_0.19-4.1       nlme_3.1-168        xfun_0.52          
 ## [100] pkgconfig_2.0.3</code></pre>
+</div>
 </div>
 </div>
 
