@@ -1,7 +1,7 @@
 ---
 title: 'Supplemental materials of "A Tutorial on Fitting Flexible Meta-Analytic Models with Structural Equation Modeling in R"'
 author: "Mike Cheung"
-date: 'October 15, 2024'
+date: 'June 23, 2025'
 output:
   html_document:
     keep_md: yes
@@ -48,7 +48,7 @@ m1b <- "yi ~ mu*1            ## Mean(yi) = mu
 "
 
 ## Display the conceptual model using the semPlot package
-## sizeInt=6: Set 6 as the size of the intercept, see help(semPaths) in R
+## sizeInt=7: Set 7 as the size of the intercept, see help(semPaths) in R
 plot(m1a, color = "yellow", sizeInt = 7)
 ```
 
@@ -249,7 +249,7 @@ plot(fit2, color="green", sizeInt = 7, nDigits = 4)
 ## Multiplicative error, same as UWLS model
 m3 <- "ei =~ phi_sqrt*yi   ## phi (phi_sqrt^2) is the heterogeneity scaling factor
        ei ~~ data.vi*ei    ## Var(ei) = vi
-       yi ~ mu*1
+       yi ~ mu*1           ## Mean(yi) = mu
        yi ~~ 0*yi          ## Set the default error variance of yi at 0
        phi := phi_sqrt^2   ## Define phi as a function of phi_sqrt
 "
@@ -335,7 +335,7 @@ plot(fit3, color="green", sizeInt=6, nDigits=4)
 
 ``` r
 ## Hybrid model 1: multiplicative and addictive error
-m4 <- "yi ~ mu*1
+m4 <- "yi ~ mu*1          ## Mean(yi) = mu 
        yi ~~ 0*yi
        ## additive error
        ui =~ 1*yi
@@ -477,7 +477,7 @@ summary(fit5)
 ## Coefficients:
 ##          Estimate Std.Error      lbound      ubound z value Pr(>|z|)
 ## mu     0.18693594        NA  0.14824131  0.22553485      NA       NA
-## omega  0.12041813        NA -0.52057903  0.65732303      NA       NA
+## omega  0.12041813        NA -0.52092471  0.65732303      NA       NA
 ## tau2   0.03307378        NA  0.00092958  0.66087441      NA       NA
 ## 
 ## Information Criteria:
@@ -496,7 +496,7 @@ summary(fit5)
 
 ``` r
 ## Hybrid model 3: Hartung-Knapp-Sidik-Jonkman method
-m6 <- "yi ~ mu*1
+m6 <- "yi ~ mu*1            ## Mean(yi) = mu
        yi ~~ 0*yi
        ## additive error
        ui =~ phi_sqrt*yi    ## phi is a scaling factor
@@ -595,6 +595,7 @@ fit4 <- sem("Hybrid1", RAM = ram4, data = dat1)
 fit5 <- sem("Hybrid2", RAM = ram5, data = dat1, replace.constraints = TRUE)
 fit6 <- sem("Hybrid3", RAM = ram6, data = dat1)
 
+## A helper function to extract the results
 extractResults <- function(x) {
   out <- summary(x)
   para <- out$coefficients[c("mu", "tau2", "phi_sqrt", "omega"), 
@@ -935,17 +936,17 @@ plot(fit9, color = "green", sizeInt=6, nDigits = 4)
 
 ``` r
 ## Correlation between fyi and fxi
-m10 <- "yi ~ 0*1
-        yi ~~ data.vi*yi
-        ## fyi: Standardized true effect size of yi
+m10 <- "## fyi: Standardized true effect size of yi
         fyi =~ tauy*yi     ## tauy: sd of fyi
         fyi ~~ 1*fyi       ## Var(fyi) = 1
-        fyi ~ y_mean_div_tauy*1
+        fyi ~ y_mean_div_tauy*1   ## rescaled mean
+        yi ~ 0*1
+        yi ~~ data.vi*yi
         ## fxi: Standardized score of xi
         fxi =~ sigma*xi    ## sigma: sd of xi
         fxi ~~ 1*fxi       ## Var(fxi) = 1
         fxi ~~ Cor*fyi
-        fxi ~ x_mean_div_sigmax*1
+        fxi ~ x_mean_div_sigmax*1 ## rescaled mean
         xi ~ 0*1
         xi ~~ 0*xi       
 "
@@ -1045,12 +1046,12 @@ plot(fit10, color = "green", sizeInt=6, nDigits = 4)
 
 ``` r
 ## Completely standardized fyi and xi
-m11 <- "yi ~ 0*1
-        yi ~~ data.vi*yi
-        ## fyi: Standardized true effect size of yi
+m11 <- "## fyi: Standardized true effect size of yi
         fyi =~ tauy*yi       ## tauy: sd of fyi
         fyi ~~ tau2_res*fyi  ## tau2_res: residual heterogeneity
         fyi ~ b0*1 + b1*fxi
+        yi ~ 0*1
+        yi ~~ data.vi*yi
         ## fxi: Standardized score of xi
         fxi =~ sigma*xi      ## sigma: sd of xi
         fxi ~~ 1*fxi         ## Var(fxi) =1
@@ -1122,7 +1123,7 @@ summary(fit11)
 ## Coefficients:
 ##             Estimate Std.Error      lbound      ubound z value Pr(>|z|)
 ## b0        1.4276e+00        NA  1.0064e+00  1.9130e+00      NA       NA
-## b1       -1.9251e-01        NA -4.4848e-01          NA      NA       NA
+## b1       -1.9251e-01        NA -4.4801e-01  8.9229e-02      NA       NA
 ## mu_x_sd   9.6296e-09        NA -2.5097e-01  2.5098e-01      NA       NA
 ## sigma     1.8978e+01        NA  1.6050e+01  2.2917e+01      NA       NA
 ## tau2_res  9.6294e-01        NA  8.0646e-01  1.0000e+00      NA       NA
@@ -1130,7 +1131,7 @@ summary(fit11)
 ## 
 ## Mxalgebras:
 ##          lbound   estimate    ubound
-## R2 1.110347e-24 0.03705907 0.1936213
+## R2 1.263057e-30 0.03705907 0.1936213
 ## 
 ## Information Criteria:
 ##      df Penalty Parameters Penalty Sample-Size Adjusted
@@ -1154,12 +1155,12 @@ plot(fit11, color="green", sizeInt=6, nDigits=4)
 
 ``` r
 ## Partial standardized xi but not yi
-m12 <- "yi ~ 0*1
-        yi ~~ data.vi*yi
-        ## fyi: Unstandardized true effect size of yi
+m12 <- "## fyi: Unstandardized true effect size of yi
         fyi =~ 1*yi
         fyi ~~ tau2_res*fyi   ## tau2_res: residual heterogeneity
         fyi ~ b0*1 + b1*fxi
+        yi ~ 0*1
+        yi ~~ data.vi*yi
         ## fxi: Standardized score of xi
         fxi =~ sigma*xi       ## sigma: sd of xi
         fxi ~~ 1*fxi          ## Var(fxi) =1
@@ -1464,1093 +1465,18 @@ dat2 <- data.frame(y1i=Chan17$g_misinfo,
                    se11i=sqrt(Chan17$v_misinfo),
                    se22i=sqrt(Chan17$v_debunk),
                    xi=scale(Chan17$PublicationYear))
-```
 
-## Models without any external variables
-### Bivariate random-effects model with known sampling covariance
-
-``` r
-## Multivariate random-effects model
-m15 <- "## Means of y1 and y2
-        y1i ~ mu_y1*1
-        y2i ~ mu_y2*1
-        ## Known sampling variances
-        y1i ~~ data.V11i*y1i
-        y2i ~~ data.V22i*y2i
-        ## Known sampling covariance
-        y1i ~~ data.V21i*y2i
-        ## Random effects
-        f1i =~ 1*y1i
-        f2i =~ 1*y2i
-        ## Heterogeneity variance-covariance matrix
-        f1i ~~ T_11*f1i
-        f1i ~~ T_21*f2i        
-        f2i ~~ T_22*f2i
-        ## Define the correlation of the random effects
-        cor := T_21/sqrt(T_11*T_22)
-"
-plot(m15, color="yellow")
-```
-
-![](Demo_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
-
-``` r
-ram15 <- lavaan2RAM(m15, obs.variables = c("y1i", "y2i"), std.lv = FALSE)
-
-impliedS(ram15)
-```
-
-```
-## Correlation matrix: FALSE
-## 
-## Amatrix:
-##     y1i y2i f1i f2i
-## y1i   0   0   1   0
-## y2i   0   0   0   1
-## f1i   0   0   0   0
-## f2i   0   0   0   0
-## 
-## Smatrix:
-##     y1i         y2i         f1i    f2i   
-## y1i "data.V11i" "data.V21i" "0"    "0"   
-## y2i "data.V21i" "data.V22i" "0"    "0"   
-## f1i "0"         "0"         "T_11" "T_21"
-## f2i "0"         "0"         "T_21" "T_22"
-## 
-## Fmatrix:
-##     y1i y2i f1i f2i
-## y1i   1   0   0   0
-## y2i   0   1   0   0
-## 
-## Mmatrix:
-##   y1i     y2i     f1i f2i
-## 1 "mu_y1" "mu_y2" "0" "0"
-## 
-## Model implied covariance matrix (Sigma):
-##     y1i                y2i               
-## y1i "T_11 + data.V11i" "T_21 + data.V21i"
-## y2i "T_21 + data.V21i" "T_22 + data.V22i"
-## 
-## Model implied mean vector (Mu):
-##   y1i     y2i    
-## 1 "mu_y1" "mu_y2"
-```
-
-``` r
-fit15 <- sem("Mul_MA", RAM=ram15, data=dat2, intervals.type = "LB")
-summary(fit15)
-```
-
-```
-## 95% confidence intervals: Likelihood-based statistic
-## Coefficients:
-##       Estimate Std.Error  lbound  ubound z value Pr(>|z|)
-## mu_y1  2.46250        NA 1.68022 3.24917      NA       NA
-## mu_y2  1.32116        NA 0.80909 1.86970      NA       NA
-## T_11   3.42730        NA 1.62053 7.49377      NA       NA
-## T_21   2.34275        NA 1.12467 4.66124      NA       NA
-## T_22   2.00459        NA 1.09309 3.87635      NA       NA
-## 
-## Mxalgebras:
-##        lbound  estimate    ubound
-## cor 0.6438956 0.8937947 0.9583192
-## 
-## Information Criteria:
-##      df Penalty Parameters Penalty Sample-Size Adjusted
-## AIC:   81.24518           173.2452             175.3880
-## BIC:   18.66440           180.8770             165.2725
-## 
-## Number of subjects (or studies): 34
-## Number of observed statistics: 46
-## Number of estimated parameters: 5
-## Degrees of freedom: 41
-## -2 log likelihood: 163.2452 
-## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
-## Other values may indicate problems.)
-```
-
-``` r
-plot(fit15, color="green", nDigits=4)
-```
-
-![](Demo_files/figure-html/unnamed-chunk-14-2.png)<!-- -->
-
-``` r
-## Multivariate random-effects model with equal means
-m15b <- "## Means of y1 and y2
-         y1i ~ mu_y*1
-         y2i ~ mu_y*1
-         ## Known sampling variances
-         y1i ~~ data.V11i*y1i
-         y2i ~~ data.V22i*y2i
-         ## Known sampling covariance
-         y1i ~~ data.V21i*y2i
-         ## Random effects
-         f1i =~ 1*y1i
-         f2i =~ 1*y2i
-         ## Heterogeneity variance-covariance matrix
-         f1i ~~ T_11*f1i
-         f1i ~~ T_21*f2i        
-         f2i ~~ T_22*f2i
-         ## Define the correlation of the random effects
-         cor := T_21/sqrt(T_11*T_22)
-"
-plot(m15b, color="yellow")
-```
-
-![](Demo_files/figure-html/unnamed-chunk-14-3.png)<!-- -->
-
-``` r
-ram15b <- lavaan2RAM(m15b, obs.variables = c("y1i", "y2i"), std.lv = FALSE)
-
-impliedS(ram15b)
-```
-
-```
-## Correlation matrix: FALSE
-## 
-## Amatrix:
-##     y1i y2i f1i f2i
-## y1i   0   0   1   0
-## y2i   0   0   0   1
-## f1i   0   0   0   0
-## f2i   0   0   0   0
-## 
-## Smatrix:
-##     y1i         y2i         f1i    f2i   
-## y1i "data.V11i" "data.V21i" "0"    "0"   
-## y2i "data.V21i" "data.V22i" "0"    "0"   
-## f1i "0"         "0"         "T_11" "T_21"
-## f2i "0"         "0"         "T_21" "T_22"
-## 
-## Fmatrix:
-##     y1i y2i f1i f2i
-## y1i   1   0   0   0
-## y2i   0   1   0   0
-## 
-## Mmatrix:
-##   y1i    y2i    f1i f2i
-## 1 "mu_y" "mu_y" "0" "0"
-## 
-## Model implied covariance matrix (Sigma):
-##     y1i                y2i               
-## y1i "T_11 + data.V11i" "T_21 + data.V21i"
-## y2i "T_21 + data.V21i" "T_22 + data.V22i"
-## 
-## Model implied mean vector (Mu):
-##   y1i    y2i   
-## 1 "mu_y" "mu_y"
-```
-
-``` r
-fit15b <- sem("Mul_MA_eq", RAM=ram15b, data=dat2, intervals.type = "LB")
-summary(fit15b)
-```
-
-```
-## 95% confidence intervals: Likelihood-based statistic
-## Coefficients:
-##      Estimate Std.Error   lbound   ubound z value Pr(>|z|)
-## mu_y  1.11652        NA  0.57667  1.65539      NA       NA
-## T_11  7.15653        NA  3.51740 15.10396      NA       NA
-## T_21  3.13158        NA  1.37705  6.24789      NA       NA
-## T_22  1.93691        NA  1.05781  3.75966      NA       NA
-## 
-## Mxalgebras:
-##        lbound  estimate    ubound
-## cor 0.4891738 0.8411191 0.9482105
-## 
-## Information Criteria:
-##      df Penalty Parameters Penalty Sample-Size Adjusted
-## AIC:   91.09663           183.0966             184.4759
-## BIC:   26.98949           189.2021             176.7185
-## 
-## Number of subjects (or studies): 34
-## Number of observed statistics: 46
-## Number of estimated parameters: 4
-## Degrees of freedom: 42
-## -2 log likelihood: 175.0966 
-## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
-## Other values may indicate problems.)
-```
-
-``` r
-## Compare the two models
-anova(fit15, fit15b)
-```
-
-```
-##     base comparison ep minus2LL df      AIC   diffLL diffdf            p
-## 1 Mul_MA       <NA>  5 163.2452 41 173.2452       NA     NA           NA
-## 2 Mul_MA  Mul_MA_eq  4 175.0966 42 183.0966 11.85145      1 0.0005761634
-```
-
-### Bivariate random-effects model with a common between- and within-correlation
-
-``` r
-## Multivariate random-effects model with a common between- and within-correlation
-m16 <- "## Means of y1 and y2
-        y1i ~ mu_y1*1
-        y2i ~ mu_y2*1
-        ## Error variances of y1i and y2i are set at 0 because e1i and e2i 
-        ## are used to represent the sampling errors.
-        y1i ~~ 0*y1i
-        y2i ~~ 0*y2i
-        ## e1i and e2i: sampling errors
-        ## Known sampling sds
-        e1i =~ data.se11i*y1i
-        e2i =~ data.se22i*y2i
-        ## Common correlation (within)
-        e1i ~~ cor*e2i
-        ## e1i and e2i variances are set at 1
-        e1i ~~ 1*e1i
-        e2i ~~ 1*e2i
-        ## Random effect taus (SDs)
-        f1i =~ sd_11*y1i
-        f2i =~ sd_22*y2i
-        ## Common correlation (between)
-        f1i ~~ cor*f2i
-        ## f1i and f2i variances are set at 1
-        f1i ~~ 1*f1i
-        f2i ~~ 1*f2i
-        ## Compute the original T
-        T_11 := sd_11^2
-        T_21 := cor*sd_11*sd_22
-        T_22 := sd_22^2
-"
-plot(m16, color="yellow")
-```
-
-![](Demo_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
-
-``` r
-ram16 <- lavaan2RAM(m16, obs.variables = c("y1i", "y2i"), std.lv = TRUE)
-
-impliedS(ram16)
-```
-
-```
-## Correlation matrix: FALSE
-## 
-## Amatrix:
-##     y1i y2i e1i          e2i          f1i     f2i    
-## y1i "0" "0" "data.se11i" "0"          "sd_11" "0"    
-## y2i "0" "0" "0"          "data.se22i" "0"     "sd_22"
-## e1i "0" "0" "0"          "0"          "0"     "0"    
-## e2i "0" "0" "0"          "0"          "0"     "0"    
-## f1i "0" "0" "0"          "0"          "0"     "0"    
-## f2i "0" "0" "0"          "0"          "0"     "0"    
-## 
-## Smatrix:
-##     y1i y2i e1i   e2i   f1i   f2i  
-## y1i "0" "0" "0"   "0"   "0"   "0"  
-## y2i "0" "0" "0"   "0"   "0"   "0"  
-## e1i "0" "0" "1"   "cor" "0"   "0"  
-## e2i "0" "0" "cor" "1"   "0"   "0"  
-## f1i "0" "0" "0"   "0"   "1"   "cor"
-## f2i "0" "0" "0"   "0"   "cor" "1"  
-## 
-## Fmatrix:
-##     y1i y2i e1i e2i f1i f2i
-## y1i   1   0   0   0   0   0
-## y2i   0   1   0   0   0   0
-## 
-## Mmatrix:
-##   y1i     y2i     e1i e2i f1i f2i
-## 1 "mu_y1" "mu_y2" "0" "0" "0" "0"
-## 
-## Model implied covariance matrix (Sigma):
-##     y1i                                        
-## y1i "data.se11i^2 + sd_11^2"                   
-## y2i "cor*(data.se11i*data.se22i + sd_11*sd_22)"
-##     y2i                                        
-## y1i "cor*(data.se11i*data.se22i + sd_11*sd_22)"
-## y2i "data.se22i^2 + sd_22^2"                   
-## 
-## Model implied mean vector (Mu):
-##   y1i     y2i    
-## 1 "mu_y1" "mu_y2"
-```
-
-``` r
-fit16 <- sem("Mul_no_cor", RAM=ram16, data=dat2, intervals.type = "LB")
-summary(fit16)
-```
-
-```
-## 95% confidence intervals: Likelihood-based statistic
-## Coefficients:
-##       Estimate Std.Error   lbound   ubound z value Pr(>|z|)
-## cor    0.88890        NA  0.65480  0.95815      NA       NA
-## mu_y1  2.47023        NA  1.69323  3.25322      NA       NA
-## mu_y2  1.31957        NA  0.80622  1.86682      NA       NA
-## sd_11  1.85706        NA -2.62492  2.73485      NA       NA
-## sd_22  1.41526        NA -1.93626  1.96625      NA       NA
-## 
-## Mxalgebras:
-##        lbound estimate   ubound
-## T_11 1.637613 3.448678 6.490188
-## T_21 1.137789 2.336228 4.571310
-## T_22 1.094094 2.002973 3.865531
-## 
-## Information Criteria:
-##      df Penalty Parameters Penalty Sample-Size Adjusted
-## AIC:   80.98687           172.9869             175.1297
-## BIC:   18.40609           180.6187             165.0142
-## 
-## Number of subjects (or studies): 34
-## Number of observed statistics: 46
-## Number of estimated parameters: 5
-## Degrees of freedom: 41
-## -2 log likelihood: 162.9869 
-## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
-## Other values may indicate problems.)
-```
-
-``` r
-plot(fit16, color="green", nDigits=4)
-```
-
-![](Demo_files/figure-html/unnamed-chunk-15-2.png)<!-- -->
-
-### Bivariate random-effects model by regressing a true effect on another true effect
-
-``` r
-## Multivariate meta-regression: regressing f2i on f1i
-m17 <- "## Means of y1 and y2
-        y1i + y2i ~ 0*1
-        ## Known sampling variances and covariance
-        y1i ~~ data.V11i*y1i
-        y2i ~~ data.V22i*y2i
-        y1i ~~ data.V21i*y2i
-        ## f1i and f2i: True effect sizes
-        f1i =~ 1*y1i
-        f2i =~ 1*y2i
-        ## Heterogeneity variances
-        f1i ~~ T_11*f1i
-        f2i ~~ T_22*f2i
-        ## Regressing f2i on f1i
-        f2i ~ b0*1+ b1*f1i
-        f1i ~ mu_1*1
-        ## Define R2 on f2i
-        R2 := b1^2*T_11/(b1^2*T_11 + T_22)
-"
-plot(m17, color="yellow", layout="spring")
-```
-
-![](Demo_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
-
-``` r
-ram17 <- lavaan2RAM(m17, obs.variables = c("y1i", "y2i"), std.lv = FALSE)
-
-impliedS(ram17)
-```
-
-```
-## Correlation matrix: FALSE
-## 
-## Amatrix:
-##     y1i y2i f1i  f2i
-## y1i "0" "0" "1"  "0"
-## y2i "0" "0" "0"  "1"
-## f1i "0" "0" "0"  "0"
-## f2i "0" "0" "b1" "0"
-## 
-## Smatrix:
-##     y1i         y2i         f1i    f2i   
-## y1i "data.V11i" "data.V21i" "0"    "0"   
-## y2i "data.V21i" "data.V22i" "0"    "0"   
-## f1i "0"         "0"         "T_11" "0"   
-## f2i "0"         "0"         "0"    "T_22"
-## 
-## Fmatrix:
-##     y1i y2i f1i f2i
-## y1i   1   0   0   0
-## y2i   0   1   0   0
-## 
-## Mmatrix:
-##   y1i y2i f1i    f2i 
-## 1 "0" "0" "mu_1" "b0"
-## 
-## Model implied covariance matrix (Sigma):
-##     y1i                   y2i                           
-## y1i "T_11 + data.V11i"    "T_11*b1 + data.V21i"         
-## y2i "T_11*b1 + data.V21i" "T_11*b1^2 + T_22 + data.V22i"
-## 
-## Model implied mean vector (Mu):
-##   y1i    y2i           
-## 1 "mu_1" "b0 + b1*mu_1"
-```
-
-``` r
-fit17 <- sem("Mul_meta_reg", RAM=ram17, data=dat2, intervals.type = "LB")
-summary(fit17)
-```
-
-```
-## 95% confidence intervals: Likelihood-based statistic
-## Coefficients:
-##      Estimate Std.Error   lbound   ubound z value Pr(>|z|)
-## b0   -0.36210        NA -1.10631  0.34321      NA       NA
-## b1    0.68356        NA  0.40918  0.93797      NA       NA
-## mu_1  2.46250        NA  1.67733  3.24930      NA       NA
-## T_11  3.42730        NA  1.62485  7.48329      NA       NA
-## T_22  0.40318        NA  0.17598  1.06625      NA       NA
-## 
-## Mxalgebras:
-##       lbound  estimate    ubound
-## R2 0.4181369 0.7988689 0.9292883
-## 
-## Information Criteria:
-##      df Penalty Parameters Penalty Sample-Size Adjusted
-## AIC:   81.24518           173.2452             175.3880
-## BIC:   18.66440           180.8770             165.2725
-## 
-## Number of subjects (or studies): 34
-## Number of observed statistics: 46
-## Number of estimated parameters: 5
-## Degrees of freedom: 41
-## -2 log likelihood: 163.2452 
-## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
-## Other values may indicate problems.)
-```
-
-``` r
-plot(fit17, color="green", nDigits=4, layout="spring")
-```
-
-![](Demo_files/figure-html/unnamed-chunk-16-2.png)<!-- -->
-
-## Models with external variables
-
-### Bivariate meta-regression
-
-``` r
-## Multivariate meta-regression: regressing f2i and f1i on xi
-## Treating xi as a variable
-# m18 <- "## Means of y1 and y2
-#         y1i + y2i ~ 0*1
-#         ## Known sampling variances
-#         y1i ~~ data.V11i*y1i
-#         y2i ~~ data.V22i*y2i
-#         y1i ~~ data.V21i*y2i
-#         ## f1i and f2i: True effect sizes
-#         f1i =~ 1*y1i
-#         f2i =~ 1*y2i
-#         ## Heterogeneity variances and covariance
-#         f1i ~~ T_11*f1i
-#         f1i ~~ T_21*f2i
-#         f2i ~~ T_22*f2i
-#         ## Regressing f2i on f1i
-#         f1i ~ b0_1*1 + b1_1*xi
-#         f2i ~ b0_2*1 + b1_2*xi
-#         xi ~ meanx*1
-#         xi ~~ varx*xi
-#         # Define R2s
-#         R2_1 := b1_1^2*varx/(b1_1^2*varx + T_11)
-#         R2_2 := b1_2^2*varx/(b1_2^2*varx + T_22)
-# "
-
-## Multivariate meta-regression: regressing f2i and f1i on xi
-## Treating xi as a design matrix
-m18 <- "## Means of y1 and y2
-        y1i + y2i ~ 0*1
-        ## Known sampling variances
-        y1i ~~ data.V11i*y1i
-        y2i ~~ data.V22i*y2i
-        y1i ~~ data.V21i*y2i
-        ## f1i and f2i: True effect sizes
-        f1i =~ 1*y1i
-        f2i =~ 1*y2i
-        ## Heterogeneity variances and covariance
-        f1i ~~ T_11*f1i 
-        f1i ~~ T_21*f2i        
-        f2i ~~ T_22*f2i
-        ## etai: a phantom latent variable to represent the covariate x
-        etai =~ 0*y1i        ## Arbitarily loaded on either y1i or y2i
-        etai ~ data.xi*1     ## etai = xi
-        etai ~~ 0*etai       ## Var(etai) = 0
-        ## Regressing f2i on f1i
-        f1i ~ b0_1*1 + b1_1*etai
-        f2i ~ b0_2*1 + b1_2*etai
-"
-
-plot(m18, color="yellow", layout="tree")
-```
-
-![](Demo_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
-
-``` r
-ram18 <- lavaan2RAM(m18, obs.variables = c("y1i", "y2i"), std.lv = FALSE)
-
-impliedS(ram18)
-```
-
-```
-## Correlation matrix: FALSE
-## 
-## Amatrix:
-##      y1i y2i f1i f2i etai  
-## y1i  "0" "0" "1" "0" "0"   
-## y2i  "0" "0" "0" "1" "0"   
-## f1i  "0" "0" "0" "0" "b1_1"
-## f2i  "0" "0" "0" "0" "b1_2"
-## etai "0" "0" "0" "0" "0"   
-## 
-## Smatrix:
-##      y1i         y2i         f1i    f2i    etai
-## y1i  "data.V11i" "data.V21i" "0"    "0"    "0" 
-## y2i  "data.V21i" "data.V22i" "0"    "0"    "0" 
-## f1i  "0"         "0"         "T_11" "T_21" "0" 
-## f2i  "0"         "0"         "T_21" "T_22" "0" 
-## etai "0"         "0"         "0"    "0"    "0" 
-## 
-## Fmatrix:
-##     y1i y2i f1i f2i etai
-## y1i   1   0   0   0    0
-## y2i   0   1   0   0    0
-## 
-## Mmatrix:
-##   y1i y2i f1i    f2i    etai     
-## 1 "0" "0" "b0_1" "b0_2" "data.xi"
-## 
-## Model implied covariance matrix (Sigma):
-##     y1i                y2i               
-## y1i "T_11 + data.V11i" "T_21 + data.V21i"
-## y2i "T_21 + data.V21i" "T_22 + data.V22i"
-## 
-## Model implied mean vector (Mu):
-##   y1i                   y2i                  
-## 1 "b0_1 + b1_1*data.xi" "b0_2 + b1_2*data.xi"
-```
-
-``` r
-fit18 <- sem("Mul_covariate", RAM=ram18, data=dat2, intervals.type = "z")
-summary(fit18)
-```
-
-```
-## 95% confidence intervals: z statistic approximation (robust=FALSE)
-## Coefficients:
-##      Estimate Std.Error   lbound   ubound z value  Pr(>|z|)    
-## b1_1  0.13337   0.34484 -0.54251  0.80925  0.3868  0.698935    
-## b1_2  0.28044   0.24539 -0.20052  0.76140  1.1428  0.253113    
-## T_11  3.72489   1.45800  0.86726  6.58252  2.5548  0.010625 *  
-## T_21  2.42713   0.85227  0.75670  4.09756  2.8478  0.004402 ** 
-## T_22  1.89816   0.60970  0.70317  3.09315  3.1133  0.001850 ** 
-## b0_1  2.38906   0.39042  1.62385  3.15427  6.1192 9.407e-10 ***
-## b0_2  1.32371   0.25263  0.82856  1.81885  5.2397 1.608e-07 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Information Criteria:
-##      df Penalty Parameters Penalty Sample-Size Adjusted
-## AIC:   82.49036           174.4904             178.7981
-## BIC:   22.96230           185.1749             163.3286
-## 
-## Number of subjects (or studies): 34
-## Number of observed statistics: 46
-## Number of estimated parameters: 7
-## Degrees of freedom: 39
-## -2 log likelihood: 160.4904 
-## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
-## Other values may indicate problems.)
-```
-
-``` r
-plot(fit18, color="green", nDigits=4, layout="tree")
-```
-
-![](Demo_files/figure-html/unnamed-chunk-17-2.png)<!-- -->
-
-``` r
-## Multivariate meta-regression: regressing f2i and f1i on xi
-## The regression coefficients are assumed the same
-m18b <- "## Means of y1 and y2
-         y1i + y2i ~ 0*1
-         ## Known sampling variances
-         y1i ~~ data.V11i*y1i
-         y2i ~~ data.V22i*y2i
-         y1i ~~ data.V21i*y2i
-         ## f1i and f2i: True effect sizes
-         f1i =~ 1*y1i
-         f2i =~ 1*y2i
-         ## Heterogeneity variances and covariance
-         f1i ~~ T_11*f1i 
-         f1i ~~ T_21*f2i        
-         f2i ~~ T_22*f2i
-         ## etai: a phantom latent variable to represent the covariate x
-         etai =~ 0*y1i        ## Arbitarily loading on either y1i or y2i
-         etai ~ data.xi*1     ## etai = xi
-         etai ~~ 0*etai       ## Var(etai) = 0
-         ## Regressing f2i on f1i with the same regression coefficients
-         f1i ~ b0_1*1 + b1*etai
-         f2i ~ b0_2*1 + b1*etai
-"
-
-plot(m18b, color="yellow", layout="tree")
-```
-
-![](Demo_files/figure-html/unnamed-chunk-17-3.png)<!-- -->
-
-``` r
-ram18b <- lavaan2RAM(m18b, obs.variables = c("y1i", "y2i"), std.lv = FALSE)
-
-impliedS(ram18b)
-```
-
-```
-## Correlation matrix: FALSE
-## 
-## Amatrix:
-##      y1i y2i f1i f2i etai
-## y1i  "0" "0" "1" "0" "0" 
-## y2i  "0" "0" "0" "1" "0" 
-## f1i  "0" "0" "0" "0" "b1"
-## f2i  "0" "0" "0" "0" "b1"
-## etai "0" "0" "0" "0" "0" 
-## 
-## Smatrix:
-##      y1i         y2i         f1i    f2i    etai
-## y1i  "data.V11i" "data.V21i" "0"    "0"    "0" 
-## y2i  "data.V21i" "data.V22i" "0"    "0"    "0" 
-## f1i  "0"         "0"         "T_11" "T_21" "0" 
-## f2i  "0"         "0"         "T_21" "T_22" "0" 
-## etai "0"         "0"         "0"    "0"    "0" 
-## 
-## Fmatrix:
-##     y1i y2i f1i f2i etai
-## y1i   1   0   0   0    0
-## y2i   0   1   0   0    0
-## 
-## Mmatrix:
-##   y1i y2i f1i    f2i    etai     
-## 1 "0" "0" "b0_1" "b0_2" "data.xi"
-## 
-## Model implied covariance matrix (Sigma):
-##     y1i                y2i               
-## y1i "T_11 + data.V11i" "T_21 + data.V21i"
-## y2i "T_21 + data.V21i" "T_22 + data.V22i"
-## 
-## Model implied mean vector (Mu):
-##   y1i                 y2i                
-## 1 "b0_1 + b1*data.xi" "b0_2 + b1*data.xi"
-```
-
-``` r
-fit18b <- sem("Mul_covariate_eq_beta", RAM=ram18b, data=dat2, intervals.type = "z")
-summary(fit18b)
-```
-
-```
-## 95% confidence intervals: z statistic approximation (robust=FALSE)
-## Coefficients:
-##      Estimate Std.Error   lbound   ubound z value  Pr(>|z|)    
-## b1    0.35320   0.23887 -0.11499  0.82138  1.4786  0.139249    
-## T_11  3.75986   1.51453  0.79143  6.72830  2.4825  0.013046 *  
-## T_21  2.41700   0.87153  0.70884  4.12515  2.7733  0.005549 ** 
-## T_22  1.89275   0.61069  0.69583  3.08967  3.0994  0.001939 ** 
-## b0_1  2.41763   0.39451  1.64440  3.19087  6.1281 8.892e-10 ***
-## b0_2  1.32098   0.25259  0.82591  1.81605  5.2297 1.697e-07 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Information Criteria:
-##      df Penalty Parameters Penalty Sample-Size Adjusted
-## AIC:   81.23251           173.2325             176.3436
-## BIC:   20.17809           182.3907             163.6653
-## 
-## Number of subjects (or studies): 34
-## Number of observed statistics: 46
-## Number of estimated parameters: 6
-## Degrees of freedom: 40
-## -2 log likelihood: 161.2325 
-## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
-## Other values may indicate problems.)
-```
-
-``` r
-plot(fit18b, color="green", nDigits=4, layout="tree")
-```
-
-![](Demo_files/figure-html/unnamed-chunk-17-4.png)<!-- -->
-
-``` r
-## Compare the two models
-anova(fit18, fit18b)
-```
-
-```
-##            base            comparison ep minus2LL df      AIC   diffLL diffdf
-## 1 Mul_covariate                  <NA>  7 160.4904 39 174.4904       NA     NA
-## 2 Mul_covariate Mul_covariate_eq_beta  6 161.2325 40 173.2325 0.742145      1
-##           p
-## 1        NA
-## 2 0.3889746
-```
-
-### Mediation model with a true effect size as a mediator
-
-``` r
-## Multivariate random-effects model: a mediation model
-## Treating xi as a variable
-# m19 <- "## Means of y1 and y2
-#         y1i + y2i ~ 0*1
-#         ## Known sampling variances
-#         y1i ~~ data.V11i*y1i
-#         y2i ~~ data.V22i*y2i
-#         y1i ~~ data.V21i*y2i
-#         ## f1i and f2i: True effect sizes
-#         f1i =~ 1*y1i
-#         f2i =~ 1*y2i
-#         ## Heterogeneity variances
-#         f1i ~~ T_11*f1i
-#         f2i ~~ T_22*f2i
-#         ## Regressing f2i on f1i
-#         f2i ~ b*f1i + cp*xi
-#         f1i ~ a*xi
-#         xi ~ meanx*1
-#         xi ~~ varx*xi
-#         f1i ~ interceptf1*1
-#         f2i ~ interceptf2*1
-#         ## Define the direct, indirect, and total effects
-#         direct := cp
-#         indirect := a*b
-#         total := a*b + cp
-# "
-
-## Multivariate random-effects model: a mediation model
-## Treating xi as a design matrix
-m19 <- "## Means of y1 and y2 are 0
-        y1i + y2i ~ 0*1
-        ## Known sampling variances
-        y1i ~~ data.V11i*y1i
-        y2i ~~ data.V22i*y2i
-        y1i ~~ data.V21i*y2i
-        ## f1i and f2i: True effect sizes
-        f1i =~ 1*y1i
-        f2i =~ 1*y2i
-        ## Heterogeneity variances
-        f1i ~~ T_11*f1i
-        f2i ~~ T_22*f2i
-        ## etai: a phantom latent variable to represent the covariate x
-        etai =~ 0*y1i        ## Arbitarily loading on either y1i or y2i
-        etai ~ data.xi*1     ## etai = xi
-        etai ~~ 0*etai       ## Var(etai) = 0     
-        ## Mediation model
-        f1i ~ interceptf1*1 + a*etai
-        f2i ~ interceptf2*1 + b*f1i + cp*etai
-        ## Define the direct, indirect, and total effects
-        direct := cp
-        indirect := a*b
-        total := a*b + cp
-"
-plot(m19, color="yellow", layout="tree")
-```
-
-![](Demo_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
-
-``` r
-ram19 <- lavaan2RAM(m19, obs.variables = c("y1i", "y2i"), std.lv = FALSE)
-
-impliedS(ram19, replace.constraints = TRUE)
-```
-
-```
-## Correlation matrix: FALSE
-## 
-## Amatrix:
-##      y1i y2i f1i f2i etai
-## y1i  "0" "0" "1" "0" "0" 
-## y2i  "0" "0" "0" "1" "0" 
-## f1i  "0" "0" "0" "0" "a" 
-## f2i  "0" "0" "b" "0" "cp"
-## etai "0" "0" "0" "0" "0" 
-## 
-## Smatrix:
-##      y1i         y2i         f1i    f2i    etai
-## y1i  "data.V11i" "data.V21i" "0"    "0"    "0" 
-## y2i  "data.V21i" "data.V22i" "0"    "0"    "0" 
-## f1i  "0"         "0"         "T_11" "0"    "0" 
-## f2i  "0"         "0"         "0"    "T_22" "0" 
-## etai "0"         "0"         "0"    "0"    "0" 
-## 
-## Fmatrix:
-##     y1i y2i f1i f2i etai
-## y1i   1   0   0   0    0
-## y2i   0   1   0   0    0
-## 
-## Mmatrix:
-##   y1i y2i f1i           f2i           etai     
-## 1 "0" "0" "interceptf1" "interceptf2" "data.xi"
-## 
-## Model implied covariance matrix (Sigma):
-##     y1i                  y2i                          
-## y1i "T_11 + data.V11i"   "T_11*b + data.V21i"         
-## y2i "T_11*b + data.V21i" "T_11*b^2 + T_22 + data.V22i"
-## 
-## Model implied mean vector (Mu):
-##   y1i                       y2i                                               
-## 1 "a*data.xi + interceptf1" "b*interceptf1 + data.xi*(a*b + cp) + interceptf2"
-```
-
-``` r
-fit19 <- sem("Mul_mediation", RAM=ram19, data=dat2, intervals.type = "LB")
-summary(fit19)
-```
-
-```
-## 95% confidence intervals: Likelihood-based statistic
-## Coefficients:
-##             Estimate Std.Error   lbound   ubound z value Pr(>|z|)
-## a            0.13337        NA -0.60336  0.84454      NA       NA
-## b            0.65160        NA  0.41732  0.88895      NA       NA
-## cp           0.19354        NA -0.05546  0.42924      NA       NA
-## interceptf1  2.38906        NA  1.56743  3.18664      NA       NA
-## interceptf2 -0.23300        NA -0.95005  0.39975      NA       NA
-## T_11         3.72489        NA  1.72998  8.14576      NA       NA
-## T_22         0.31665        NA  0.13556  0.86963      NA       NA
-## 
-## Mxalgebras:
-##               lbound   estimate    ubound
-## direct   -0.05545953 0.19353602 0.4292424
-## indirect -0.38098155 0.08690437 0.5612046
-## total    -0.22448848 0.28044039 0.7828064
-## 
-## Information Criteria:
-##      df Penalty Parameters Penalty Sample-Size Adjusted
-## AIC:   82.49036           174.4904             178.7981
-## BIC:   22.96230           185.1749             163.3286
-## 
-## Number of subjects (or studies): 34
-## Number of observed statistics: 46
-## Number of estimated parameters: 7
-## Degrees of freedom: 39
-## -2 log likelihood: 160.4904 
-## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
-## Other values may indicate problems.)
-```
-
-``` r
-plot(fit19, color="green", nDigits=4, layout="tree")
-```
-
-![](Demo_files/figure-html/unnamed-chunk-18-2.png)<!-- -->
-
-## One-stage meta-analytic structural equation modeling (OSMASEM)
-
-### OSMASEM using the osmasem() function
-
-``` r
-#### Data preparation
-dat_osmasem <- Cor2DataFrame(Becker92)
-
-#### Specify the model to fit
-m20 <- "Math ~ s2m*Spatial + v2m*Verbal
-        Spatial ~~ r_sv*Verbal
-        Spatial ~~ 1*Spatial
-        Verbal ~~ 1*Verbal
-"
-plot(m20, col = "yellow")
-```
-
-![](Demo_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
-
-``` r
-## std.lv = TRUE to standardize the latent variables
-ram20 <- lavaan2RAM(m20, obs.variables = c("Math", "Spatial", "Verbal"), std.lv = TRUE)
-
-## Fit the osmasem using m20
-fit.osmasem <- osmasem(RAM=ram20, data=dat_osmasem)
-summary(fit.osmasem)
-```
-
-```
-## Summary of osmasem 
-##  
-## free parameters:
-##     name  matrix    row     col   Estimate  Std.Error A   z value     Pr(>|z|)
-## 1    s2m      A0   Math Spatial  0.3420455 0.04489421    7.618922 2.553513e-14
-## 2    v2m      A0   Math  Verbal  0.2445485 0.09485628    2.578095 9.934665e-03
-## 3   r_sv      S0 Verbal Spatial  0.1570785 0.05033867    3.120434 1.805845e-03
-## 4 Tau1_1 vecTau1      1       1 -6.2104200 2.68058695   -2.316813 2.051389e-02
-## 5 Tau1_2 vecTau1      2       1 -3.1741347 0.75128419   -4.224945 2.389987e-05
-## 6 Tau1_3 vecTau1      3       1 -5.4735694 2.37038631   -2.309147 2.093545e-02
-## 
-## To obtain confidence intervals re-run with intervals=TRUE
-## 
-## Model Statistics: 
-##                |  Parameters  |  Degrees of Freedom  |  Fit (-2lnL units)
-##        Model:              6                     12             -18.20738
-##    Saturated:              9                      9                    NA
-## Independence:              6                     12                    NA
-## Number of observations/statistics: 538/18
-## 
-## Information Criteria: 
-##       |  df Penalty  |  Parameters Penalty  |  Sample-Size Adjusted
-## AIC:      -42.20738              -6.207377                -6.049185
-## BIC:      -93.66168              19.519774                 0.473715
-## To get additional fit indices, see help(mxRefModels)
-## timestamp: 2024-10-15 10:19:53 
-## Wall clock time: 0.04102325 secs 
-## optimizer:  SLSQP 
-## OpenMx version number: 2.21.12 
-## Need help?  See help(mxSummary)
-```
-
-``` r
-plot(fit.osmasem, col = "green")
-```
-
-![](Demo_files/figure-html/unnamed-chunk-19-2.png)<!-- -->
-
-### OSMASEM using the sem() function
-
-``` r
-#### Data preparation
-## Use the correlations and sampling covariance matrices prepared by Cor2DataFrame(Becker92)
-dat3 <- dat_osmasem$data
-
-## Use better names for the correlations and sampling covariance matrices
-colnames(dat3) <- c("rS_M", "rV_M", "rV_S", 
-                    "cSM_SM", "cVM_SM", "cVS_SM", "cVM_VM", "cVS_VM", "cVS_VS")
-
-## Data set including the correlation coefficients and sampling covariance matrices
-dat3
-```
-
-```
-##                   rS_M   rV_M   rV_S      cSM_SM       cVM_SM      cVS_SM
-## Berry (1957)     0.460  0.310  0.190 0.007146778 0.0008225680 0.002045514
-## Rosenberg (1981) 0.460  0.550  0.320 0.010668379 0.0012278914 0.003053448
-## Weiner 1 (1984)  0.397  0.402  0.183 0.010668379 0.0012278914 0.003053448
-## Weiner 2 (1984)  0.266  0.567  0.218 0.010515974 0.0012103501 0.003009828
-## Becker 1 (1978)  0.280  0.190  0.180 0.004811230 0.0005537549 0.001377045
-## Becker 2 (1978)  0.470 -0.210 -0.150 0.009947543 0.0011449258 0.002847134
-##                       cVM_VM      cVS_VM      cVS_VS
-## Berry (1957)     0.008242393 0.003113865 0.009219172
-## Rosenberg (1981) 0.012303862 0.004648233 0.013761952
-## Weiner 1 (1984)  0.012303862 0.004648233 0.013761952
-## Weiner 2 (1984)  0.012128093 0.004581829 0.013565353
-## Becker 1 (1978)  0.005548800 0.002096262 0.006206370
-## Becker 2 (1978)  0.011472520 0.004334163 0.012832090
-```
-
-``` r
-## corr = TRUE to get the model-implied correlation vector
-impliedS(ram20, corr = TRUE)
-```
-
-```
-## Correlation matrix: TRUE
-## 
-## Amatrix:
-##         Math Spatial Verbal
-## Math    "0"  "s2m"   "v2m" 
-## Spatial "0"  "0"     "0"   
-## Verbal  "0"  "0"     "0"   
-## 
-## Smatrix:
-##         Math           Spatial Verbal
-## Math    "MathWITHMath" "0"     "0"   
-## Spatial "0"            "1"     "r_sv"
-## Verbal  "0"            "r_sv"  "1"   
-## 
-## Fmatrix:
-##         Math Spatial Verbal
-## Math       1       0      0
-## Spatial    0       1      0
-## Verbal     0       0      1
-## 
-## Mmatrix:
-##   Math       Spatial       Verbal      
-## 1 "Mathmean" "Spatialmean" "Verbalmean"
-## 
-## Model implied covariance matrix (Sigma):
-##         Math             Spatial          Verbal          
-## Math    "1"              "r_sv*v2m + s2m" "r_sv*s2m + v2m"
-## Spatial "r_sv*v2m + s2m" "1"              "r_sv"          
-## Verbal  "r_sv*s2m + v2m" "r_sv"           "1"             
-## 
-## Model implied mean vector (Mu):
-##   Math                                          Spatial       Verbal      
-## 1 "Mathmean + Spatialmean*s2m + Verbalmean*v2m" "Spatialmean" "Verbalmean"
-```
-
-``` r
-#### OSMASEM using the SEM-based meta-analysis
-m21 <- "## Create true effect sizes
-        rhoS_M =~ 1*rS_M
-        rhoV_M =~ 1*rV_M                  
-        rhoV_S =~ 1*rV_S
-        ## Average effect sizes
-        rhoS_M ~ muS_M*1
-        rhoV_M ~ muV_M*1
-        rhoV_S ~ muV_S*1
-        ## Heterogeneity variances
-        ## As there are only a few studies, random effects are assumed to be independent.
-        rhoS_M ~~ tau2S_M*rhoS_M
-        rhoV_M ~~ tau2V_M*rhoV_M
-        rhoV_S ~~ tau2V_S*rhoV_S
-        ## Known sampling variances and covariances
-        rS_M ~~ data.cSM_SM*rS_M
-        rV_M ~~ data.cVM_SM*rS_M
-        rV_S ~~ data.cVS_SM*rS_M
-        rV_M ~~ data.cVM_VM*rV_M
-        rV_S ~~ data.cVS_VM*rV_M
-        rV_S ~~ data.cVS_VS*rV_S
-        ## Fit the model-implied correlation vector based on impliedS(ram20, corr=TRUE)
-        muS_M == r_sv*v2m + s2m
-        muV_M == r_sv*s2m + v2m
-        muV_S == r_sv
-"
-
-## std.lv = FALSE to keep the true effect sizes unstandardized
-ram21 <- lavaan2RAM(m21, obs.variables = c("rS_M", "rV_M", "rV_S"), std.lv = FALSE)
-
-fit21 <- sem("OSMASEM", RAM=ram21, data=dat3, replace.constraints = TRUE)
-summary(fit21)
-```
-
-```
-## 95% confidence intervals: z statistic approximation (robust=FALSE)
-## Coefficients:
-##           Estimate  Std.Error     lbound     ubound z value  Pr(>|z|)    
-## tau2S_M  0.0020084  0.0053837 -0.0085434  0.0125602  0.3731  0.709109    
-## tau2V_M  0.0418303  0.0314264 -0.0197644  0.1034250  1.3311  0.183171    
-## tau2V_S  0.0041962  0.0099467 -0.0152989  0.0236914  0.4219  0.673118    
-## r_sv     0.1570785  0.0503387  0.0584165  0.2557405  3.1204  0.001806 ** 
-## s2m      0.3420455  0.0448942  0.2540545  0.4300365  7.6189 2.554e-14 ***
-## v2m      0.2445485  0.0948563  0.0586336  0.4304634  2.5781  0.009935 ** 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Information Criteria:
-##      df Penalty Parameters Penalty Sample-Size Adjusted
-## AIC:  -42.20738          -6.207377            -90.20738
-## BIC:  -39.70849          -7.456820            -24.79905
-## 
-## Number of subjects (or studies): 6
-## Number of observed statistics: 18
-## Number of estimated parameters: 6
-## Degrees of freedom: 12
-## -2 log likelihood: -18.20738 
-## OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
-## Other values may indicate problems.)
-```
-
-``` r
 sessionInfo()
 ```
 
 ```
-## R version 4.4.1 (2024-06-14)
+## R version 4.5.1 (2025-06-13)
 ## Platform: x86_64-pc-linux-gnu
-## Running under: Ubuntu 24.04.1 LTS
+## Running under: Ubuntu 24.04.2 LTS
 ## 
 ## Matrix products: default
-## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.12.0 
-## LAPACK: /home/mikewlcheung/Sync/Apps/miniconda3/lib/libmkl_rt.so.2;  LAPACK version 3.10.1
+## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_SG.UTF-8       LC_NUMERIC=C              
@@ -2567,42 +1493,42 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] symSEM_0.4.1   caracas_2.1.1  metaSEM_1.5.0  OpenMx_2.21.12
+## [1] symSEM_0.4    caracas_2.1.1 metaSEM_1.5.2 OpenMx_2.22.7
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] psych_2.4.6.26     tidyselect_1.2.1   dplyr_1.1.4       
-##   [4] fastmap_1.2.0      rpart_4.1.23       XML_3.99-0.16.1   
-##   [7] digest_0.6.37      semPlot_1.1.6      mi_1.1            
-##  [10] lifecycle_1.0.4    cluster_2.1.6      magrittr_2.0.3    
-##  [13] compiler_4.4.1     rlang_1.1.4        Hmisc_5.1-3       
-##  [16] sass_0.4.9         tools_4.4.1        igraph_2.0.3      
-##  [19] utf8_1.2.4         yaml_2.3.10        data.table_1.16.0 
-##  [22] knitr_1.48         htmlwidgets_1.6.4  mnormt_2.1.1      
-##  [25] reticulate_1.39.0  plyr_1.8.9         abind_1.4-8       
-##  [28] withr_3.0.1        foreign_0.8-86     nnet_7.3-19       
-##  [31] grid_4.4.1         stats4_4.4.1       fansi_1.0.6       
-##  [34] lavaan_0.6-19      xtable_1.8-4       colorspace_2.1-1  
-##  [37] ggplot2_3.5.1      gtools_3.9.5       scales_1.3.0      
-##  [40] MASS_7.3-61        cli_3.6.3          mvtnorm_1.3-1     
-##  [43] ellipse_0.5.0      rmarkdown_2.28     generics_0.1.3    
-##  [46] RcppParallel_5.1.9 rstudioapi_0.16.0  reshape2_1.4.4    
-##  [49] pbapply_1.7-2      minqa_1.2.8        cachem_1.1.0      
-##  [52] stringr_1.5.1      splines_4.4.1      parallel_4.4.1    
-##  [55] base64enc_0.1-3    vctrs_0.6.5        boot_1.3-30       
-##  [58] Matrix_1.7-0       jsonlite_1.8.8     carData_3.0-5     
-##  [61] glasso_1.11        htmlTable_2.4.3    Formula_1.2-5     
-##  [64] jpeg_0.1-10        jquerylib_0.1.4    qgraph_1.9.8      
-##  [67] glue_1.7.0         nloptr_2.1.1       stringi_1.8.4     
-##  [70] sem_3.1-16         gtable_0.3.5       quadprog_1.5-8    
-##  [73] lme4_1.1-35.5      munsell_0.5.1      tibble_3.2.1      
-##  [76] lisrelToR_0.3      pillar_1.9.0       htmltools_0.5.8.1 
-##  [79] R6_2.5.1           evaluate_1.0.0     pbivnorm_0.6.0    
-##  [82] lattice_0.22-5     highr_0.11         backports_1.5.0   
-##  [85] png_0.1-8          rockchalk_1.8.157  kutils_1.73       
-##  [88] openxlsx_4.2.7     arm_1.14-4         corpcor_1.6.10    
-##  [91] bslib_0.8.0        fdrtool_1.2.18     Rcpp_1.0.13       
-##  [94] zip_2.3.1          checkmate_2.3.2    gridExtra_2.3     
-##  [97] coda_0.19-4.1      nlme_3.1-165       xfun_0.47         
+##   [1] psych_2.5.3         tidyselect_1.2.1    dplyr_1.1.4        
+##   [4] farver_2.1.2        fastmap_1.2.0       rpart_4.1.24       
+##   [7] XML_3.99-0.16.1     digest_0.6.37       semPlot_1.1.6      
+##  [10] mi_1.1              lifecycle_1.0.4     cluster_2.1.8.1    
+##  [13] magrittr_2.0.3      compiler_4.5.1      rlang_1.1.6        
+##  [16] Hmisc_5.2-3         sass_0.4.10         tools_4.5.1        
+##  [19] igraph_2.1.4        yaml_2.3.10         data.table_1.17.0  
+##  [22] knitr_1.50          htmlwidgets_1.6.4   mnormt_2.1.1       
+##  [25] reticulate_1.42.0   plyr_1.8.9          RColorBrewer_1.1-3 
+##  [28] abind_1.4-8         foreign_0.8-90      nnet_7.3-20        
+##  [31] grid_4.5.1          stats4_4.5.1        lavaan_0.6-19      
+##  [34] colorspace_2.1-1    xtable_1.8-4        ggplot2_3.5.2      
+##  [37] gtools_3.9.5        scales_1.4.0        MASS_7.3-65        
+##  [40] cli_3.6.5           mvtnorm_1.3-3       ellipse_0.5.0      
+##  [43] rmarkdown_2.29      reformulas_0.4.1    generics_0.1.4     
+##  [46] RcppParallel_5.1.10 rstudioapi_0.17.1   reshape2_1.4.4     
+##  [49] pbapply_1.7-2       minqa_1.2.8         cachem_1.1.0       
+##  [52] stringr_1.5.1       splines_4.5.1       parallel_4.5.1     
+##  [55] base64enc_0.1-3     vctrs_0.6.5         boot_1.3-31        
+##  [58] Matrix_1.7-3        jsonlite_2.0.0      carData_3.0-5      
+##  [61] glasso_1.11         htmlTable_2.4.3     Formula_1.2-5      
+##  [64] jpeg_0.1-11         jquerylib_0.1.4     qgraph_1.9.8       
+##  [67] glue_1.8.0          nloptr_2.2.1        stringi_1.8.7      
+##  [70] sem_3.1-16          gtable_0.3.6        quadprog_1.5-8     
+##  [73] lme4_1.1-37         tibble_3.3.0        lisrelToR_0.3      
+##  [76] pillar_1.10.2       htmltools_0.5.8.1   R6_2.6.1           
+##  [79] Rdpack_2.6.4        evaluate_1.0.3      pbivnorm_0.6.0     
+##  [82] lattice_0.22-5      backports_1.5.0     rbibutils_2.3      
+##  [85] png_0.1-8           rockchalk_1.8.157   kutils_1.73        
+##  [88] openxlsx_4.2.8      arm_1.14-4          corpcor_1.6.10     
+##  [91] bslib_0.9.0         fdrtool_1.2.18      Rcpp_1.0.14        
+##  [94] zip_2.3.3           checkmate_2.3.2     gridExtra_2.3      
+##  [97] coda_0.19-4.1       nlme_3.1-168        xfun_0.52          
 ## [100] pkgconfig_2.0.3
 ```
 
