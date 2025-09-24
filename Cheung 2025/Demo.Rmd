@@ -15,15 +15,18 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Univariate Meta-Analyses
+# Illustrations using Jaramillo, Mulki, and Marshall (2005)
 
 ## Data preparation
 ```{r, message=FALSE}
 ## Load the required libraries
+library(metafor)
 library(metaSEM)
 library(symSEM)
 
 ## Prepare a sample data
+## xi: a predictor
+## zi: an outcome variable
 dat1 <- data.frame(yi=Jaramillo05$r, 
                    vi=Jaramillo05$r_v,
                    xi=scale(Jaramillo05$IDV, scale=FALSE),
@@ -31,23 +34,27 @@ dat1 <- data.frame(yi=Jaramillo05$r,
 ```
 
 ## Models without any external variables
+
 ### Fixed-effect model
 ```{r}
 ## Fixed-effect model with a latent variable ei
-m1a <- "ei =~ 1*yi           ## e as a latent variable and yi is its indicator
+## data.vi means that vi in the data are fixed at each case in the model.
+m1a <- "ei =~ 1*yi           ## e is a latent variable and yi is its indicator
         yi ~ mu*1            ## Mean(yi) = mu
-        yi ~~ 0*yi           ## Set the error variance of yi at 0
-        ei ~~ data.vi*ei     ## Var(yi) = vi, which is assigned from data
-"
+        yi ~~ 0*yi           ## Set the measurement error variance of yi at 0
+        ei ~~ data.vi*ei     ## Var(yi) = vi, which is assumed known in meta-analysis
+"                            
 
-## Fixed-effects model without specifying ei
-m1b <- "yi ~ mu*1            ## Mean(yi) = mu
-        yi ~~ data.vi*yi     ## Var(yi) = vi, which is assigned from data
-"
-
-## Display the conceptual model using the semPlot package
-## sizeInt=7: Set 7 as the size of the intercept, see help(semPaths) in R
+## Display the conceptual model using the semPlot package.
+## sizeInt=7: Set 7 as the size of the intercept, see help(semPaths) in R.
 plot(m1a, color = "yellow", sizeInt = 7)
+
+## Fixed-effect model without specifying ei
+m1b <- "yi ~ mu*1            ## Mean(yi) = mu
+        yi ~~ data.vi*yi     ## Var(yi) = vi, the measurement error variance is assigned from the data
+"
+
+plot(m1b, color = "yellow", sizeInt = 7)
 
 ## Convert the lavaan model to RAM specification
 ## obs.variables = "yi": "yi" is the observed variable
@@ -66,38 +73,56 @@ summary(fit1)
 ## Display the model with results using the semPlot package
 ## nDigits=4: Display 4 digits
 plot(fit1, color = "green", sizeInt = 7, nDigits = 4)
+
+## Compare the results with metafor
+rma(yi, vi, data = dat1, method = "FE")
 ```
 
 ### Random-effects model
 ```{r}
-## Random-effects model
-m2 <- "ui =~ 1*yi          ## ui is the random effect
-       ui ~~ tau2*ui       ## Var(ui) = tau2
-       yi ~ mu*1           ## Mean(yi) = mu
-       yi ~~ data.vi*yi    ## Var(yi) = vi, which is assigned from data
+## ei is conceptualized as a latent variable
+## data.vi means that vi in the data are fixed at each case in the model.
+m2a <- "ui =~ 1*yi          ## ui is the random effect
+        ui ~~ tau2*ui       ## Var(ui) = tau2
+        ei =~ 1*yi          ## ei, the error term, is conceptualized as a latent variable
+        ei ~~ data.vi*ei    ## Var(ei) = vi, which is assigned from data
+        yi ~ mu*1           ## Mean(yi) = mu
+        yi ~~ 0*yi          ## Set the measurement error variance of yi at 0
 "
 
 ## Display the conceptual model
-plot(m2, color="yellow", sizeInt = 7)
+plot(m2a, color="yellow", sizeInt = 7)
+
+## ei is conceptualized as the measurement error of yi
+## data.vi means that vi in the data are fixed at each case in the model.
+m2b <- "ui =~ 1*yi          ## ui is the random effect
+        ui ~~ tau2*ui       ## Var(ui) = tau2
+        yi ~ mu*1           ## Mean(yi) = mu
+        yi ~~ data.vi*yi    ## Var(yi) = vi, the measurement error variance is assigned from the data
+"
+
+plot(m2b, color="yellow", sizeInt = 7)
 
 ## Convert the lavaan model to RAM specification
 ## std.lv = FALSE: Ensure the latent variable is not standardized
-ram2 <- lavaan2RAM(m2, obs.variables = "yi", std.lv = FALSE)
+ram2 <- lavaan2RAM(m2b, obs.variables = "yi", std.lv = FALSE)
 
 ## Get the model-implied mean and variance structures
 impliedS(ram2)
 
-## intervals.type = "LB": Request likelihood-based CI
-fit2 <- sem("Random", RAM = ram2, data = dat1, intervals.type = "LB")
+fit2 <- sem("Random", RAM = ram2, data = dat1)
 summary(fit2)
 
 ## Display the model with results
 plot(fit2, color="green", sizeInt = 7, nDigits = 4)
+
+## Compare the results with metafor using ML estimation method
+rma(yi, vi, data = dat1, method = "ML")
 ```
 
 ### Multiplicative-error model
 ```{r}
-## Multiplicative error, same as UWLS model
+## Multiplicative error, same as the UWLS model
 m3 <- "ei =~ phi_sqrt*yi   ## phi (phi_sqrt^2) is the heterogeneity scaling factor
        ei ~~ data.vi*ei    ## Var(ei) = vi
        yi ~ mu*1           ## Mean(yi) = mu
@@ -111,23 +136,27 @@ ram3 <- lavaan2RAM(m3, obs.variables = "yi", std.lv = FALSE)
 
 impliedS(ram3)
 
-fit3 <- sem("Multiplicative", RAM = ram3, data = dat1, intervals.type = "LB")
+fit3 <- sem("Multiplicative", RAM = ram3, data = dat1)
 summary(fit3)
+
 plot(fit3, color="green", sizeInt=6, nDigits=4)
+
+## Compare the results with regression with UWLS estimation method
+summary( lm(yi ~ 1, weights=1/vi, data = dat1) )
 ```
 
 ### Hybrid models of additive and multiplicative errors
 ```{r}
-## Hybrid model 1: multiplicative and addictive error
-m4 <- "yi ~ mu*1          ## Mean(yi) = mu 
-       yi ~~ 0*yi
+## Hybrid model 1: multiplicative and additive error
+m4 <- "yi ~ mu*1              ## Mean(yi) = mu 
+       yi ~~ 0*yi             ## Set the measurement error variance of yi at 0
        ## additive error
        ui =~ 1*yi
-       ui ~~ tau2*ui      ## Var(ui) = tau2
-       ## mulitplicative error
-       ei =~ phi_sqrt*yi  ## phi is a scaling factor
-       ei ~~ data.vi*ei   ## Var(ei) = vi
-       phi := phi_sqrt^2  ## Define phi as a function of phi_sqrt
+       ui ~~ tau2*ui          ## Var(ui) = tau2
+       ## multiplicative error
+       ei =~ phi_sqrt*yi      ## phi is a scaling factor
+       ei ~~ data.vi*ei       ## Var(ei) = vi
+       phi := phi_sqrt^2      ## Define phi as a function of phi_sqrt
 "
 plot(m4, color="yellow", sizeInt=6)
 
@@ -135,11 +164,10 @@ ram4 <- lavaan2RAM(m4, obs.variables = "yi", std.lv = FALSE)
 
 impliedS(ram4)
 
-fit4 <- sem("Hybrid1", RAM = ram4, data = dat1, intervals.type = "LB")
+fit4 <- sem("Hybrid1", RAM = ram4, data = dat1)
 summary(fit4)
 
 plot(fit4, color="green", sizeInt=6, nDigits=4)
-
 
 ## Hybrid model 2: multiplicative and addictive error
 m5 <- "yi ~ mu*1         ## Mean(yi) = mu
@@ -150,19 +178,20 @@ m5 <- "yi ~ mu*1         ## Mean(yi) = mu
 
 ram5 <- lavaan2RAM(m5, obs.variables = "yi", std.lv = FALSE)
 
+## replace.constraints = TRUE: Replace the constraint "Vary" with the new parameters
 impliedS(ram5, replace.constraints = TRUE)
 
-fit5 <- sem("Hybrid2", RAM = ram5, data = dat1, intervals.type = "LB", 
-            replace.constraints = TRUE)
+## replace.constraints = TRUE: Replace the constraint "Vary" with the new parameters
+fit5 <- sem("Hybrid2", RAM = ram5, data = dat1, replace.constraints = TRUE)
 summary(fit5)
 
 ## Hybrid model 3: Hartung-Knapp-Sidik-Jonkman method
 m6 <- "yi ~ mu*1            ## Mean(yi) = mu
-       yi ~~ 0*yi
+       yi ~~ 0*yi           ## Set the measurement error variance of yi at 0  
        ## additive error
        ui =~ phi_sqrt*yi    ## phi is a scaling factor
-       ui ~~ 0.01703407*ui  ## tau2 obtained from the random-effects model
-       ## mulitplicative error
+       ui ~~ 0.01703407*ui  ## Estimated tau2 is obtained from the random-effects model
+       ## multiplicative error
        ei =~ phi_sqrt*yi    ## phi is a scaling factor
        ei ~~ data.vi*ei     ## Var(ei) = vi
        phi := phi_sqrt^2    ## Define phi as a function of phi_sqrt
@@ -173,21 +202,17 @@ ram6 <- lavaan2RAM(m6, obs.variables = "yi", std.lv = FALSE)
 
 impliedS(ram6)
 
-fit6 <- sem("Hybrid3", RAM = ram6, data = dat1, intervals.type = "LB")
+fit6 <- sem("Hybrid3", RAM = ram6, data = dat1)
 summary(fit6)
 
 plot(fit6, color="green", sizeInt=6, nDigits=4)
+
+## Compare the results with metafor using the Hartung-Knapp-Sidik-Jonkman method
+rma(yi, vi, data = dat1, method = "SJ")
 ```
 
 ### Comparison of the six models
 ```{r}
-## Refit some models to get SEs rather than LBCIs for comparisons
-fit2 <- sem("Random", RAM = ram2, data = dat1)
-fit3 <- sem("Multiplicative", RAM = ram3, data = dat1)
-fit4 <- sem("Hybrid1", RAM = ram4, data = dat1)
-fit5 <- sem("Hybrid2", RAM = ram5, data = dat1, replace.constraints = TRUE)
-fit6 <- sem("Hybrid3", RAM = ram6, data = dat1)
-
 ## A helper function to extract the results
 extractResults <- function(x) {
   out <- summary(x)
@@ -220,8 +245,8 @@ knitr::kable(table1, digits=4, caption="Results of the Six Meta-Analytic Models"
 ## Mixed-effects model with the covariate as a design matrix
 m7 <- "yi ~ b0*1         ## Intercept of yi: b0
        yi ~~ data.vi*yi  ## Known sampling variance vi
-       ui =~ 1*yi
-       ui ~~ tau2*ui     ## Heterogeneity variance tau2
+       ui =~ 1*yi        ## ui: random effects
+       ui ~~ tau2*ui     ## Residual heterogeneity variance tau2
        ## etai: a phantom latent variable to represent the covariate x
        etai =~ b1*yi     ## yi = b1*etai
        etai ~ data.xi*1  ## etai = xi
@@ -235,9 +260,13 @@ ram7 <- lavaan2RAM(m7, obs.variables = "yi", std.lv = FALSE)
 
 impliedS(ram7)
 
-fit7 <- sem("Covariate_design", RAM=ram7, data=dat1, intervals.type = "LB")
+fit7 <- sem("Fixed_x", RAM=ram7, data=dat1)
 summary(fit7)
+
 plot(fit7, color = "green", sizeInt=6,  nDigits = 4)
+
+## Compare the results with metafor using the ML method
+rma(yi, vi, mod= ~xi, data = dat1, method = "ML")
 ```
 
 ### A random-x meta-regression
@@ -245,8 +274,8 @@ plot(fit7, color = "green", sizeInt=6,  nDigits = 4)
 ## Mixed-effects model with the covariate as a variable
 m8 <- "yi ~ b0*1 + b1*xi ## Intercept (b0) and slope (b1)
        yi ~~ data.vi*yi  ## Known sampling variance vi
-       ui =~ 1*yi
-       ui ~~ tau2*ui     ## Heterogeneity variance tau2
+       ui =~ 1*yi        ## ui: random effects
+       ui ~~ tau2*ui     ## Residual heterogeneity variance tau2
        xi ~ Meanx*1      ## Mean(xi) = Meanx
        xi ~~ Varx*xi     ## Var(xi) = Varx
        ## Define R2: explained variance/total variance
@@ -261,7 +290,7 @@ ram8 <- lavaan2RAM(m8, obs.variables = c("yi", "xi"), std.lv = FALSE)
 impliedS(ram8)
 
 ## Request LBCIs on the R2
-fit8 <- sem("Covariate_variable", RAM=ram8, data=dat1, intervals.type = "LB")
+fit8 <- sem("Random_x", RAM=ram8, data=dat1, intervals.type = "LB")
 summary(fit8)
 
 plot(fit8, color="green", sizeInt=6, nDigits = 4, layout = "spring")
@@ -270,9 +299,9 @@ plot(fit8, color="green", sizeInt=6, nDigits = 4, layout = "spring")
 ### Regressing a covariate on the true effect size
 ```{r}
 ## Regressing a covariate on the true effect size
-m9 <- "fyi =~ 1*yi         ## fi: true effect size
-       fyi ~~ tau2*fyi     ## Var(fi) = tau2
-       fyi ~ Meany*1       ## Mean(fi) = Meany
+m9 <- "fyi =~ 1*yi         ## fyi: true effect size
+       fyi ~~ tau2*fyi     ## Var(fyi) = tau2
+       fyi ~ Meany*1       ## Mean(fyi) = Meany
        yi ~ 0*1         
        yi ~~ data.vi*yi    ## Var(ei) = vi
        zi ~ b0*1 + b1*fyi  ## Intercept (b0) and slope (b1)
@@ -288,85 +317,26 @@ ram9 <- lavaan2RAM(m9, obs.variables = c("yi", "zi"), std.lv = FALSE)
 
 impliedS(ram9)
 
-fit9 <- sem("Regress_covariate", RAM=ram9, data=dat1, intervals.type = "LB")
+fit9 <- sem("Regress_covariate", RAM=ram9, data=dat1)
 summary(fit9)
 
 plot(fit9, color = "green", sizeInt=6, nDigits = 4)
+
+## Compare the incorrect results with regression ignoring the known sampling variance vi on yi
+summary( lm(zi ~ yi, data = dat1) )
 ```
 
-### Correlating a covariate with a true effect size
+### Meta-regression with partially standardized variables
 ```{r}
-## Correlation between fyi and fxi
-m10 <- "## fyi: Standardized true effect size of yi
-        fyi =~ tauy*yi     ## tauy: sd of fyi
-        fyi ~~ 1*fyi       ## Var(fyi) = 1
-        fyi ~ y_mean_div_tauy*1   ## rescaled mean
-        yi ~ 0*1
-        yi ~~ data.vi*yi
-        ## fxi: Standardized score of xi
-        fxi =~ sigma*xi    ## sigma: sd of xi
-        fxi ~~ 1*fxi       ## Var(fxi) = 1
-        fxi ~~ Cor*fyi
-        fxi ~ x_mean_div_sigmax*1 ## rescaled mean
-        xi ~ 0*1
-        xi ~~ 0*xi       
-"
-
-plot(m10, color = "yellow", sizeInt=6)
-
-## Both yi and xi are observed variables
-ram10 <- lavaan2RAM(m10, obs.variables = c("yi", "xi"), std.lv = TRUE)
-
-impliedS(ram10)
-
-fit10 <- sem("Correlation", RAM=ram10, data=dat1)
-summary(fit10)
-plot(fit10, color = "green", sizeInt=6, nDigits = 4)
-```
-
-### Meta-regression with completely and partially standardized variables
-```{r}
-## Completely standardized fyi and xi
-m11 <- "## fyi: Standardized true effect size of yi
-        fyi =~ tauy*yi       ## tauy: sd of fyi
-        fyi ~~ tau2_res*fyi  ## tau2_res: residual heterogeneity
-        fyi ~ b0*1 + b1*fxi
-        yi ~ 0*1
-        yi ~~ data.vi*yi
-        ## fxi: Standardized score of xi
-        fxi =~ sigma*xi      ## sigma: sd of xi
-        fxi ~~ 1*fxi         ## Var(fxi) =1
-        fxi ~ mu_x_sd*1
-        xi ~ 0*1
-        xi ~~ 0*xi
-        ## Nonlinear constraint to ensure Var(fyi) = 1
-        tau2_res == 1 - b1^2
-        ## Define R2
-        R2 := b1^2
-"
-
-plot(m11, color="yellow", layout="spring", sizeInt=6)
-
-## Both yi and xi are observed variables
-ram11 <- lavaan2RAM(m11, obs.variables = c("yi", "xi"), std.lv = FALSE)
-
-impliedS(ram11, replace.constraints = TRUE)
-
-fit11 <- sem("Complete_standardize", RAM=ram11, data=dat1, intervals.type = "LB",
-             lbound = list(tauy=0))
-summary(fit11)
-plot(fit11, color="green", sizeInt=6, nDigits=4)
-
 ## Partial standardized xi but not yi
-m12 <- "## fyi: Unstandardized true effect size of yi
-        fyi =~ 1*yi
-        fyi ~~ tau2_res*fyi   ## tau2_res: residual heterogeneity
-        fyi ~ b0*1 + b1*fxi
+m10 <- "fyi =~ 1*yi          ## fyi: Latent effect size of yi
+        fyi ~~ tau2_res*fyi  ## tau2_res: residual heterogeneity variance
+        fyi ~ b0*1 + b1*fxi  ## b0: intercept, b1: slope
         yi ~ 0*1
-        yi ~~ data.vi*yi
+        yi ~~ data.vi*yi     ## Var(ei) = vi
         ## fxi: Standardized score of xi
-        fxi =~ sigma*xi       ## sigma: sd of xi
-        fxi ~~ 1*fxi          ## Var(fxi) =1
+        fxi =~ sd_xi*xi      ## sd_xi: sd of xi
+        fxi ~~ 1*fxi         ## Var(fxi) =1 for standardization
         fxi ~ mu_x_sd*1
         xi ~ 0*1
         xi ~~ 0*xi
@@ -374,59 +344,150 @@ m12 <- "## fyi: Unstandardized true effect size of yi
         R2 := b1^2/(b1^2 + tau2_res)
 "
 
-plot(m12, color="yellow", layout="spring", sizeInt=6)
+plot(m10, color="yellow", layout="spring", sizeInt=6)
 
 ## Both yi and xi are observed variables
-ram12 <- lavaan2RAM(m12, obs.variables = c("yi", "xi"), std.lv = FALSE)
-ram12
-impliedS(ram12)
+ram10 <- lavaan2RAM(m10, obs.variables = c("yi", "xi"), std.lv = FALSE)
+ram10
+impliedS(ram10)
 
-fit12 <- sem("Partial_standardize", RAM=ram12, data=dat1, intervals.type = "LB")
-summary(fit12)
-plot(fit12, color="green", sizeInt=6, nDigits=4)
+fit10 <- sem("Partial_standardize", RAM=ram10, data=dat1)
+summary(fit10)
+
+plot(fit10, color="green", sizeInt=6, nDigits=4)
+
+## Compare the incorrect results with metafor using the ML method
+rma(yi, vi, mod= ~ scale(xi), data = dat1, method = "ML")
 ```
 
-### Location-scale and nonlinear models
+### Correlating a covariate with a true effect size
+```{r}
+## Correlation between fyi and fxi
+m11 <- "## fyi: Standardized true effect size of yi
+        fyi =~ tauy*yi     ## tauy: sd of fyi
+        fyi ~~ 1*fyi       ## Var(fyi) = 1
+        fyi ~ y_mean_div_tauy*1   ## rescaled mean
+        yi ~ 0*1
+        yi ~~ data.vi*yi
+        ## fxi: Standardized score of xi
+        fxi =~ sd_xi*xi   ## sd_xi: sd of xi
+        fxi ~~ 1*fxi      ## Var(fxi) = 1 for standardization
+        fxi ~~ Cor*fyi    ## Correlation between fyi and fxi
+        fxi ~ x_mean_div_sigmax*1 ## rescaled mean
+        xi ~ 0*1
+        xi ~~ 0*xi       
+"
+
+plot(m11, color = "yellow", sizeInt=6)
+
+## Both yi and xi are observed variables
+ram11 <- lavaan2RAM(m11, obs.variables = c("yi", "xi"), std.lv = TRUE)
+
+impliedS(ram11)
+
+fit11 <- sem("Correlation", RAM=ram11, data=dat1)
+summary(fit11)
+
+plot(fit11, color = "green", sizeInt=6, nDigits = 4)
+
+## Compare the incorrect results with correlation analysis ignoring the known sampling variance vi on yi
+cor.test(~ yi + zi, data = dat1)
+```
+
+### Location-scale and nonlinear models with an additive heterogeneity variance
 ```{r}
 ## Location-scale model with an additive heterogeneity variance
-m13 <- "yi ~ mu*1          ## Mean(yi) = mu
+m12 <- "yi ~ mu*1          ## Mean(yi) = mu
         yi ~~ data.vi*yi   ## Var(ei) = vi 
         ## ui is the latent variable of the random effect
         ui =~ 1*yi         ## yi = 1*ui
-        ui ~~ tau2*ui      ## Var(ui) = tau2
-        ## Specify nonlinear on mean and tau2
+        ui ~~ tau2*ui      ## Var(ui) = tau2 of the residual heterogenenity variance
+        ## Specify a linear relationship on the mean structure
         mu == b0 + b1*data.xi
+        ## Specify a nonlinear relationship on the variance structure
         tau2 == exp(a0 + a1*data.xi)
 "
 
-ram13 <- lavaan2RAM(m13, obs.variables="yi", std.lv = FALSE)
+ram12 <- lavaan2RAM(m12, obs.variables="yi", std.lv = FALSE)
 
 ## Get the model implied structures
 ## We need to replace the constraints with the new parameters
-impliedS(ram13, replace.constraints=TRUE)
+impliedS(ram12, replace.constraints=TRUE)
 
-fit13 <- sem("Location_additive", RAM=ram13, data=dat1,
-             replace.constraints=TRUE)
-summary(fit13)
+fit12 <- sem("Location_scale_additive", RAM=ram12, data=dat1, replace.constraints=TRUE)
+summary(fit12)
 
+## Compare the incorrect results with metafor using the ML method
+rma(yi, vi, mod= ~xi, scale= ~xi, data = dat1, method = "ML")
+```
 
+### Location-scale and nonlinear models with a multiplicative heterogeneity variance
+```{r}
 ## Location-scale model with a multiplicative heterogeneity variance
-m14 <- "yi ~ mu*1          ## Mean(yi) = mu
+m13 <- "yi ~ mu*1          ## Mean(yi) = mu
         yi ~~ sigma2*yi    ## Var(yi) = sigma2 
-        ## Specify nonlinear on mean and sigma2
+        ## Specify nonlinear on mean and variance structures
         mu == b0 + b1*data.xi
         sigma2 == exp(a0 + a1*data.xi)*data.vi
 "
 
-ram14 <- lavaan2RAM(m14, obs.variables="yi", std.lv = FALSE)
+ram13 <- lavaan2RAM(m13, obs.variables="yi", std.lv = FALSE)
 
-impliedS(ram14, replace.constraints = TRUE)
+impliedS(ram13, replace.constraints = TRUE)
 
-fit14 <- sem("Location_multiplicative", RAM=ram14, data=dat1,
-             replace.constraints=TRUE)
+fit13 <- sem("Location_scale_multiplicative", RAM=ram13, data=dat1, replace.constraints=TRUE)
+
+summary(fit13)
+```
+
+# Illustrations using Chan et al. (2017)
+
+## Data preparation
+```{r}
+## Replace missing values with 0, as NA is not allowed in definition variables
+## The imputed "0" will be dropped because the corresponding effect sizes are missing.
+Chan17$v_misinfo[is.na(Chan17$v_misinfo)] <-0 
+Chan17$c_mis_deb[is.na(Chan17$c_mis_deb)] <-0
+Chan17$v_debunk[is.na(Chan17$v_debunk)] <-0
+
+dat2 <- data.frame(y1i=Chan17$g_misinfo,
+                   y2i=Chan17$g_debunk,
+                   V11i=Chan17$v_misinfo,
+                   V21i=Chan17$c_mis_deb,
+                   V22i=Chan17$v_debunk)
+```
+
+## Regressing one effect size on another effect size
+```{r}
+## Regressing true effect sizes f2i on f1i
+m14 <- "## Means of y1 and y2 are fixed at 0
+        y1i + y2i ~ 0*1
+        ## Known sampling variances and covariance
+        y1i ~~ data.V11i*y1i
+        y2i ~~ data.V22i*y2i
+        y1i ~~ data.V21i*y2i
+        ## f1i and f2i: True effect sizes
+        f1i =~ 1*y1i
+        f2i =~ 1*y2i
+        ## Heterogeneity variances
+        f1i ~~ T_11*f1i
+        f2i ~~ T_22*f2i
+        ## Regressing f2i on f1i
+        f2i ~ b0*1+ b1*f1i
+        f1i ~ mu_1*1
+        ## Define R2 on f2i
+        R2 := b1^2*T_11/(b1^2*T_11 + T_22)
+"
+plot(m14, color="yellow", layout="spring")
+
+ram14 <- lavaan2RAM(m14, obs.variables = c("y1i", "y2i"), std.lv = FALSE)
+
+impliedS(ram14)
+
+fit14 <- sem("Regress_y2_y1", RAM=ram14, data=dat2)
 summary(fit14)
+
+plot(fit14, color="green", nDigits=4, layout="spring")
 
 sessionInfo()
 ```
-
-
