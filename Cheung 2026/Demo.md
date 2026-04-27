@@ -1,7 +1,7 @@
 ---
 title: 'Supplemental materials of "A Tutorial on Fitting Flexible Meta-Analytic Models with Structural Equation Modeling in R"'
 author: "Mike Cheung"
-date: 'September 21, 2025'
+date: 'April 27, 2026'
 output:
   html_document:
     keep_md: yes
@@ -100,7 +100,8 @@ impliedS(ram1)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##    yi ei
@@ -232,7 +233,8 @@ impliedS(ram2)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##    yi ui
@@ -345,7 +347,8 @@ impliedS(ram3)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##    yi  ei        
@@ -413,6 +416,35 @@ plot(fit3, color="green", sizeInt=6, nDigits=4)
 ![](Demo_files/figure-html/unnamed-chunk-4-2.png)<!-- -->
 
 ``` r
+## Compare the results with metafor using a combination of "EE" and "knha" adjustment.
+rma(yi, vi, data = dat1, method = "EE", test = "knha")
+```
+
+```
+## Warning: Knapp and Hartung method is not meant to be used in the context of EE
+## models.
+```
+
+```
+## 
+## Equal-Effects Model (k = 61)
+## 
+## I^2 (total heterogeneity / total variability):   82.32%
+## H^2 (total variability / sampling variability):  5.66
+## 
+## Test for Heterogeneity:
+## Q(df = 60) = 339.3886, p-val < .0001
+## 
+## Model Results:
+## 
+## estimate      se     tval  df    pval   ci.lb   ci.ub      
+##   0.1938  0.0189  10.2710  60  <.0001  0.1560  0.2315  *** 
+## 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+``` r
 ## Compare the results with regression with UWLS estimation method
 summary( lm(yi ~ 1, weights=1/vi, data = dat1) )
 ```
@@ -461,7 +493,8 @@ impliedS(ram4)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##    yi  ui  ei        
@@ -485,7 +518,7 @@ impliedS(ram4)
 ## 
 ## Model implied covariance matrix (Sigma):
 ##    yi                         
-## yi "data.vi*phi_sqrt^2 + tau2"
+## yi "tau2 + data.vi*phi_sqrt^2"
 ## 
 ## Model implied mean vector (Mu):
 ##   yi  
@@ -532,7 +565,7 @@ plot(fit4, color="green", sizeInt=6, nDigits=4)
 ![](Demo_files/figure-html/unnamed-chunk-5-2.png)<!-- -->
 
 ``` r
-## Hybrid model 2: multiplicative and addictive error
+## Hybrid model 2: multiplicative and additive error
 m5 <- "yi ~ mu*1         ## Mean(yi) = mu
        yi ~~ Vary*yi     ## Var(yi) = vary
        ## Define Vary as a function of vi, tau2, and omega
@@ -546,7 +579,8 @@ impliedS(ram5, replace.constraints = TRUE)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##    yi
@@ -566,7 +600,7 @@ impliedS(ram5, replace.constraints = TRUE)
 ## 
 ## Model implied covariance matrix (Sigma):
 ##    yi                            
-## yi "data.vi + data.vi^omega*tau2"
+## yi "data.vi + tau2*data.vi^omega"
 ## 
 ## Model implied mean vector (Mu):
 ##   yi  
@@ -627,7 +661,8 @@ impliedS(ram6)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##    yi  ui         ei        
@@ -650,8 +685,8 @@ impliedS(ram6)
 ## 1 "mu" "0" "0"
 ## 
 ## Model implied covariance matrix (Sigma):
-##    yi                                 
-## yi "phi_sqrt^2*(data.vi + 0.01703407)"
+##    yi                                          
+## yi "data.vi*phi_sqrt^2 + 0.01703407*phi_sqrt^2"
 ## 
 ## Model implied mean vector (Mu):
 ##   yi  
@@ -798,7 +833,8 @@ impliedS(ram7)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##      yi  ui  etai
@@ -922,7 +958,8 @@ impliedS(ram8)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##    yi  xi   ui 
@@ -947,12 +984,12 @@ impliedS(ram8)
 ## 
 ## Model implied covariance matrix (Sigma):
 ##    yi                           xi       
-## yi "Varx*b1^2 + data.vi + tau2" "Varx*b1"
-## xi "Varx*b1"                    "Varx"   
+## yi "data.vi + tau2 + b1^2*Varx" "b1*Varx"
+## xi "b1*Varx"                    "Varx"   
 ## 
 ## Model implied mean vector (Mu):
 ##   yi              xi     
-## 1 "Meanx*b1 + b0" "Meanx"
+## 1 "b0 + b1*Meanx" "Meanx"
 ```
 
 ``` r
@@ -1023,7 +1060,8 @@ impliedS(ram9)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##     yi  zi  fyi 
@@ -1053,7 +1091,7 @@ impliedS(ram9)
 ## 
 ## Model implied mean vector (Mu):
 ##   yi      zi             
-## 1 "Meany" "Meany*b1 + b0"
+## 1 "Meany" "b0 + b1*Meany"
 ```
 
 ``` r
@@ -1190,7 +1228,8 @@ impliedS(ram10)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##     yi  xi  fyi fxi    
@@ -1217,12 +1256,12 @@ impliedS(ram10)
 ## 
 ## Model implied covariance matrix (Sigma):
 ##    yi                          xi        
-## yi "b1^2 + data.vi + tau2_res" "b1*sd_xi"
+## yi "data.vi + tau2_res + b1^2" "b1*sd_xi"
 ## xi "b1*sd_xi"                  "sd_xi^2" 
 ## 
 ## Model implied mean vector (Mu):
 ##   yi                xi             
-## 1 "b0 + b1*mu_x_sd" "mu_x_sd*sd_xi"
+## 1 "b0 + b1*mu_x_sd" "sd_xi*mu_x_sd"
 ```
 
 ``` r
@@ -1329,7 +1368,8 @@ impliedS(ram11)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##     yi  xi  fyi    fxi    
@@ -1356,8 +1396,8 @@ impliedS(ram11)
 ## 
 ## Model implied covariance matrix (Sigma):
 ##    yi                 xi              
-## yi "data.vi + tauy^2" "Cor*sd_xi*tauy"
-## xi "Cor*sd_xi*tauy"   "sd_xi^2"       
+## yi "data.vi + tauy^2" "Cor*tauy*sd_xi"
+## xi "Cor*tauy*sd_xi"   "sd_xi^2"       
 ## 
 ## Model implied mean vector (Mu):
 ##   yi                     xi                       
@@ -1409,21 +1449,21 @@ plot(fit11, color = "green", sizeInt=6, nDigits = 4)
 
 ``` r
 ## Compare the incorrect results with correlation analysis ignoring the known sampling variance vi on yi
-cor.test(~ yi + zi, data = dat1)
+cor.test(~ yi + xi, data = dat1)
 ```
 
 ```
 ## 
 ## 	Pearson's product-moment correlation
 ## 
-## data:  yi and zi
-## t = -1.753, df = 59, p-value = 0.08479
+## data:  yi and xi
+## t = -1.3521, df = 59, p-value = 0.1815
 ## alternative hypothesis: true correlation is not equal to 0
 ## 95 percent confidence interval:
-##  -0.44915865  0.03105597
+##  -0.40740077  0.08203622
 ## sample estimates:
-##        cor 
-## -0.2225049
+##       cor 
+## -0.173366
 ```
 
 ### Location-scale and nonlinear models with an additive heterogeneity variance
@@ -1449,7 +1489,8 @@ impliedS(ram12, replace.constraints=TRUE)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##    yi ui
@@ -1559,7 +1600,8 @@ impliedS(ram13, replace.constraints = TRUE)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##    yi
@@ -1669,7 +1711,8 @@ impliedS(ram14)
 ```
 
 ```
-## Correlation matrix: FALSE
+## Center: FALSE
+## Scale: FALSE
 ## 
 ## Amatrix:
 ##     y1i y2i f1i  f2i
@@ -1696,8 +1739,8 @@ impliedS(ram14)
 ## 
 ## Model implied covariance matrix (Sigma):
 ##     y1i                   y2i                           
-## y1i "T_11 + data.V11i"    "T_11*b1 + data.V21i"         
-## y2i "T_11*b1 + data.V21i" "T_11*b1^2 + T_22 + data.V22i"
+## y1i "T_11 + data.V11i"    "data.V21i + b1*T_11"         
+## y2i "data.V21i + b1*T_11" "T_22 + data.V22i + b1^2*T_11"
 ## 
 ## Model implied mean vector (Mu):
 ##   y1i    y2i           
@@ -1750,9 +1793,9 @@ sessionInfo()
 ```
 
 ```
-## R version 4.5.1 (2025-06-13)
+## R version 4.5.3 (2026-03-11)
 ## Platform: x86_64-pc-linux-gnu
-## Running under: Linux Mint 22.1
+## Running under: Linux Mint 22.3
 ## 
 ## Matrix products: default
 ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.12.0 
@@ -1773,43 +1816,43 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] symSEM_0.4          caracas_2.1.1       metaSEM_1.5.2      
-## [4] OpenMx_2.22.9       metafor_4.8-0       numDeriv_2016.8-1.1
-## [7] metadat_1.4-0       Matrix_1.7-4       
+## [1] symSEM_0.5.0        symengine_0.2.11    metaSEM_1.5.4      
+## [4] OpenMx_2.22.11      metafor_4.8-0       numDeriv_2016.8-1.1
+## [7] metadat_1.4-0       Matrix_1.7-5       
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] Rdpack_2.6.4          mnormt_2.1.1          pbapply_1.7-4        
-##   [4] gridExtra_2.3         fdrtool_1.2.18        rlang_1.1.6          
-##   [7] magrittr_2.0.3        rockchalk_1.8.157     compiler_4.5.1       
-##  [10] png_0.1-8             vctrs_0.6.5           reshape2_1.4.4       
-##  [13] quadprog_1.5-8        stringr_1.5.2         pkgconfig_2.0.3      
-##  [16] fastmap_1.2.0         arm_1.14-4            backports_1.5.0      
-##  [19] pbivnorm_0.6.0        rmarkdown_2.29        nloptr_2.2.1         
-##  [22] xfun_0.53             cachem_1.1.0          kutils_1.73          
-##  [25] jsonlite_2.0.0        jpeg_0.1-11           psych_2.5.6          
-##  [28] parallel_4.5.1        lavaan_0.6-19         cluster_2.1.8.1      
-##  [31] R6_2.6.1              bslib_0.9.0           stringi_1.8.7        
-##  [34] RColorBrewer_1.1-3    reticulate_1.43.0     boot_1.3-31          
-##  [37] rpart_4.1.24          jquerylib_0.1.4       Rcpp_1.1.0           
-##  [40] knitr_1.50            base64enc_0.1-3       splines_4.5.1        
-##  [43] nnet_7.3-20           igraph_2.1.4          tidyselect_1.2.1     
-##  [46] rstudioapi_0.17.1     abind_1.4-8           yaml_2.3.10          
-##  [49] qgraph_1.9.8          lattice_0.22-5        tibble_3.3.0         
-##  [52] plyr_1.8.9            S7_0.2.0              coda_0.19-4.1        
-##  [55] evaluate_1.0.5        foreign_0.8-90        RcppParallel_5.1.11-1
-##  [58] zip_2.3.3             pillar_1.11.0         carData_3.0-5        
-##  [61] checkmate_2.3.3       stats4_4.5.1          reformulas_0.4.1     
-##  [64] ellipse_0.5.0         generics_0.1.4        mathjaxr_1.8-0       
-##  [67] ggplot2_4.0.0         scales_1.4.0          semPlot_1.1.7        
-##  [70] minqa_1.2.8           gtools_3.9.5          xtable_1.8-4         
-##  [73] glue_1.8.0            mi_1.2                Hmisc_5.2-3          
-##  [76] tools_4.5.1           data.table_1.17.8     lme4_1.1-37          
-##  [79] openxlsx_4.2.8        mvtnorm_1.3-3         XML_3.99-0.16.1      
-##  [82] grid_4.5.1            sem_3.1-16            rbibutils_2.3        
-##  [85] colorspace_2.1-1      nlme_3.1-168          htmlTable_2.4.3      
-##  [88] Formula_1.2-5         cli_3.6.5             dplyr_1.1.4          
-##  [91] corpcor_1.6.10        glasso_1.11           gtable_0.3.6         
-##  [94] sass_0.4.10           digest_0.6.37         htmlwidgets_1.6.4    
-##  [97] farver_2.1.2          htmltools_0.5.8.1     lifecycle_1.0.4      
-## [100] lisrelToR_0.3         MASS_7.3-65
+##   [1] psych_2.5.6           tidyselect_1.2.1      dplyr_1.2.0          
+##   [4] farver_2.1.2          S7_0.2.0              fastmap_1.2.0        
+##   [7] mathjaxr_2.0-0        rpart_4.1.27          XML_3.99-0.16.1      
+##  [10] digest_0.6.37         semPlot_1.1.8         mi_1.2               
+##  [13] lifecycle_1.0.5       cluster_2.1.8.2       magrittr_2.0.4       
+##  [16] compiler_4.5.3        rlang_1.1.7           Hmisc_5.2-5          
+##  [19] sass_0.4.10           tools_4.5.3           igraph_2.2.1         
+##  [22] yaml_2.3.10           data.table_1.17.8     knitr_1.50           
+##  [25] htmlwidgets_1.6.4     mnormt_2.1.1          plyr_1.8.9           
+##  [28] RColorBrewer_1.1-3    abind_1.4-8           foreign_0.8-91       
+##  [31] nnet_7.3-20           grid_4.5.3            stats4_4.5.3         
+##  [34] lavaan_0.6-21         colorspace_2.1-2      xtable_1.8-4         
+##  [37] ggplot2_4.0.2         gtools_3.9.5          scales_1.4.0         
+##  [40] MASS_7.3-65           cli_3.6.5             mvtnorm_1.3-3        
+##  [43] ellipse_0.5.0         rmarkdown_2.30        crayon_1.5.3         
+##  [46] reformulas_0.4.4      generics_0.1.4        RcppParallel_5.1.11-1
+##  [49] rstudioapi_0.17.1     reshape2_1.4.4        pbapply_1.7-4        
+##  [52] minqa_1.2.8           cachem_1.1.0          stringr_1.5.2        
+##  [55] splines_4.5.3         parallel_4.5.3        base64enc_0.1-3      
+##  [58] vctrs_0.7.1           boot_1.3-32           jsonlite_2.0.0       
+##  [61] carData_3.0-5         glasso_1.11           htmlTable_2.4.3      
+##  [64] Formula_1.2-5         jpeg_0.1-11           jquerylib_0.1.4      
+##  [67] qgraph_1.9.8          glue_1.8.0            nloptr_2.2.1         
+##  [70] stringi_1.8.7         sem_3.1-16            gtable_0.3.6         
+##  [73] quadprog_1.5-8        lme4_2.0-1            tibble_3.3.0         
+##  [76] pillar_1.11.1         lisrelToR_0.3         htmltools_0.5.8.1    
+##  [79] R6_2.6.1              Rdpack_2.6.4          evaluate_1.0.5       
+##  [82] pbivnorm_0.6.0        lattice_0.22-9        backports_1.5.0      
+##  [85] rbibutils_2.4         png_0.1-8             rockchalk_1.8.157    
+##  [88] kutils_1.73           openxlsx_4.2.8.1      arm_1.14-4           
+##  [91] corpcor_1.6.10        bslib_0.9.0           fdrtool_1.2.18       
+##  [94] Rcpp_1.1.1            zip_2.3.3             checkmate_2.3.3      
+##  [97] gridExtra_2.3         coda_0.19-4.1         nlme_3.1-169         
+## [100] xfun_0.53             pkgconfig_2.0.3
 ```

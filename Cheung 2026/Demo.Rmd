@@ -141,6 +141,9 @@ summary(fit3)
 
 plot(fit3, color="green", sizeInt=6, nDigits=4)
 
+## Compare the results with metafor using a combination of "EE" and "knha" adjustment.
+rma(yi, vi, data = dat1, method = "EE", test = "knha")
+
 ## Compare the results with regression with UWLS estimation method
 summary( lm(yi ~ 1, weights=1/vi, data = dat1) )
 ```
@@ -169,7 +172,7 @@ summary(fit4)
 
 plot(fit4, color="green", sizeInt=6, nDigits=4)
 
-## Hybrid model 2: multiplicative and addictive error
+## Hybrid model 2: multiplicative and additive error
 m5 <- "yi ~ mu*1         ## Mean(yi) = mu
        yi ~~ Vary*yi     ## Var(yi) = vary
        ## Define Vary as a function of vi, tau2, and omega
@@ -391,7 +394,7 @@ summary(fit11)
 plot(fit11, color = "green", sizeInt=6, nDigits = 4)
 
 ## Compare the incorrect results with correlation analysis ignoring the known sampling variance vi on yi
-cor.test(~ yi + zi, data = dat1)
+cor.test(~ yi + xi, data = dat1)
 ```
 
 ### Location-scale and nonlinear models with an additive heterogeneity variance
